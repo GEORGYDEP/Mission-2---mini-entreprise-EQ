@@ -817,10 +817,47 @@ body{background:radial-gradient(130% 85% at 50% -10%, #241a52 0%, #120d2c 45%, #
   .cpt-liege{padding:20px 14px}
   .cpt-scene{min-height:0}
 }
+/* ─── v1.3 : petits films sur tout l'écran (3 s au plus, passés d'un clic ou d'une touche) ─── */
+.cpt-film{position:fixed; inset:0; z-index:95; display:grid; grid-template-columns:minmax(0,1fr); place-items:center; padding:16px; overflow:hidden; cursor:pointer;
+  background:radial-gradient(120% 90% at 50% 40%, rgba(30,20,60,.92), rgba(6,4,16,.96)); animation:cpt-film-entre .25s ease-out both}
+.cpt-film.cpt-film-sort{animation:cpt-film-sort .22s ease-in both}
+@keyframes cpt-film-entre{from{opacity:0}}
+@keyframes cpt-film-sort{to{opacity:0}}
+.cpt-film-boite{display:flex; flex-direction:column; align-items:center; width:min(680px,100%); min-width:0; max-width:100%; max-height:100%}
+.cpt-film-boite > *{max-width:100%; min-width:0}
+.cpt-film-texte{margin:18px 0 0; font:700 22px var(--display,'Segoe UI',Arial,sans-serif); color:#fff; text-align:center; text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.cpt-film-passer{position:absolute; right:16px; bottom:12px; font:500 12px var(--ui,'Segoe UI',Arial,sans-serif); color:rgba(255,255,255,.55)}
+.cpt-film-temps{position:absolute; left:0; bottom:0; width:100%; height:3px; transform-origin:left; background:linear-gradient(90deg,#e3b85c,#ff3d8b); animation:cpt-film-temps linear both}
+@keyframes cpt-film-temps{from{transform:scaleX(0)} to{transform:scaleX(1)}}
+.cpt-film-calme .cpt-film-temps{display:none}
+
+/* ─── v1.3 : la page qui vit (allumée par le décor d'une mission : body.cpt-vivant) ─── */
+.cpt-vivant .cpt-arrive{animation:cpt-arrive .45s cubic-bezier(.2,.9,.3,1) both; animation-delay:calc(var(--cpt-i,0) * 70ms)}
+@keyframes cpt-arrive{from{opacity:0; transform:translateY(14px) scale(.985)}}
+.cpt-vivant .choice,.cpt-vivant .offer,.cpt-vivant .chip{transition:transform .18s cubic-bezier(.3,1.5,.5,1), box-shadow .18s, border-color .15s, background .15s}
+.cpt-vivant .choice:not([aria-disabled="true"]):hover,.cpt-vivant .offer:hover{transform:translateY(-3px); box-shadow:0 14px 28px rgba(0,0,0,.3)}
+.cpt-vivant .choice:not([aria-disabled="true"]):hover .ico{animation:cpt-frise .5s ease-in-out}
+@keyframes cpt-frise{25%{transform:rotate(-9deg)} 75%{transform:rotate(9deg)}}
+.cpt-vivant .choice:active,.cpt-vivant .offer:active{transform:scale(.98)}
+.cpt-vivant .grad{background-size:220% auto; animation:cpt-reflet 5s ease-in-out infinite alternate}
+@keyframes cpt-reflet{to{background-position:100% center}}
+.cpt-vivant .cpt-xp-saute{animation:cpt-xp .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes cpt-xp{40%{transform:scale(1.2)}}
+.cpt-vivant #toasts .toast{border-radius:18px; background:rgba(26,18,52,.94); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); animation:cpt-notif .45s cubic-bezier(.2,.9,.3,1) both}
+@keyframes cpt-notif{from{opacity:0; transform:translateX(34px) scale(.96)}}
+.cpt-confettis{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0}
+.cpt-confettis i{position:absolute; top:-14px; width:8px; height:13px; border-radius:2px; opacity:.85; animation:cpt-tombe linear infinite}
+@keyframes cpt-tombe{to{transform:translateY(520px) rotate(560deg)}}
+@media (max-width:640px){
+  .cpt-film-texte{font-size:18px}
+  .cpt-film-passer{right:10px; bottom:8px}
+}
+
 @media (prefers-reduced-motion:reduce){
   .cpt-pose,.cpt-glisse{animation:none !important}
+  .cpt-vivant .cpt-arrive,.cpt-vivant .grad,.cpt-confettis i,.cpt-film,.cpt-film-temps{animation:none !important}
 }
-@media print{ .cpt-scene,.cpt-calc,.cpt-objet,.cpt-credits{display:none !important} }
+@media print{ .cpt-scene,.cpt-calc,.cpt-objet,.cpt-credits,.cpt-film,.cpt-confettis{display:none !important} }
 /* ═══ KIT COMPTA EQ v1 — fin ═══ */
 </style>
 <style id="decor-m2">
@@ -1160,6 +1197,170 @@ table.m2-registre-table tr.tot td{border-top:2px solid #14284b !important; font-
 }
 /* ─── Photos de matières (images/bois-bureau.webp, CC0) sur le bureau de la mission ; le dessin reste si l'image manque ─── */
 #main{--m2-bois:radial-gradient(70% 60% at 30% 0%, rgba(255,220,160,.14), transparent 70%), linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.30)), var(--cpt-img-bois) center / 520px, linear-gradient(90deg,#5b3a22,#6d4528 18%,#5f3c23 37%,#77502f 58%,#64412a 79%,#573823)}
+/* ─── Films (comme aux 3P) : chercher les offres, envoyer le bon de commande, payer ─── */
+.m2-sc{position:relative; display:flex; justify-content:center; align-items:center; gap:28px; width:100%; animation:m2-sc-entre .35s ease-out both}
+@keyframes m2-sc-entre{from{opacity:0; transform:scale(.96)}}
+.m2-sc-tel .m2-sc-phone{width:240px; margin:0; padding:50px 14px 22px !important; min-height:380px}
+.m2-sc-tel .m2-sc-phone::after,.m2-paie-tel::after{display:none}
+.m2-appel{display:none; padding-top:22px; text-align:center; color:#fff}
+.m2-appel.actif{display:block; animation:m2-sc-entre .25s ease-out}
+.m2-appel-av{width:86px; height:86px; margin:0 auto 14px; padding:6px; border-radius:50%; background:rgba(255,255,255,.12); animation:m2-sonne 1s ease-out 3}
+.m2-appel-av svg{display:block; width:100%; height:100%}
+@keyframes m2-sonne{from{box-shadow:0 0 0 0 rgba(255,255,255,.4)} to{box-shadow:0 0 0 18px rgba(255,255,255,0)}}
+.m2-appel b{display:block; font:700 21px var(--doc)}
+.m2-appel-num{display:block; margin-top:4px; font:500 15px var(--mono); opacity:.85}
+.m2-appel-etat{display:block; margin-top:14px; font:500 15px var(--doc); color:#b6f5c9}
+.m2-raccrocher{width:54px; height:54px; margin:40px auto 0; border-radius:50%; display:grid; place-items:center; font-size:23px; background:#e5484d; transform:rotate(135deg)}
+.m2-sc-liste{list-style:none; display:grid; gap:12px; min-width:230px; margin:0; padding:0}
+.m2-sc-liste li{display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:14px; color:#cfd6e6; font-size:16px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); transition:background .3s, border-color .3s}
+.m2-sl-logo{flex:none; width:30px; height:30px}
+.m2-sl-logo svg,.m2-m-logo svg{display:block; width:100%; height:100%}
+.m2-sl-nom{flex:1; font-weight:600; color:#fff}
+.m2-sl-etat{opacity:0; font-size:14px; font-weight:700; color:#9ff0c9; transition:opacity .3s}
+.m2-sc-liste li.encours{background:rgba(255,255,255,.13); border-color:rgba(255,255,255,.45)}
+.m2-sc-liste li.ok{background:rgba(52,211,153,.13); border-color:rgba(52,211,153,.6)}
+.m2-sc-liste li.ok .m2-sl-etat{opacity:1}
+.m2-fen{flex-direction:column; align-items:stretch; gap:0; overflow:hidden; border-radius:12px; text-align:left; color:#1f2433; font-family:var(--doc); background:#fff; box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.m2-fen-barre{display:flex; align-items:center; gap:7px; padding:10px 14px; background:#eceef3; border-bottom:1px solid #d9dce5; font:600 14px var(--doc); color:#4a5068}
+.m2-fen-barre i{flex:none; width:12px; height:12px; border-radius:50%; background:#ff5f57}
+.m2-fen-barre i:nth-child(2){background:#febc2e}
+.m2-fen-barre i:nth-child(3){background:#28c840}
+.m2-fen-barre span{margin-left:8px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+.m2-mail-envoye{padding:10px 16px; opacity:0; font:600 15px var(--doc); color:#1f7a45; background:#eefaf2; border-bottom:1px solid #d7efe0; transition:opacity .3s}
+.m2-mail-envoye.vu{opacity:1}
+.m2-boite{list-style:none; margin:0; padding:0}
+.m2-m-ligne{position:relative; display:flex; align-items:center; gap:12px; padding:12px 16px 12px 20px; border-bottom:1px solid #eceef3; opacity:0; transform:translateY(-12px); transition:opacity .35s, transform .35s cubic-bezier(.3,1.4,.5,1)}
+.m2-m-ligne.vu{opacity:1; transform:none}
+.m2-m-ligne::before{content:""; position:absolute; left:7px; top:50%; width:7px; height:7px; margin-top:-3.5px; border-radius:50%; background:#3e63dd}
+.m2-m-logo{flex:none; width:38px; height:38px}
+.m2-m-txt{flex:1; min-width:0; display:flex; flex-direction:column; font-size:15px}
+.m2-m-txt b{font-size:16px}
+.m2-m-txt > span{overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#4a5068}
+.m2-m-txt > span.m2-m-pj{display:inline-flex; align-self:flex-start; margin-top:4px; padding:2px 10px; border-radius:999px; background:#fdecec; color:#b42318; font:600 13px var(--doc)}
+.m2-m-ligne time{white-space:nowrap; font:500 13px var(--doc); color:#6b6f88}
+.m2-web-onglets{display:flex; gap:4px; padding:8px 10px 0; background:#e3e6ee}
+.m2-onglet{display:flex; align-items:center; gap:6px; max-width:34%; padding:7px 12px; overflow:hidden; white-space:nowrap; border-radius:10px 10px 0 0; font:600 13px var(--doc); color:#4a5068; background:#d3d7e2}
+.m2-onglet svg{flex:none; width:16px; height:16px}
+.m2-onglet.actif{background:#fff; color:#1f2433}
+.m2-web-adresse{display:flex; align-items:center; gap:8px; margin:8px 12px 6px; padding:7px 14px; border-radius:999px; font:500 14px var(--mono); color:#1f2433; background:#f1f3f7}
+.m2-web-charge{height:3px; margin:0 12px; overflow:hidden}
+.m2-web-charge i{display:block; width:0; height:100%; background:#3e63dd}
+.m2-web-charge.go i{animation:m2-charge .5s ease-out forwards}
+@keyframes m2-charge{to{width:100%}}
+.m2-web-pages{min-height:196px}
+.m2-web-page{display:none; padding:14px 16px 18px}
+.m2-web-page.actif{display:block; animation:m2-sc-entre .3s ease-out}
+.m2-wp-tete{display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:10px; background:var(--f); color:var(--t)}
+.m2-wp-tete svg{flex:none; width:30px; height:30px}
+.m2-wp-tete b{font:800 17px var(--doc)}
+.m2-wp-tete span{margin-left:auto; font:600 13px var(--doc); opacity:.85}
+.m2-wp-prod{display:flex; align-items:center; gap:16px; margin-top:14px}
+.m2-wp-img{flex:none; width:110px; height:96px; display:grid; place-items:center; font-size:52px; border-radius:10px; background:radial-gradient(circle at 50% 40%, #fff, #e6e9f2)}
+.m2-wp-info{display:flex; flex-direction:column; gap:6px; min-width:0}
+.m2-wp-info b{font:700 16px var(--doc)}
+.m2-wp-prix{font:800 22px var(--mono); color:#1f2433}
+.m2-wp-btn{align-self:flex-start; padding:6px 14px; border-radius:8px; font:700 14px var(--doc); color:#4a5068; background:#e9ecf4; transition:background .3s, color .3s}
+.m2-web-page.garde .m2-wp-btn{background:#16a34a; color:#fff}
+.m2-wp-btn .m2-wb-2,.m2-web-page.garde .m2-wp-btn .m2-wb-1{display:none}
+.m2-web-page.garde .m2-wp-btn .m2-wb-2{display:inline}
+.m2-sc-rue{flex-direction:column; gap:0; overflow:hidden; border-radius:16px; background:linear-gradient(180deg,#2a2f63,#3f3a6e 70%); box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.m2-rue-mags{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; width:100%; padding:46px 16px 0; align-items:end}
+.m2-mag{position:relative; text-align:center; border-radius:6px 6px 0 0; background:#efe6d6}
+.m2-mag-enseigne{padding:7px 6px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border-radius:6px 6px 0 0; font:800 14px var(--doc); color:var(--t); background:var(--f)}
+.m2-mag-auvent{height:16px; background:repeating-linear-gradient(90deg, var(--f) 0 14px, #fff 14px 28px); clip-path:polygon(0 0,100% 0,96% 100%,4% 100%)}
+.m2-mag-face{display:flex; align-items:flex-end; gap:8px; height:96px; padding:10px 10px 0}
+.m2-mag-vit{flex:1; height:62px; margin-bottom:12px; display:grid; place-items:center; font-size:30px; border-radius:3px; border:3px solid #6b4a2f; background:linear-gradient(160deg,#cfe8ff,#9cc8ec)}
+.m2-mag-porte{position:relative; flex:none; width:34px; height:72px; border-radius:3px 3px 0 0; background:#6b4a2f}
+.m2-mag-porte::after{content:""; position:absolute; right:5px; top:36px; width:4px; height:4px; border-radius:50%; background:#f5c84b}
+.m2-mag-bulle{position:absolute; left:50%; top:-38px; padding:5px 10px; opacity:0; white-space:nowrap; border-radius:10px; font:700 13px var(--doc); color:#1f2433; background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.35); transform:translate(-50%,8px) scale(.6); transition:transform .35s cubic-bezier(.3,1.6,.5,1), opacity .25s}
+.m2-mag-bulle::after{content:""; position:absolute; left:50%; bottom:-6px; margin-left:-6px; border:6px solid transparent; border-top-color:#fff; border-bottom:0}
+.m2-mag.vu .m2-mag-bulle{opacity:1; transform:translate(-50%,0) scale(1)}
+.m2-rue-trottoir{position:relative; width:100%; height:64px; background:linear-gradient(180deg,#7d7f8c 0 18px,#4a4b55 18px)}
+.m2-rue-trottoir::after{content:""; position:absolute; left:0; right:0; bottom:16px; height:3px; background:repeating-linear-gradient(90deg, rgba(255,255,255,.7) 0 26px, transparent 26px 52px)}
+.m2-pieton{position:absolute; left:-8%; top:-28px; font-size:44px; line-height:1; transform:translateX(-50%) scaleX(-1); transition:left .5s cubic-bezier(.4,0,.2,1)}
+.m2-sc-envoi{flex-direction:column}
+.m2-mail-fen{width:min(520px,100%); overflow:hidden; border-radius:12px; text-align:left; color:#1f2433; font:400 15px var(--doc); background:#fff; box-shadow:0 30px 70px rgba(0,0,0,.6); transition:transform .5s cubic-bezier(.5,0,.75,0), opacity .45s ease-in}
+.m2-mf-barre{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#1f2433; color:#fff; font:600 14px var(--doc)}
+.m2-mf-btns{display:flex; gap:8px}
+.m2-mf-btns i{width:10px; height:10px; border-radius:2px; background:rgba(255,255,255,.4)}
+.m2-mf-champ{display:flex; gap:8px; padding:8px 16px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border-bottom:1px solid #eceef3}
+.m2-mf-champ span{flex:none; min-width:58px; color:#6b6f88}
+.m2-mf-corps{padding:12px 16px; line-height:1.5; color:#2a2f45}
+.m2-mf-sig{font-weight:600}
+.m2-mf-pj{display:flex; align-items:center; gap:10px; max-width:310px; margin:0 16px 12px; padding:8px 12px; border:1px solid #e3e5ee; border-radius:10px; background:#fafbfd}
+.m2-pdf{flex:none; width:34px; height:40px; display:grid; place-items:center; border-radius:4px; background:#e5484d; color:#fff; font:800 11px var(--doc)}
+.m2-mf-pj b{display:block; font:700 14px var(--mono)}
+.m2-mf-pj small{display:block; font-size:12.5px; color:#6b6f88}
+.m2-mf-bas{display:flex; justify-content:flex-end; padding:0 16px 14px}
+.m2-mf-envoyer{padding:9px 20px; border-radius:999px; background:#1d4ed8; color:#fff; font:700 15px var(--doc); box-shadow:0 4px 0 #1e3a8a; transition:transform .1s, box-shadow .1s}
+.m2-mf-envoyer.appuie{transform:translateY(3px); box-shadow:0 1px 0 #1e3a8a}
+.m2-sc-envoi.part .m2-mail-fen{opacity:0; transform:translate(46vw,-58vh) rotate(18deg) scale(.25)}
+.m2-sc-ok{position:absolute; inset:0; display:grid; place-items:center; opacity:0; font:800 32px var(--doc); color:#9ff0c9; transform:scale(.7); transition:opacity .3s, transform .4s cubic-bezier(.3,1.6,.5,1); pointer-events:none}
+.m2-sc-envoi.fini .m2-sc-ok{opacity:1; transform:none}
+.m2-paie-tel{width:260px; margin:0; padding:50px 16px 20px !important; min-height:440px; color:#fff}
+.m2-pt-app{display:flex; justify-content:center; margin:6px 0 10px}
+.m2-pt-app svg{height:26px; width:auto}
+.m2-pt-titre{font:700 17px var(--doc); text-align:center; margin-bottom:10px}
+.m2-pt-ligne{display:flex; flex-direction:column; padding:6px 10px; margin:4px 0; border-radius:10px; background:rgba(255,255,255,.08)}
+.m2-pt-ligne small{font-size:11px; color:rgba(255,255,255,.65)}
+.m2-pt-ligne b{font:600 14px var(--doc)}
+.m2-pt-montant{margin:8px 0; text-align:center; font:800 28px var(--mono); color:#fff}
+.m2-pt-code,.m2-pt-ok{display:none; text-align:center; margin:10px 0 6px; font:600 15px var(--doc)}
+.m2-sc-paie.code .m2-pt-code{display:block}
+.m2-sc-paie.ok .m2-pt-code{display:none}
+.m2-sc-paie.ok .m2-pt-ok{display:block; padding:10px; border-radius:12px; font:800 19px var(--doc); color:#062a19; background:#7dffb5; animation:m2-sc-entre .3s ease-out}
+.m2-pts{font-family:var(--mono); font-size:20px; letter-spacing:.25em}
+.m2-pt-touches{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:8px; transition:opacity .3s}
+.m2-pt-touches span{height:30px; display:grid; place-items:center; border-radius:9px; font:700 15px var(--doc); background:rgba(255,255,255,.14); transition:background .08s, transform .08s}
+.m2-pt-touches span.appuie{background:rgba(255,255,255,.5); transform:scale(.92)}
+.m2-sc-paie.ok .m2-pt-touches{opacity:.3}
+.m2-sc-dette{flex-direction:column; gap:0; min-height:300px}
+.m2-sd-facture{position:relative; z-index:2; display:flex; flex-direction:column; gap:4px; width:220px; padding:16px 18px; border-radius:6px; color:#1f2433; font:500 14px var(--doc); background:#fffdf6; box-shadow:0 18px 40px rgba(0,0,0,.45); transition:transform .6s cubic-bezier(.5,0,.3,1)}
+.m2-sd-facture b{font:800 18px var(--doc); letter-spacing:.08em; text-transform:uppercase}
+.m2-sd-facture small{font:600 12px var(--mono); color:#6b6f88}
+.m2-sd-montant{font:800 20px var(--mono)}
+.m2-sd-farde{position:relative; width:340px; max-width:100%; height:150px; margin-top:-30px; border-radius:6px 6px 12px 12px; background:linear-gradient(180deg,#c79a4b,#a77f2e); box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.m2-sd-onglet{position:absolute; left:18px; top:-22px; padding:4px 14px; border-radius:6px 6px 0 0; font:800 13px var(--doc); color:#2a1d07; background:#d8ac58}
+.m2-sd-ech{position:absolute; z-index:3; right:16px; bottom:14px; padding:6px 10px; border:3px solid #b42318; border-radius:6px; font:700 12px var(--doc); color:#b42318; text-align:center; background:rgba(255,255,255,.75); opacity:0; transform:rotate(-8deg) scale(1.6); transition:opacity .2s, transform .25s cubic-bezier(.3,1.6,.5,1)}
+.m2-sc-dette.range .m2-sd-facture{transform:translate(-70px,110px) scale(.8)}
+.m2-sc-dette.fini .m2-sd-ech{opacity:1; transform:rotate(-8deg)}
+/* ─── Livraison : le téléphone vibre (après le film de l'envoi), la date au calendrier ─── */
+.m2-sms.m2-vibre{animation:m2-vibre .45s ease-in-out 2.1s 2}
+@keyframes m2-vibre{20%{transform:translateX(-4px) rotate(-.6deg)} 40%{transform:translateX(4px) rotate(.6deg)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)}}
+.m2-cal-livraison{float:right; display:grid; justify-items:center; width:84px; margin:0 0 8px 12px; overflow:hidden; border-radius:10px; font-family:var(--doc); background:#fffdf6; color:#1f2433; box-shadow:var(--ombre-objet)}
+.m2-cl-mois{width:100%; padding:4px 0; text-align:center; font:800 11px var(--doc); letter-spacing:.08em; text-transform:uppercase; color:#fff; background:#d9534f}
+.m2-cl-jour{font:800 32px/1.1 var(--doc)}
+.m2-cl-sem{padding-bottom:6px; font:600 11px var(--doc); color:#6b6f88}
+/* ─── Classement : les trois documents volent dans le classeur ─── */
+.m2-cl-classeur{position:relative}
+.m2-vol{position:absolute; inset:0; pointer-events:none}
+.m2-vol i{position:absolute; left:-70%; top:30%; width:34px; height:44px; border-radius:3px; background:#fffdf6; box-shadow:0 6px 14px rgba(0,0,0,.4); opacity:0}
+.m2-vol i::before{content:""; position:absolute; left:6px; right:6px; top:8px; height:22px; background:repeating-linear-gradient(180deg,#b9cde6 0 2px, transparent 2px 6px)}
+.m2-vol.go i{animation:m2-vole .9s cubic-bezier(.5,0,.3,1) both}
+.m2-vol.go i:nth-child(2){animation-delay:.18s}
+.m2-vol.go i:nth-child(3){animation-delay:.36s}
+@keyframes m2-vole{0%{opacity:1; transform:translate(0,0) rotate(-14deg)} 85%{opacity:1} 100%{opacity:0; transform:translate(170px,10px) rotate(6deg) scale(.5)}}
+/* ─── Bilan : le surligneur passe sur ce que l'équipement a changé ─── */
+.m2-fluo{background-image:linear-gradient(90deg, rgba(255,226,59,.5), rgba(255,226,59,.5)) !important; background-repeat:no-repeat !important; background-size:0 100%; animation:m2-fluo .8s .5s ease-out forwards}
+@keyframes m2-fluo{to{background-size:100% 100%}}
+/* ─── Fin : la pluie de confettis devant la boutique ─── */
+.m2-fete-cadre{position:relative}
+.m2-fete-cadre .cpt-confettis{z-index:3}
+@media (max-width:640px){
+  .m2-sc-tel{flex-direction:column; gap:14px}
+  .m2-sc-tel .m2-sc-phone{min-height:0; padding-bottom:16px !important}
+  .m2-raccrocher{display:none}
+  .m2-sc-liste{width:100%; min-width:0}
+  .m2-rue-mags{gap:8px; padding:46px 8px 0}
+  .m2-mag-enseigne{font-size:12px}
+  .m2-mag-face{height:80px; padding:8px 6px 0}
+  .m2-mag-vit{height:50px; font-size:24px}
+  .m2-mag-porte{width:24px; height:58px}
+  .m2-wp-img{width:80px; height:76px; font-size:40px}
+  .m2-paie-tel{min-height:0}
+  .m2-cal-livraison{width:70px}
+}
+@media (prefers-reduced-motion:reduce){ .m2-sms.m2-vibre,.m2-vol.go i{animation:none !important} .m2-fluo{animation:none !important; background-size:100% 100%} }
 /* ═══ DÉCOR MISSION 2 — fin ═══ */
 </style>
 </head>
@@ -1603,7 +1804,7 @@ const CONFIG = {
 };
 const MODE_TEST = new URLSearchParams(location.search).has("test");   // ?test : mission de démonstration, rien n'est enregistré
 const TVA = 0.21, ESCOMPTE = 0.02, DELAI_PAIEMENT = 30;     // TVA 21 % · escompte 2 % si paiement comptant · crédit fournisseur à 30 jours
-const BUDGETS = [1500, 2500, 4000, 6000];
+const BUDGETS = [2000, 2500, 4000, 6000];            // V2 : 1 500 € était impossible (les trois offres les moins chères font 1 886,39 € TTC)
 const BIENS = [
   { id:"mobilier", nom:"Le mobilier", court:"mobilier", icone:"🪑", rubrique:"Mobilier", pourquoi:"Pour accueillir tes clients et travailler confortablement : une table, des chaises et un comptoir.",
     fournisseurs:[
@@ -1700,6 +1901,14 @@ const niv = () => M2_NIVEAUX.filter(n => S.xp >= n[0]).pop()[1];
 const dateFr = (d) => d.toLocaleDateString("fr-BE", {day:"numeric", month:"long", year:"numeric"});
 const dateCourte = (d) => d.toLocaleDateString("fr-BE", {day:"2-digit", month:"2-digit"});
 const plusJours = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d; };
+/** V2 : jours fériés légaux en Belgique ; Pâques (calcul grégorien) donne le lundi de Pâques, l'Ascension et le lundi de Pentecôte. */
+const paques = (an) => { const a = an % 19, b = Math.floor(an / 100), c = an % 100, h = (19 * a + b - Math.floor(b / 4) - Math.floor((b - Math.floor((b + 8) / 25) + 1) / 3) + 15) % 30, l = (32 + 2 * (b % 4) + 2 * Math.floor(c / 4) - h - c % 4) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), x = h + l - 7 * m + 114; return new Date(an, Math.floor(x / 31) - 1, x % 31 + 1); };
+const ferie = (d) => [101, 501, 721, 815, 1101, 1111, 1225].includes((d.getMonth() + 1) * 100 + d.getDate()) || [1, 39, 50].includes(Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - paques(d.getFullYear())) / 864e5));
+const ouvre = (d) => d.getDay() % 6 !== 0 && !ferie(d);
+const jourOuvre = (d) => { while (!ouvre(d)) d.setDate(d.getDate() + 1); return d; };
+const joursApres = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+/** V2 : livraison « sous n jours ouvrables » : le n-ième jour, ramené au dernier jour ouvré avant lui s'il tombe un week-end ou un jour férié (jamais aujourd'hui), sinon le prochain jour ouvré. */
+const dateLivraison = (n) => { const d = plusJours(n); for (let k = n; k > 1 && !ouvre(d); k--) d.setDate(d.getDate() - 1); return jourOuvre(d); };
 const jourLong = (d) => d.toLocaleDateString("fr-BE", {weekday:"long", day:"numeric", month:"long"});
 function hash(s){ let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
 function bceFixe(n){ const base = "0" + String(n % 1e7).padStart(7, "0"); const k = base + String(97 - (parseInt(base, 10) % 97)).padStart(2, "0"); return `${k.slice(0,4)}.${k.slice(4,7)}.${k.slice(7)}`; }
@@ -1756,9 +1965,9 @@ function genererOffres(bienId){
 /** Numéro de l'achat qui recevra une facture erronée (un seul par élève, choisi une fois pour toutes). */
 const achatPiege = () => hash(S.eleve.email + "piege") % CONFIG.NB_ACHATS;
 function genererFacture(a, k){
-  const o = offreChoisie(a), f = o.fournisseur, d = new Date();
+  const o = offreChoisie(a), f = o.fournisseur, d = dateLivraison(o.delai);    // V2 : facture datée du jour de la livraison (un jour ouvré)
   const base = { lignes:[{ libelle:`${o.article} (réf. ${o.ref})`, qte:1, pu:o.prixHT, montant:o.prixHT }], remisePct:o.remisePct, remise:o.remise, livraison:o.livraison, totalHT:o.totalHT, tauxTva:21, tva:o.tva, totalTTC:o.totalTTC };
-  const fac = { numero:`F-${f.code}-${ANNEE()}-${String(hash(S.eleve.email + o.numero) % 900 + 100)}`, date:dateFr(d), echeance:dateFr(plusJours(DELAI_PAIEMENT)), correct:JSON.parse(JSON.stringify(base)), erreur:null };
+  const fac = { numero:`F-${f.code}-${ANNEE()}-${String(hash(S.eleve.email + o.numero) % 900 + 100)}`, date:dateFr(d), echeance:dateFr(joursApres(d, DELAI_PAIEMENT)), correct:JSON.parse(JSON.stringify(base)), erreur:null };
   Object.assign(fac, JSON.parse(JSON.stringify(base)));
   if (k === achatPiege()){
     let type = o.remise > 0 ? "remise" : (o.livraison === 0 ? "livraison" : "quantite");
@@ -1771,7 +1980,7 @@ function genererFacture(a, k){
   return fac;
 }
 function genererExtrait(a){
-  const o = offreChoisie(a), d = new Date();
+  const o = offreChoisie(a), d = dateLivraison(o.delai);                        // V2 : virement le jour de la facture
   const avant = r2(banque() + montantPaye(a));   // solde avant ce paiement (appelé juste après avoir marqué payé)
   return { date:dateFr(d), lignes:[{ date:dateCourte(d), libelle:`Virement à ${o.fournisseur.nom} ${o.fournisseur.forme} · facture ${a.facture.numero}`, montant:-montantPaye(a) }], soldeAvant:avant, soldeApres:banque() };
 }
@@ -1805,7 +2014,7 @@ function payload(statut){
         termine:x.fini };
     }),
     bilan:d, patrimoine,
-    journalAchats: S.achats.filter(x => x.fini).map(x => { const o = offreChoisie(x); return { date:x.facture.date, fournisseur:`${o.fournisseur.nom} ${o.fournisseur.forme}`, piece:x.facture.numero, ht:o.totalHT, tva:o.tva, ttc:montantFacture(x), paye:x.paye, condition:x.condition }; }),
+    journalAchats: S.achats.filter(x => x.fini).map(x => { const o = offreChoisie(x); return { date:x.facture.date, fournisseur:`${o.fournisseur.nom} ${o.fournisseur.forme}`, piece:x.facture.numero, ht:o.totalHT, tva:o.tva, enTrop:tropPaye(x), ttc:montantFacture(x), paye:x.paye, condition:x.condition }; }),
     defisEclair: Object.keys(M2_QUIZ).map(k => ({ defi:k, question:M2_QUIZ[k].q, reponse: S.quiz[k] ? M2_QUIZ[k].opts[S.quiz[k].rep] : "", reussi: S.quiz[k] ? !!S.quiz[k].ok : null })),
     recompenses:{ xp:S.xp, niveau:niv(), badges:M2_BADGES.filter(b => S.done["b_" + b[0]]).map(b => b[2]), motsDePro:S.mots.map(m => M2_MOTS[m].mot) },
     xp:S.xp, dureeMinutes: S.startedAt ? Math.round((Date.now() - S.startedAt) / 60000) : null,
@@ -1870,7 +2079,7 @@ function award(key, pts, badgeId){
   S.done[key] = true; S.xp += pts;
   const b = badgeId ? M2_BADGES.find(x => x[0] === badgeId) : null;
   if (b && !S.done["b_" + b[0]]) S.done["b_" + b[0]] = true;
-  toast(`<b>+${pts} XP</b>${b ? `<div>${b[1]} Badge débloqué : ${esc(b[2])}</div>` : ""}`);
+  toast(`${pts ? `<b>+${pts} XP</b>` : ""}${b ? `<div>${b[1]} Badge débloqué : ${esc(b[2])}</div>` : ""}`);
 }
 function unlockMots(ids){
   (ids || []).forEach((id, i) => { if (!id || S.mots.includes(id)) return; S.mots.push(id);
@@ -1901,7 +2110,7 @@ function lignesDoc(d, opts={}){
 }
 function bonDeCommande(a){ const o = offreChoisie(a), d = { lignes:[{ libelle:`${o.article} (réf. ${o.ref})`, qte:1, pu:o.prixHT, montant:o.prixHT }], remisePct:o.remisePct, remise:o.remise, livraison:o.livraison, totalHT:o.totalHT, tva:o.tva, totalTTC:o.totalTTC };
   return `<div class="paper">${entete("Bon de commande", `N° ${a.bc ? a.bc.numero : "BC-" + ANNEE() + "-00" + (S.i + 1)} · ${esc(V1(adresse2).split(" ").slice(1).join(" "))}, le ${esc(a.bc ? a.bc.date : today())}`, `Suivant votre offre<br>${esc(o.numero)} du ${esc(o.date)}`)}${parties(o)}${lignesDoc(d)}
-    <div class="cond">Livraison : sous ${o.delai} jours ouvrables, à l'adresse du client. Garantie : ${o.garantie} an${o.garantie > 1 ? "s" : ""}. Paiement : ${a.condition === "comptant" ? "comptant à la livraison, par virement, avec escompte de 2 %" : a.condition === "30j" ? "par virement à 30 jours fin de mois" : "<i>à préciser</i>"}.</div>
+    <div class="cond">Livraison : sous ${o.delai} jours ouvrables, à l'adresse du client. Garantie : ${o.garantie} an${o.garantie > 1 ? "s" : ""}. Paiement : ${a.condition === "comptant" ? "comptant, par virement dans les 8 jours suivant la facture, avec escompte de 2 %" : a.condition === "30j" ? "par virement à 30 jours, date de facture" : "<i>à préciser</i>"}.</div>
     <div class="sigline"><div><input data-bind="signBC" value="${esc(a.signBC)}" placeholder="Signe ici (prénom et nom)" maxlength="40" ${a.bc ? "disabled" : ""} aria-label="Signature du bon de commande">${esc(S.eleve.prenom)} ${esc(S.eleve.nom)}, ${esc(V1(fonction).toLowerCase())}</div></div></div>`; }
 function bonDeLivraison(a){ const o = offreChoisie(a);
   return `<div class="paper">${entete("Bon de livraison", `N° ${esc(a.bl.numero)} · ${esc(a.bl.date)}`, `Votre commande<br>${esc(a.bc.numero)}`)}${parties(o)}
@@ -1910,7 +2119,7 @@ function bonDeLivraison(a){ const o = offreChoisie(a);
     <div class="sigline"><div><input data-bind="signBL" value="${esc(a.signBL)}" placeholder="Signe après vérification" maxlength="40" ${a.etape > 4 ? "disabled" : ""} aria-label="Signature du bon de livraison">${esc(S.eleve.prenom)} ${esc(S.eleve.nom)}, réception</div></div></div>`; }
 function facture(a, opts={}){ const o = offreChoisie(a), f = a.facture;
   return `<div class="paper">${entete("Facture", `N° ${esc(f.numero)} · ${esc(f.date)}`, `Bon de commande ${esc(a.bc.numero)}<br>Bon de livraison ${esc(a.bl.numero)}`)}${parties(o)}${lignesDoc(f, opts)}
-    <div class="cond">Échéance : ${a.condition === "comptant" ? "comptant (escompte 2 % déduit si paiement sous 8 jours)" : "le " + esc(f.echeance)} · Paiement par virement sur le compte ${esc(o.fournisseur.nom)} · Communication : ${esc(f.numero)}.</div></div>`; }
+    <div class="cond">Échéance : ${a.condition === "comptant" ? "comptant, dans les 8 jours (escompte de 2 %)" : "le " + esc(f.echeance)} · Paiement par virement sur le compte ${esc(o.fournisseur.nom)} · Communication : ${esc(f.numero)}.</div></div>`; }
 function noteDeCredit(a){ const o = offreChoisie(a), f = a.facture, nc = a.nc;
   return `<div class="paper" style="border:2px solid var(--mint)">${entete("Note de crédit", `N° ${esc(nc.numero)} · ${esc(nc.date)}`, `Annule partiellement<br>la facture ${esc(f.numero)}`)}${parties(o)}
     <table class="doc-lines"><tbody><tr><td>Correction : ${esc(f.erreur.texte.toLowerCase())}</td><td class="n">− ${euro(r2(f.totalTTC - f.correct.totalTTC - (f.tva - f.correct.tva)))}</td></tr><tr class="sub"><td>TVA 21 %</td><td class="n">− ${euro(r2(f.tva - f.correct.tva))}</td></tr><tr class="tot"><td>Montant porté à votre crédit (TTC)</td><td class="n">− ${euro(f.erreur.surcoutTTC)}</td></tr></tbody></table>
@@ -1924,7 +2133,7 @@ function ecriture(a){ const o = offreChoisie(a), b = bien(a.bien), comptant = a.
   const l = (c, lib, deb, cre) => `<tr><td class="n" style="color:var(--muted)">${c}</td><td>${lib}</td><td class="n">${deb ? euro(deb) : ""}</td><td class="n">${cre ? euro(cre) : ""}</td></tr>`;
   return `<div class="ecriture"><h4>🎓 L'écriture comptable (journal des achats)</h4><table><thead><tr><th>Compte</th><th>Libellé</th><th class="n">Débit</th><th class="n">Crédit</th></tr></thead><tbody>
     ${l(b.id === "mobilier" ? "24" : b.id === "caisse" ? "24" : "24", `${b.rubrique} · ${esc(o.article)}`, o.totalHT, 0)}${l("411", "TVA à récupérer", o.tva, 0)}
-    ${comptant ? l("550", "Banque (virement)", 0, montantPaye(a)) + (escompteDe(a) ? l("757", "Escomptes obtenus", 0, escompteDe(a)) : "") + (tropPaye(a) ? l("66", "Perte : trop payé sur facture", tropPaye(a), 0) : "") : l("440", `Fournisseur ${esc(o.fournisseur.nom)}`, 0, montantFacture(a)) + (tropPaye(a) ? l("66", "Perte : facture acceptée en trop", tropPaye(a), 0) : "")}
+    ${comptant ? l("550", "Banque (virement)", 0, montantPaye(a)) + (escompteDe(a) ? l("757", "Escomptes obtenus", 0, escompteDe(a)) : "") + (tropPaye(a) ? l("66", "Charge : facture payée en trop (TVA indue comprise)", tropPaye(a), 0) : "") : l("440", `Fournisseur ${esc(o.fournisseur.nom)}`, 0, montantFacture(a)) + (tropPaye(a) ? l("66", "Charge : facture acceptée en trop (TVA indue comprise)", tropPaye(a), 0) : "")}
     </tbody></table><div class="help">Débit = ce qui entre ou ce qu'on possède en plus ; crédit = d'où ça vient. Les deux colonnes sont toujours égales : partie double.</div></div>`; }
 function offreCard(o, k, a){ const on = a.choix === k, minTTC = Math.min(...a.offres.map(x => x.totalTTC));
   return `<button class="offer ${on ? "on" : ""}" data-choix="${k}">
@@ -1975,8 +2184,10 @@ function nav(ok, manque, opts={}){
   return `<div class="nav">${opts.back ? `<button class="btn btn-ghost" data-act="back">Retour</button>` : "<span></span>"}
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span class="hint" style="visibility:${ok ? "hidden" : "visible"}">${manque || ""}</span><button class="btn btn-main" data-act="${opts.act || "next"}" ${ok ? "" : "disabled"}>${opts.label || "Valider et continuer"}</button></div></div>`;
 }
+/** V2 : ordre d'affichage des réponses d'un défi, mélangé une fois pour toutes par élève (la bonne réponse n'est plus toujours la 2e). */
+const ordreQuiz = (key, n) => { const o = [...Array(n).keys()], h = hash((S.eleve.email || "") + "quiz" + key); for (let i = n - 1; i > 0; i--){ const j = (h >>> (i * 3)) % (i + 1); [o[i], o[j]] = [o[j], o[i]]; } return o; };
 function quiz(key){ const q = M2_QUIZ[key], r = S.quiz[key];
-  return `<div class="quiz"><h4>⚡ Défi éclair <span class="pts">+50 XP</span></h4><p>${esc(q.q)}</p><div class="q">${q.opts.map((o,i) => `<button data-quiz="${key}" data-i="${i}" ${r ? "disabled" : ""} class="${r ? (i === q.ok ? "ok" : (i === r.rep ? "ko" : "")) : ""}">${esc(o)}</button>`).join("")}</div>${r ? `<div class="exp">${r.ok ? "✔ Exact." : "✘ Pas tout à fait."} ${esc(q.exp)}</div>` : ""}</div>`; }
+  return `<div class="quiz"><h4>⚡ Défi éclair <span class="pts">+50 XP</span></h4><p>${esc(q.q)}</p><div class="q">${ordreQuiz(key, q.opts.length).map(i => [q.opts[i], i]).map(([o,i]) => `<button data-quiz="${key}" data-i="${i}" ${r ? "disabled" : ""} class="${r ? (i === q.ok ? "ok" : (i === r.rep ? "ko" : "")) : ""}">${esc(o)}</button>`).join("")}</div>${r ? `<div class="exp">${r.ok ? "✔ Exact." : "✘ Pas tout à fait."} ${esc(q.exp)}</div>` : ""}</div>`; }
 const subSteps = (a) => `<div class="sub-steps">${ETAPES.map((e, k) => `<span class="ss ${a.etape > k ? "done" : a.etape === k ? "now" : ""}"><i>${a.etape > k ? "✓" : k + 1}</i>${e[1]}</span>`).join("")}</div>`;
 const achatTag = () => `<div class="achat-tag">Achat <b>${S.i + 1}/${CONFIG.NB_ACHATS}</b>${A().bien ? ` · ${bien(A().bien).icone} <b>${esc(bien(A().bien).nom)}</b>` : ""}</div>`;
 
@@ -1984,7 +2195,7 @@ R.budget = () => { const t = tresoDepart(), c = chargesMois(), opts = BUDGETS.fi
   return head("Décision préalable", "Combien peux-tu <span class='grad'>investir</span> ?", `Tu as ${euro0(t)} en banque. Chaque euro investi ne sera plus disponible pour payer les charges fixes (${euro0(c)} par mois). Fixe ton enveloppe.`) + coach("budget")
     + `<div class="card"><h3>Ton budget d'investissement</h3>
       <div class="money-opts">${opts.map(b => { const reste = t - b, auto = c ? Math.floor(reste / c) : null; return `<button class="choice budget-opt ${S.budget === b ? "on" : ""}" data-budget="${b}"><b>${euro0(b)}</b><small>reste ${euro0(reste)} en banque<br>${auto != null ? auto + " mois d'autonomie" : ""}</small></button>`; }).join("")}</div>
-      ${S.budget ? `<div class="note" style="margin:14px 0 0"><span class="i">📊</span><div>Avec ${euro0(S.budget)} d'achats payés comptant, il te resterait ${euro0(t - S.budget)}, soit <b>${Math.floor((t - S.budget) / c)} mois</b> de charges fixes. ${S.budget >= 4000 ? "Ambitieux : du matériel haut de gamme, mais moins de marge de sécurité." : S.budget <= 1500 ? "Prudent : tu devras choisir les offres les moins chères." : "Équilibré : de la qualité sans vider le compte."} Tu pourras aussi payer à 30 jours pour garder de la trésorerie.</div></div>` : ""}</div>`
+      ${S.budget ? `<div class="note" style="margin:14px 0 0"><span class="i">📊</span><div>Avec ${euro0(S.budget)} d'achats payés comptant, il te resterait ${euro0(t - S.budget)}, soit <b>${Math.floor((t - S.budget) / c)} mois</b> de charges fixes. ${S.budget >= 4000 ? "Ambitieux : du matériel haut de gamme, mais moins de marge de sécurité." : S.budget <= 2000 ? "Prudent : tu devras choisir les offres les moins chères." : "Équilibré : de la qualité sans vider le compte."} Tu pourras aussi payer à 30 jours pour garder de la trésorerie.</div></div>` : ""}</div>`
     + nav(!!S.budget, "Choisis une enveloppe pour continuer.");
 };
 
@@ -2012,7 +2223,7 @@ R.ac_commande = (a) => { const o = offreChoisie(a), solde = banque(), comptantOK
   const ok = !!a.condition && a.verifBC && a.signBC.trim().length >= 3 && a.envoyeBC;
   return head(`Achat ${S.i + 1} · étape 4`, "Rédige ton <span class='grad'>bon de commande</span>", "Choisis tes conditions de paiement, vérifie chaque ligne, signe, envoie.") + coach("commande")
     + `<div class="card" style="margin-bottom:14px"><h3>Conditions de paiement</h3><div class="grid g2">
-        <button class="choice ${a.condition === "comptant" ? "on" : ""} ${comptantOK ? "" : "full"}" data-cond="comptant" ${comptantOK ? "" : 'aria-disabled="true"'}><div class="ico">⚡</div><h4>Comptant à la livraison</h4><p>Tu paies dès réception. Le fournisseur t'accorde <b>2 % d'escompte</b>.</p><span class="pro">Tu économises ${euro(r2(o.totalTTC * ESCOMPTE))}</span><span class="con">${euro(r2(o.totalTTC * (1 - ESCOMPTE)))} sortent tout de suite de la banque</span>${comptantOK ? "" : `<span class="tag" style="color:var(--coral)">Solde insuffisant (${euro0(solde)}) : la banque refuserait le virement</span>`}</button>
+        <button class="choice ${a.condition === "comptant" ? "on" : ""} ${comptantOK ? "" : "full"}" data-cond="comptant" ${comptantOK ? "" : 'aria-disabled="true"'}><div class="ico">⚡</div><h4>Comptant (sous 8 jours)</h4><p>Tu paies la facture dès réception, dans les 8 jours. Le fournisseur t'accorde <b>2 % d'escompte</b>.</p><span class="pro">Tu économises ${euro(r2(o.totalTTC * ESCOMPTE))}</span><span class="con">${euro(r2(o.totalTTC * (1 - ESCOMPTE)))} sortent tout de suite de la banque</span>${comptantOK ? "" : `<span class="tag" style="color:var(--coral)">Solde insuffisant (${euro0(solde)}) : la banque refuserait le virement</span>`}</button>
         <button class="choice ${a.condition === "30j" ? "on" : ""}" data-cond="30j"><div class="ico">📅</div><h4>À 30 jours</h4><p>Le fournisseur te fait crédit : tu paies le mois prochain, prix plein.</p><span class="pro">Ta trésorerie reste disponible</span><span class="con">Une dette fournisseur de ${euro(o.totalTTC)} apparaît au passif</span></button></div></div>
       ${bonDeCommande(a)}
       <div class="checks" style="margin-top:14px">
@@ -2036,7 +2247,7 @@ R.ac_facture = (a) => { const f = a.facture, o = offreChoisie(a), decided = !!a.
     else if (!f.erreur && a.decision === "contestee") verdict = `<div class="note warn"><span class="i">📩</span><div><b>Le fournisseur a vérifié : la facture est correcte.</b> Pas de note de crédit. Contester sans raison fait perdre du temps à tout le monde… mais mieux vaut ça que payer trop.</div></div>`;
     else if (bonneReponse) verdict = `<div class="note ok"><span class="i">🦅</span><div><b>Bien vu !</b> ${esc(f.erreur.texte)} : ${euro(f.erreur.surcoutTTC)} de trop. Le fournisseur t'envoie une note de crédit. Reste dû : <b class="money">${euro(f.correct.totalTTC)}</b>.</div></div>`;
     else if (f.erreur && a.decision === "contestee") verdict = `<div class="note warn"><span class="i">📩</span><div><b>Tu as contesté, mais pas la bonne ligne.</b> Le fournisseur a quand même retrouvé l'erreur : ${esc(f.erreur.texte.toLowerCase())}. Note de crédit de ${euro(f.erreur.surcoutTTC)}. La prochaine fois, compare ligne par ligne.</div></div>`;
-    else verdict = `<div class="note bad"><span class="i">💸</span><div><b>Tu as accepté une facture erronée.</b> ${esc(f.erreur.texte)} : tu vas payer <b class="money">${euro(f.erreur.surcoutTTC)}</b> de trop. En comptabilité, c'est une perte. Compare toujours la facture au bon de commande.</div></div>`;
+    else verdict = `<div class="note bad"><span class="i">💸</span><div><b>Tu as accepté une facture erronée.</b> ${esc(f.erreur.texte)} : tu vas payer <b class="money">${euro(f.erreur.surcoutTTC)}</b> de trop, TVA comprise (une TVA facturée à tort ne se récupère pas). En comptabilité, c'est une charge : une perte pour l'entreprise. Compare toujours la facture au bon de commande.</div></div>`;
   }
   return head(`Achat ${S.i + 1} · étape 6`, "Contrôle la <span class='grad'>facture</span>", `La facture de ${esc(o.fournisseur.nom)} est arrivée. Compare-la avec ton bon de commande (${euro(o.totalTTC)} TTC) et ton bon de livraison.`) + coach("facture")
     + `<div class="grid g2" style="align-items:start"><div>${facture(a, {marque:decided})}</div>
@@ -2050,9 +2261,9 @@ R.ac_facture = (a) => { const f = a.facture, o = offreChoisie(a), decided = !!a.
 
 R.ac_paiement = (a) => { const o = offreChoisie(a), comptant = a.condition === "comptant", due = montantFacture(a);
   return head(`Achat ${S.i + 1} · étape 7`, comptant ? "Paie par <span class='grad'>virement</span>" : "Enregistre ta <span class='grad'>dette</span>", comptant ? `Montant dû ${euro(due)} TTC, moins 2 % d'escompte : <b class="money">${euro(montantPaye(a))}</b>.` : `Rien ne sort aujourd'hui : tu dois <b class="money">${euro(due)}</b> à ${esc(o.fournisseur.nom)} pour le ${esc(a.facture.echeance)}.`) + coach("paiement")
-    + (a.fini ? `${comptant ? extraitCompte(a) : `<div class="note gold"><span class="i">📅</span><div><b>Dette fournisseur enregistrée.</b> ${euro(due)} à payer le ${esc(a.facture.echeance)}. Ta banque n'a pas bougé : ${euro(banque())}. Mais au passif, une dette est apparue : il faudra la trésorerie à l'échéance.</div></div>`}${ecriture(a)}`
+    + (a.fini ? `${a.virementRefuse ? `<div class="note warn"><span class="i">🏦</span><div><b>La banque a refusé le virement : solde insuffisant.</b> La facture acceptée était plus chère que ta commande. Le fournisseur accepte un paiement à 30 jours, sans escompte : une dette fournisseur apparaît au passif.</div></div>` : ""}${comptant ? extraitCompte(a) : `<div class="note gold"><span class="i">📅</span><div><b>Dette fournisseur enregistrée.</b> ${euro(due)} à payer le ${esc(a.facture.echeance)}. Ta banque n'a pas bougé : ${euro(banque())}. Mais au passif, une dette est apparue : il faudra la trésorerie à l'échéance.</div></div>`}${ecriture(a)}`
       : `<div class="card"><h3>${comptant ? "Ordre de virement" : "Facture à payer"}</h3><table class="led"><tbody><tr><td>Bénéficiaire</td><td class="n">${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}</td></tr><tr><td>Communication</td><td class="n">${esc(a.facture.numero)}</td></tr><tr><td>Montant facturé TTC</td><td class="n">${euro(due)}</td></tr>${comptant ? `<tr><td>Escompte 2 %</td><td class="n pos">− ${euro(escompteDe(a))}</td></tr><tr class="tot"><td>Montant du virement</td><td class="n">${euro(montantPaye(a))}</td></tr>` : `<tr class="tot"><td>Échéance</td><td class="n">${esc(a.facture.echeance)}</td></tr>`}</tbody></table>
-        <div class="nav" style="margin-top:14px"><span class="help">Solde actuel : ${euro(banque())}</span><button class="btn btn-main" data-act="payer">${comptant ? "Confirmer le virement" : "Enregistrer la facture à payer"}</button></div></div>`)
+        ${comptant && montantPaye(a) > banque() ? `<div class="note warn" style="margin:12px 0 0"><span class="i">⚠️</span><div>Solde insuffisant (${euro(banque())}) : la banque refusera ce virement. Le fournisseur te laissera alors 30 jours, sans escompte.</div></div>` : ""}<div class="nav" style="margin-top:14px"><span class="help">Solde actuel : ${euro(banque())}</span><button class="btn btn-main" data-act="payer">${comptant ? "Confirmer le virement" : "Enregistrer la facture à payer"}</button></div></div>`)
     + (a.fini ? nav(true, "", {label: achatsRecus().length < CONFIG.NB_ACHATS ? "Achat suivant" : "Voir mon bilan"}) : ""); };
 
 R.bilan = () => { const d = bilanData(), t = tresoDepart(), ok = !!S.done.bilan;
@@ -2063,12 +2274,12 @@ R.bilan = () => { const d = bilanData(), t = tresoDepart(), ok = !!S.done.bilan;
     ${quiz("bilan")}`
     + nav(d.equilibre, "Le bilan n'est pas équilibré : préviens ton professeur.", {label: ok ? "Terminer la mission 🚀" : "Valider mon bilan", act: ok ? "send" : "validerBilan"}); };
 
-R.fin = () => { const lecture = MODE === "consultation", e = S.envoi || {}, defis = Object.values(S.quiz).filter(q => q.ok).length;
+R.fin = () => { const lecture = MODE === "consultation", e = S.envoi || {}, defis = Object.values(S.quiz).filter(q => q.ok).length, trop = S.achats.some(a => tropPaye(a) > 0);
   const status = lecture ? `<div class="status ok">🔒 Ta mission 2 est enregistrée chez ton professeur. Tes achats sont définitifs.</div>` : e.mode === "ok" ? `<div class="status ok">✓ Mission enregistrée chez ton professeur.</div>` : e.mode === "ferme" ? `<div class="status err">L'accès a été fermé avant l'envoi. Demande à ton professeur de rouvrir, puis <button class="btn btn-ghost" data-act="resend" style="padding:8px 16px;font-size:14px">Réessayer l'envoi</button></div>` : e.mode === "err" ? `<div class="status err">L'envoi n'a pas pu être confirmé. <button class="btn btn-ghost" data-act="resend" style="padding:8px 16px;font-size:14px">Réessayer l'envoi</button></div>` : `<div class="status wait"><span class="spin"></span>Enregistrement chez ton professeur en cours…</div>`;
   return `<div class="hero" style="padding-top:6px"><div class="kick">Mission 2 ${lecture ? "terminée" : "accomplie"}</div><h2 style="font-size:clamp(32px,4.8vw,54px)"><span class="grad">${esc(V1(deno))}</span> est équipée.</h2><p class="lead">Mobilier, caisse, ordinateur : tout est là, payé ou à payer, et ta comptabilité est à jour. Bravo ${esc(S.eleve.prenom)}.</p></div>${status}
     <div class="stats"><div class="stat"><b>${S.xp}</b><span>XP gagnés</span></div><div class="stat"><b style="font-family:var(--display);font-size:20px;padding:4px 0">${esc(niv())}</b><span>Ton niveau</span></div><div class="stat"><b>${M2_BADGES.filter(b => S.done["b_" + b[0]]).length}/${M2_BADGES.length}</b><span>Badges</span></div><div class="stat"><b>${defis}/${Object.keys(M2_QUIZ).length}</b><span>Défis éclair réussis</span></div></div>
     <div class="duo"><div class="front-wrap">${V1(() => vitrine("fin"))}</div><div><div class="card tight"><h3>Ton équipement</h3>${S.achats.map(a => { const o = offreChoisie(a), b = bien(a.bien); return `<div class="fourn" style="margin-bottom:8px"><div class="fi">${b.icone}</div><div><b>${esc(o.article)}</b><br><span class="help" style="margin:0">${esc(o.fournisseur.nom)} · ${euro(o.totalHT)} HT · ${a.condition === "comptant" ? "payé comptant" : "à payer le " + esc(a.facture.echeance)}</span></div></div>`; }).join("")}</div></div></div>
-    <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">Journal des achats</h3><table class="led journal"><thead><tr><th>Date</th><th>Fournisseur</th><th>Pièce</th><th class="n">HT</th><th class="n">TVA</th><th class="n">TTC</th><th>Paiement</th></tr></thead><tbody>${S.achats.map(a => { const o = offreChoisie(a); return `<tr><td>${esc(a.facture.date)}</td><td>${esc(o.fournisseur.nom)}</td><td class="money">${esc(a.facture.numero)}${a.nc ? " + NC" : ""}</td><td class="n">${euro(o.totalHT)}</td><td class="n">${euro(o.tva)}</td><td class="n">${euro(montantFacture(a))}</td><td>${a.paye ? "✓ payé " + euro(montantPaye(a)) : "📅 " + esc(a.facture.echeance)}</td></tr>`; }).join("")}<tr class="tot"><td colspan="3">Total</td><td class="n">${euro(r2(S.achats.reduce((s, a) => s + offreChoisie(a).totalHT, 0)))}</td><td class="n">${euro(tvaRecup())}</td><td class="n">${euro(r2(S.achats.reduce((s, a) => s + montantFacture(a), 0)))}</td><td></td></tr></tbody></table></div>
+    <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">Journal des achats</h3><table class="led journal"><thead><tr><th>Date</th><th>Fournisseur</th><th>Pièce</th><th class="n">HT</th><th class="n">TVA</th>${trop ? `<th class="n">En trop</th>` : ""}<th class="n">TTC</th><th>Paiement</th></tr></thead><tbody>${S.achats.map(a => { const o = offreChoisie(a); return `<tr><td>${esc(a.facture.date)}</td><td>${esc(o.fournisseur.nom)}</td><td class="money">${esc(a.facture.numero)}${a.nc ? " + NC" : ""}</td><td class="n">${euro(o.totalHT)}</td><td class="n">${euro(o.tva)}</td>${trop ? `<td class="n">${tropPaye(a) ? euro(tropPaye(a)) : "–"}</td>` : ""}<td class="n">${euro(montantFacture(a))}</td><td>${a.paye ? "✓ payé " + euro(montantPaye(a)) : "📅 " + esc(a.facture.echeance)}</td></tr>`; }).join("")}<tr class="tot"><td colspan="3">Total</td><td class="n">${euro(r2(S.achats.reduce((s, a) => s + offreChoisie(a).totalHT, 0)))}</td><td class="n">${euro(tvaRecup())}</td>${trop ? `<td class="n">${euro(r2(S.achats.reduce((s, a) => s + tropPaye(a), 0)))}</td>` : ""}<td class="n">${euro(r2(S.achats.reduce((s, a) => s + montantFacture(a), 0)))}</td><td></td></tr></tbody></table>${trop ? `<p class="help" style="margin:10px 0 0">« En trop » : la facture fausse que tu as acceptée, TVA comprise. C'est une charge pour l'entreprise. HT + TVA + en trop = TTC.</p>` : ""}</div>
     <h3 class="sub">Ton bilan après équipement</h3>${bilanHTML()}
     <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">Tes badges</h3><div class="badges">${M2_BADGES.map(b => `<div class="badge ${S.done["b_" + b[0]] ? "" : "lockd"}"><div class="i">${S.done["b_" + b[0]] ? b[1] : "🔒"}</div><b>${esc(b[2])}</b></div>`).join("")}</div>
       <h3 class="sub">Ton carnet de mots de pro</h3><div class="words">${S.mots.map(m => `<div class="word"><b>${esc(M2_MOTS[m].mot)}</b><span>${esc(M2_MOTS[m].def)}</span></div>`).join("")}</div>
@@ -2165,11 +2376,11 @@ function suivant(){
     else if (k === "methode"){ if (!a.methode) return; a.offres = genererOffres(a.bien); a.etape = 2; unlockMots(["offre"]); }
     else if (k === "offres"){ if (a.choix == null || !a.raisons.length) return; award("compare" + n, 50, "compare"); unlockMots(n === 0 ? ["httc","immobilisation"] : []); a.etape = 3; }
     else if (k === "commande"){ if (!(a.condition && a.verifBC && a.signBC.trim().length >= 3 && a.envoyeBC)) return;
-      const o = offreChoisie(a); a.bc = { numero:`BC-${ANNEE()}-00${n + 1}`, date:today() }; a.notif = { date:today(), livraison:jourLong(plusJours(o.delai)) }; a.bl = { numero:`BL-${o.fournisseur.code}-${String(hash(S.eleve.email + o.numero) % 90000 + 10000)}`, date:dateFr(plusJours(o.delai)) };
+      const o = offreChoisie(a); a.bc = { numero:`BC-${ANNEE()}-00${n + 1}`, date:today() }; a.notif = { date:today(), livraison:jourLong(dateLivraison(o.delai)) }; a.bl = { numero:`BL-${o.fournisseur.code}-${String(hash(S.eleve.email + o.numero) % 90000 + 10000)}`, date:dateFr(dateLivraison(o.delai)) };
       award("bc" + n, 50, "bc"); unlockMots(["bc", a.condition === "30j" ? "credit" : "escompte"]); if (a.condition === "30j") award("credit", 0, "credit"); a.etape = 4; }
     else if (k === "livraison"){ if (!(a.checks.every(Boolean) && a.signBL.trim().length >= 3)) return;
       a.facture = genererFacture(a, n); award("bl" + n, 50, "bl"); unlockMots(["bl"]); a.etape = 5; }
-    else if (k === "facture"){ if (!a.decision) return; award("fact" + n, 50, "facture"); unlockMots(["facture", a.nc ? "nc" : "tvaDed"]); a.etape = 6; }
+    else if (k === "facture"){ if (!a.decision) return; if (a.facture.erreur && a.decision === "acceptee") toast("<div>Facture erronée acceptée : pas de badge « Contrôle facture » cette fois.</div>"); else award("fact" + n, 50, "facture"); unlockMots(["facture", a.nc ? "nc" : "tvaDed"]); a.etape = 6; }
     else if (k === "paiement"){ if (!a.fini) return;
       if (achatsRecus().length >= CONFIG.NB_ACHATS){ S.phase = "bilan"; } else { S.i = S.achats.findIndex(x => !x.fini); }
     }
@@ -2178,7 +2389,9 @@ function suivant(){
 }
 function payer(){
   const a = A(); if (a.fini) return;
-  a.fini = true; a.payeLe = today();
+  // V2 : solde insuffisant (facture erronée acceptée, plus chère que la commande) → la banque refuse le virement ; le fournisseur accepte 30 jours, sans escompte
+  if (a.condition === "comptant" && montantPaye(a) > banque()){ a.condition = "30j"; a.virementRefuse = true; toast(`<div>🏦 Virement refusé : solde insuffisant (${euro(banque())}). ${esc(offreChoisie(a).fournisseur.nom)} accepte un paiement à 30 jours, sans escompte.</div>`); }
+  a.fini = true; a.payeLe = a.facture ? a.facture.date : today();
   if (a.condition === "comptant"){ a.paye = true; a.extrait = genererExtrait(a); award("paye" + S.i, 50, "paye"); unlockMots(["extrait"]); }
   else { a.paye = false; award("dette" + S.i, 50, "credit"); unlockMots(["dettes"]); }
   save(); render(); sauvegarder(true);
@@ -2254,7 +2467,7 @@ document.addEventListener("click", (e) => {
     if (act === "accepter"){ a.decision = "acceptee"; a.contestation = false; save(); render(); return; }
     if (act === "contester"){ a.contestation = true; save(); render(); return; }
     if (b.dataset.err){ a.erreurChoisie = b.dataset.err; a.decision = "contestee"; a.contestation = false;
-      if (a.facture.erreur){ const o = offreChoisie(a); a.nc = { numero:`NC-${o.fournisseur.code}-${ANNEE()}-${String(hash(a.facture.numero) % 900 + 100)}`, date:today() };
+      if (a.facture.erreur){ const o = offreChoisie(a); a.nc = { numero:`NC-${o.fournisseur.code}-${ANNEE()}-${String(hash(a.facture.numero) % 900 + 100)}`, date:dateFr(jourOuvre(joursApres(dateLivraison(o.delai), 2))) };
         if (a.erreurChoisie === a.facture.erreur.type){ S.xp += 75; S.done["b_lynx"] = true; toast("<b>+75 XP</b><div>🦅 Badge débloqué : Œil de lynx</div>"); } }
       save(); render(); return; }
     if (act === "payer"){ payer(); return; }
@@ -2930,6 +3143,8 @@ function vitrineSVG(cfg, uid){
 // v1.1 (26/10/2026) : inserer accepte un html « paresseux » (fonction), poser remplace un décor dont le contenu a changé,
 // vitrineEQ accepte des réglages en plus (boutique fermée, à louer…), taperCalcul peut se taire et relire le résultat au dernier moment.
 // v1.2 (26/10/2026) : creditsImages() ajoute au bas d'une mission les crédits des photos de matières (CC0).
+// v1.3 (27/10/2026) : film() (scène de 3 s au plus sur tout l'écran, passée d'un clic, comme aux 3P), cascade(), confettis(),
+// xpSaute(), vivant() (cartes qui réagissent, reflets, notifications façon téléphone), couperFilms() pour les bancs d'essai.
 const COMPTA = (() => {
   const X = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
@@ -3134,7 +3349,63 @@ const COMPTA = (() => {
   const premiereFois = (cle) => vus.has(cle) ? false : (vus.add(cle), true);
   const son = (nom) => { if (typeof SON !== "undefined") SON.jouer(nom); };
 
-  return { X, avatarNadia, coachs, logoBanque, entete, mention, calculatrice, taperCalcul, balance, classeur, punaise, postit, etiquette, etagere, objet, vitrineEQ, inserer, poser, premiereFois, son, creditsImages };
+  // ─── v1.3 : petits films sur tout l'écran (comme aux 3P) et page qui vit ───
+  // Un film dure 3 s au plus et ne se joue qu'une fois par clé. Un clic ou une touche le passe ; « moins d'animations »
+  // le réduit à un instant (état final seulement). Il ne retarde jamais la mission : il passe par-dessus l'écran suivant, déjà affiché.
+  let filmsCoupes = false, filmEnCours = null;
+  /** Plus aucun film (bancs d'essai qui contrôlent chaque écran). */
+  function couperFilms(){ filmsCoupes = true; if (filmEnCours) filmEnCours(); }
+  /** Lance les étapes d'un film (instants en fraction de la durée) ; rien ne se passe si le film a déjà disparu. */
+  function etapes(el, ms, liste){ liste.forEach(([f, fn]) => setTimeout(() => { if (el.isConnected) try { fn(); } catch(e) {} }, Math.round(f * ms))); }
+  /** Joue un film : { cle, html, texte, duree (3000 ms au plus), jouer(el, ms), final(el) }. Promesse : true s'il s'est joué. */
+  function film(o){
+    if (filmsCoupes || !o || !o.html || !premiereFois("film-" + o.cle)) return Promise.resolve(false);
+    if (filmEnCours) filmEnCours();
+    const reduit = matchMedia("(prefers-reduced-motion: reduce)").matches, ms = reduit ? 700 : Math.min(3000, o.duree || 2400);
+    const el = document.createElement("div");
+    el.className = "cpt-film" + (reduit ? " cpt-film-calme" : ""); el.setAttribute("aria-hidden", "true");
+    el.innerHTML = `<div class="cpt-film-boite">${o.html}${o.texte ? `<p class="cpt-film-texte">${X(o.texte)}</p>` : ""}</div><span class="cpt-film-passer">Clique pour passer</span><i class="cpt-film-temps" style="animation-duration:${ms}ms"></i>`;
+    document.body.appendChild(el);
+    return new Promise((fin) => {
+      let fini = false, t = null;
+      const fermer = () => { if (fini) return; fini = true; clearTimeout(t); document.removeEventListener("keydown", fermer, true); if (filmEnCours === fermer) filmEnCours = null;
+        el.classList.add("cpt-film-sort"); setTimeout(() => el.remove(), 230); fin(true); };
+      t = setTimeout(fermer, ms);
+      filmEnCours = fermer;
+      el.addEventListener("click", fermer);
+      document.addEventListener("keydown", fermer, true);
+      try { if (reduit){ if (o.final) o.final(el); } else if (o.jouer) o.jouer(el, ms); } catch(e) {}
+    });
+  }
+  /** Les blocs d'un écran arrivent l'un après l'autre (une fois par écran ; ceux qui ont déjà leur animation sont laissés). */
+  function cascade(racine, cle){
+    if (!racine || !premiereFois("cascade-" + cle)) return;
+    const deja = /\b(kit-anim|cpt-pose|cpt-glisse|m[123]-pose|m[123]-glisse|reveal)\b/, cls = (el) => el.getAttribute("class") || "", blocs = [];
+    [...racine.children].forEach((el) => {
+      if (el.hasAttribute("data-decor") || deja.test(cls(el))) return;
+      if (/\b(grid|offers|checks|money-opts)\b/.test(cls(el))) [...el.children].forEach((x) => { if (!x.hasAttribute("data-decor") && !deja.test(cls(x))) blocs.push(x); });
+      else blocs.push(el);
+    });
+    blocs.slice(0, 14).forEach((el, k) => { el.classList.add("cpt-arrive"); el.style.setProperty("--cpt-i", String(k)); });
+  }
+  /** Une pluie de confettis (grands moments), à poser dans un bloc en position relative. */
+  function confettis(n){
+    const C = ["#e3b85c", "#ff3d8b", "#9d4edd", "#22d3ee", "#34d399", "#f6f1e6"]; let s = "";
+    for (let i = 0; i < (n || 36); i++) s += `<i style="left:${(i * 37 % 100)}%;background:${C[i % C.length]};animation-duration:${(3 + (i * 7 % 25) / 10).toFixed(1)}s;animation-delay:-${((i * 13 % 50) / 10).toFixed(1)}s"></i>`;
+    return `<span class="cpt-confettis" aria-hidden="true">${s}</span>`;
+  }
+  /** La pastille d'XP de la barre du haut saute quand l'élève gagne des points. */
+  let xpVu = null;
+  function xpSaute(valeur){
+    const el = document.querySelector("#top .xp"); if (!el) return;
+    if (xpVu != null && valeur > xpVu){ el.classList.remove("cpt-xp-saute"); void el.offsetWidth; el.classList.add("cpt-xp-saute"); }
+    xpVu = valeur;
+  }
+  /** Allume la page qui vit (cartes qui réagissent, titres à reflets, notifications façon téléphone) : chaque mission l'allume dans son décor. */
+  const vivant = () => document.body.classList.add("cpt-vivant");
+
+  return { X, avatarNadia, coachs, logoBanque, entete, mention, calculatrice, taperCalcul, balance, classeur, punaise, postit, etiquette, etagere, objet, vitrineEQ, inserer, poser, premiereFois, son, creditsImages,
+    film, etapes, couperFilms, cascade, confettis, xpSaute, vivant };
 })();
 // ═══ KIT COMPTA EQ v1 — fin ═══
 </script>
@@ -3221,6 +3492,108 @@ const DECOR = (() => {
       <circle cx="15" cy="10.5" r="1.8" fill="#ff6b6b"/><circle cx="21" cy="10.5" r="1.8" fill="#ffd166"/><circle cx="27" cy="10.5" r="1.8" fill="#4fd69c"/><rect x="40" y="8" width="70" height="5" rx="2.5" fill="#fff"/>
       ${produitWeb(16, 0)}${produitWeb(58, 1)}${produitWeb(100, 2)}<path d="M112 35v15l4-3.6 3 6.6 3-1.4-3-6.4h5.5z" fill="#14284b" stroke="#fff" stroke-width="1.1" stroke-linejoin="round"/></svg>`
   };
+
+  // ─── Films sur tout l'écran (comme aux 3P) : chercher les offres, envoyer le bon de commande, payer ───
+  // Ils se jouent au passage d'un écran à l'autre, par-dessus l'écran suivant déjà affiché (COMPTA.film : 3 s au plus, un clic les passe).
+  const heureCourte = () => new Date().toLocaleTimeString("fr-BE", { hour:"2-digit", minute:"2-digit" });
+  const mailFourn = (f) => "commandes@" + String(f.web || "fournisseur.be").replace(/^www\./, "");
+  const encreF = (code) => (FOURN[code] || [])[2] || "#fff";
+  function filmRecherche(a){
+    const b = bien(a.bien), offres = a.offres || [], fs = offres.map(o => o.fournisseur);
+    if (!b || fs.length < 3) return null;
+    if (a.methode === "telephone") return { duree:2600, texte:"Tu appelles trois fournisseurs…",
+      html:`<div class="m2-sc m2-sc-tel"><div class="phone m2-sc-phone"><div class="tel-barre"><span>${X(heureCourte())}</span><span>📶 🔋</span></div>
+        ${fs.map(f => `<div class="m2-appel"><div class="m2-appel-av">${logoF(f.code)}</div><b>${X(f.nom)}</b><span class="m2-appel-num">${X(f.tel)}</span><span class="m2-appel-etat">Appel en cours… <span class="m2-chrono">00:00</span></span></div>`).join("")}
+        <div class="m2-raccrocher">📞</div></div>
+        <ol class="m2-sc-liste">${fs.map(f => `<li><span class="m2-sl-logo">${logoF(f.code)}</span><span class="m2-sl-nom">${X(f.nom)}</span><span class="m2-sl-etat">✔ Offre demandée</span></li>`).join("")}</ol></div>`,
+      jouer(el, ms){
+        const ap = el.querySelectorAll(".m2-appel"), li = el.querySelectorAll(".m2-sc-liste li"); let k = -1, s = 0;
+        const tic = setInterval(() => { if (!el.isConnected) return clearInterval(tic); const c = el.querySelector(".m2-appel.actif .m2-chrono"); if (c) c.textContent = "00:" + String(++s % 60).padStart(2, "0"); }, Math.max(50, Math.round(ms / 28)));
+        setTimeout(() => clearInterval(tic), ms + 100);
+        const appeler = () => { if (k >= 0){ li[k].classList.remove("encours"); li[k].classList.add("ok"); } k++;
+          if (k < ap.length){ ap.forEach((x, j) => x.classList.toggle("actif", j === k)); li[k].classList.add("encours"); s = 0; COMPTA.son("bip"); } };
+        COMPTA.etapes(el, ms, [[0, appeler], [.31, appeler], [.62, appeler], [.93, appeler]]);
+      },
+      final(el){ el.querySelectorAll(".m2-sc-liste li").forEach(x => x.classList.add("ok")); const ap = el.querySelector(".m2-appel"); if (ap) ap.classList.add("actif"); } };
+    if (a.methode === "email") return { duree:2400, texte:"Tu demandes trois offres de prix par e-mail…",
+      html:`<div class="m2-sc m2-fen m2-sc-mail"><div class="m2-fen-barre"><i></i><i></i><i></i><span>Boîte de réception – ${X(V(emailPro, ""))}</span></div>
+        <div class="m2-mail-envoye">✔ Demande de prix envoyée à 3 fournisseurs</div>
+        <ul class="m2-boite">${fs.map(f => `<li class="m2-m-ligne"><span class="m2-m-logo">${logoF(f.code)}</span><span class="m2-m-txt"><b>${X(f.nom)}</b><span>Re : Demande de prix – ${X(b.court)}</span><span class="m2-m-pj">📎 Offre de prix.pdf</span></span><time>maintenant</time></li>`).join("")}</ul></div>`,
+      jouer(el, ms){
+        const l = el.querySelectorAll(".m2-m-ligne");
+        COMPTA.etapes(el, ms, [[.02, () => { el.querySelector(".m2-mail-envoye").classList.add("vu"); COMPTA.son("envoi"); }],
+          [.3, () => l[0].classList.add("vu")], [.52, () => l[1].classList.add("vu")], [.74, () => { l[2].classList.add("vu"); COMPTA.son("notif"); }]]);
+      },
+      final(el){ el.querySelectorAll(".m2-mail-envoye, .m2-m-ligne").forEach(x => x.classList.add("vu")); } };
+    if (a.methode === "internet") return { duree:2600, texte:"Tu compares les sites de trois fournisseurs…",
+      html:`<div class="m2-sc m2-fen m2-sc-web"><div class="m2-web-onglets">${fs.map(f => `<span class="m2-onglet">${logoF(f.code)}${X(f.nom)}</span>`).join("")}</div>
+        <div class="m2-web-adresse"><span>🔒</span><span class="m2-url">${X(fs[0].web)}</span></div><div class="m2-web-charge"><i></i></div>
+        <div class="m2-web-pages">${offres.map(o => `<div class="m2-web-page" style="--f:${couleurF(o.fournisseur.code)};--t:${encreF(o.fournisseur.code)}"><div class="m2-wp-tete">${logoF(o.fournisseur.code)}<b>${X(o.fournisseur.nom)}</b><span>Boutique en ligne</span></div>
+          <div class="m2-wp-prod"><span class="m2-wp-img">${X(b.icone)}</span><span class="m2-wp-info"><b>${X(o.article)}</b><span class="m2-wp-prix">${X(euro(o.prixHT))} HT</span><span class="m2-wp-btn"><span class="m2-wb-1">Enregistrer l'offre</span><span class="m2-wb-2">✔ Offre enregistrée</span></span></span></div></div>`).join("")}</div></div>`,
+      jouer(el, ms){
+        const ong = el.querySelectorAll(".m2-onglet"), pg = el.querySelectorAll(".m2-web-page"), url = el.querySelector(".m2-url"), ch = el.querySelector(".m2-web-charge");
+        const ouvrir = (k) => () => { ong.forEach((x, j) => x.classList.toggle("actif", j === k)); pg.forEach((x, j) => x.classList.toggle("actif", j === k));
+          url.textContent = fs[k].web; ch.classList.remove("go"); void ch.offsetWidth; ch.classList.add("go"); COMPTA.son("touche"); };
+        const garder = (k) => () => pg[k].classList.add("garde");
+        COMPTA.etapes(el, ms, [[0, ouvrir(0)], [.22, garder(0)], [.33, ouvrir(1)], [.55, garder(1)], [.66, ouvrir(2)], [.88, garder(2)]]);
+      },
+      final(el){ const pg = el.querySelectorAll(".m2-web-page"); pg.forEach(x => x.classList.add("garde")); if (pg[2]) pg[2].classList.add("actif"); } };
+    return { duree:2600, texte:"Tu visites trois magasins…",                                       // aller dans les magasins
+      html:`<div class="m2-sc m2-sc-rue"><div class="m2-rue-mags">${fs.map(f => `<div class="m2-mag" style="--f:${couleurF(f.code)};--t:${encreF(f.code)}"><div class="m2-mag-enseigne">${X(f.nom)}</div><div class="m2-mag-auvent"></div>
+        <div class="m2-mag-face"><span class="m2-mag-vit">${X(b.icone)}</span><span class="m2-mag-porte"></span></div><span class="m2-mag-bulle">📄 Offre de prix</span></div>`).join("")}</div>
+        <div class="m2-rue-trottoir"><span class="m2-pieton">🚶</span></div></div>`,
+      jouer(el, ms){
+        const mags = el.querySelectorAll(".m2-mag"), p = el.querySelector(".m2-pieton"), pos = ["16.6%", "50%", "83.3%"];
+        const aller = (k) => () => { void p.offsetWidth; p.style.left = pos[k]; };
+        const visiter = (k) => () => { mags[k].classList.add("vu"); COMPTA.son(k === 0 ? "porte" : "papier"); };
+        COMPTA.etapes(el, ms, [[.02, aller(0)], [.2, visiter(0)], [.3, aller(1)], [.5, visiter(1)], [.62, aller(2)], [.82, visiter(2)]]);
+      },
+      final(el){ el.querySelectorAll(".m2-mag").forEach(x => x.classList.add("vu")); } };
+  }
+  /** L'envoi du bon de commande : une vraie fenêtre de messagerie qui part. */
+  function filmEnvoi(a, o){
+    if (!a.bc || !o) return null;
+    const f = o.fournisseur;
+    return { duree:2000, texte:`Envoi du bon de commande à ${f.nom}…`,
+      html:`<div class="m2-sc m2-sc-envoi"><div class="m2-mail-fen"><div class="m2-mf-barre"><span>Nouveau message</span><span class="m2-mf-btns"><i></i><i></i><i></i></span></div>
+        <div class="m2-mf-champ"><span>De :</span>${X(V(emailPro, ""))}</div><div class="m2-mf-champ"><span>À :</span>${X(mailFourn(f))}</div><div class="m2-mf-champ"><span>Objet :</span>Bon de commande ${X(a.bc.numero)}</div>
+        <div class="m2-mf-corps">Bonjour,<br>Voici notre bon de commande ${X(a.bc.numero)}, suivant votre offre n° ${X(o.numero)}.<br>Bien à vous,<br><span class="m2-mf-sig">${X(S.eleve.prenom)} ${X(S.eleve.nom)} – ${X(V(deno, ""))}</span></div>
+        <div class="m2-mf-pj"><span class="m2-pdf">PDF</span><span><b>${X(a.bc.numero)}.pdf</b><small>Pièce jointe</small></span></div><div class="m2-mf-bas"><span class="m2-mf-envoyer">Envoyer ➤</span></div></div>
+        <div class="m2-sc-ok">✔ Envoyé</div></div>`,
+      jouer(el, ms){
+        const sc = el.querySelector(".m2-sc-envoi");
+        COMPTA.etapes(el, ms, [[.4, () => el.querySelector(".m2-mf-envoyer").classList.add("appuie")], [.5, () => { sc.classList.add("part"); COMPTA.son("envoi"); }], [.7, () => sc.classList.add("fini")]]);
+      },
+      final(el){ el.querySelector(".m2-sc-envoi").classList.add("part", "fini"); } };
+  }
+  /** Le paiement : virement dans l'application de la banque (code secret, « Virement exécuté »), ou facture rangée « À payer ». */
+  function filmPaiement(a, o){
+    if (a.condition !== "comptant") return { duree:2000, texte:"Facture enregistrée : à payer à l'échéance",
+      html:`<div class="m2-sc m2-sc-dette"><div class="m2-sd-facture"><b>Facture</b><small>${X(a.facture ? a.facture.numero : "")}</small><span>${X(o.fournisseur.nom)}</span><span class="m2-sd-montant">${X(euro(montantFacture(a)))}</span></div>
+        <div class="m2-sd-farde"><span class="m2-sd-onglet">À payer</span><span class="m2-sd-ech">Échéance<br><b>${X(a.facture ? a.facture.echeance : "")}</b></span></div></div>`,
+      jouer(el, ms){ const sc = el.querySelector(".m2-sc-dette"); COMPTA.etapes(el, ms, [[.3, () => { sc.classList.add("range"); COMPTA.son("papier"); }], [.68, () => { sc.classList.add("fini"); COMPTA.son("tampon"); }]]); },
+      final(el){ el.querySelector(".m2-sc-dette").classList.add("range", "fini"); } };
+    const code = String(KIT.hash(S.eleve.email + a.bien) % 9000 + 1000).split("");
+    return { duree:2800, texte:`Virement de ${euro(montantPaye(a))} à ${o.fournisseur.nom}`,
+      html:`<div class="m2-sc m2-sc-paie"><div class="phone m2-paie-tel"><div class="tel-barre"><span>${X(heureCourte())}</span><span>📶 🔋</span></div>
+        <div class="m2-pt-app">${COMPTA.logoBanque({ clair:true })}</div><div class="m2-pt-titre">Nouveau virement</div>
+        <div class="m2-pt-ligne"><small>Vers</small><b>${X(o.fournisseur.nom)} ${X(o.fournisseur.forme)}</b></div><div class="m2-pt-montant">${X(euro(montantPaye(a)))}</div>
+        <div class="m2-pt-ligne"><small>Communication</small><b class="m2-mono">${X(a.facture ? a.facture.numero : "")}</b></div>
+        <div class="m2-pt-code">Code secret : <b class="m2-pts">○○○○</b></div><div class="m2-pt-ok">✔ Virement exécuté</div>
+        <div class="m2-pt-touches">${["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "✔"].map(t => `<span>${t}</span>`).join("")}</div></div></div>`,
+      jouer(el, ms){
+        const sc = el.querySelector(".m2-sc-paie"), pts = el.querySelector(".m2-pts"), touches = [...el.querySelectorAll(".m2-pt-touches span")];
+        const appuyer = (t) => { const s = touches.find(x => x.textContent === t); if (s){ s.classList.add("appuie"); setTimeout(() => s.classList.remove("appuie"), 120); } COMPTA.son("touche"); };
+        const pas = code.map((c, i) => [.16 + i * .12, () => { appuyer(c); pts.textContent = "●".repeat(i + 1) + "○".repeat(code.length - i - 1); }]);
+        COMPTA.etapes(el, ms, [[.06, () => sc.classList.add("code")]].concat(pas, [[.68, () => appuyer("✔")], [.74, () => { sc.classList.add("ok"); COMPTA.son("caisse"); }]]));
+      },
+      final(el){ el.querySelector(".m2-sc-paie").classList.add("ok"); } };
+  }
+  /** Le calendrier de la livraison, à côté du SMS du fournisseur. */
+  function calLivraison(date, jour){
+    const m = String(date || "").match(/^(\d{1,2})\s+(\S+)/), sem = String(jour || "").split(" ")[0];
+    return `<span class="m2-cal-livraison" aria-hidden="true"><span class="m2-cl-mois">${X(m ? m[2] : "Livraison")}</span><span class="m2-cl-jour">${X(m ? m[1] : "")}</span><span class="m2-cl-sem">${X(sem)}</span></span>`;
+  }
 
   // ─── La boutique de l'élève, en petit (devant elle s'arrête le camion), et le réverbère de la rue ───
   const REVERBERE = `<svg class="m2-rue-lampe cpt-cache-mobile" viewBox="0 0 40 130" aria-hidden="true"><circle cx="20" cy="22" r="19" fill="#ffd58a" opacity=".16"/><circle cx="20" cy="22" r="10" fill="#ffd58a" opacity=".28"/>
@@ -3351,7 +3724,11 @@ const DECOR = (() => {
       sms.classList.add("m2-sms");
       const de = sms.querySelector(".from"); if (de) poser(de, "afterbegin", "ico", `<span class="m2-sms-ico" aria-hidden="true">💬</span>`);
       poser(sms, "afterend", "rue", () => `<div class="kit-route m2-rue" aria-hidden="true" data-anim="m2-rue-${S.i}"><span class="m2-rue-ciel"></span>${REVERBERE}${KIT.camion({ nom:f.nom, sousTitre:"Livraison · " + f.ville, couleur:couleurF(f.code) })}<span class="m2-rue-boutique">${miniBoutique()}</span></div>`);
-      if (COMPTA.premiereFois("camion-" + S.i)) sonDiffere("camion", 2300);           // le klaxon quand le camion s'arrête
+      if (a.bl) poser(sms, "afterbegin", "cal", () => calLivraison(a.bl.date, a.notif ? a.notif.livraison : ""));
+      if (COMPTA.premiereFois("camion-" + S.i)){
+        sms.classList.add("m2-vibre"); sonDiffere("notif", 2100);                  // le téléphone vibre : SMS du fournisseur (après le film de l'envoi)
+        sonDiffere("camion", 2400); sonDiffere("porte", 3300);                      // le klaxon quand le camion s'arrête, puis la sonnette
+      }
     }
     const papier = un("#main .paper");
     if (papier){
@@ -3411,9 +3788,12 @@ const DECOR = (() => {
       return `<div class="m2-dossier${x === courant ? " m2-glisse" : ""}"><span class="m2-d-ico">${X(b ? b.icone : "📄")}</span><span><b>${X(ox.article)}</b><small>Facture ${X(x.facture.numero)} · ${X(ox.fournisseur.nom)} · ${X(euro(montantFacture(x)))}</small><small>+ bon de commande ${X(x.bc ? x.bc.numero : "")} + bon de livraison ${X(x.bl ? x.bl.numero : "")}</small></span>
         <span class="m2-d-statut${paye ? "" : " m2-du"}">${paye ? "✓ Payée" : "À payer · " + X(x.facture.echeance)}</span></div>`;
     }).join("");
+    const vol = COMPTA.premiereFois("vol-" + S.i) ? `<span class="m2-vol"><i></i><i></i><i></i></span>` : "";   // les trois documents volent dans le classeur (une fois)
     return `<div class="m2-classement" aria-hidden="true" data-anim="m2-classe-${S.i}"><div class="m2-cl-titre">📁 Le dossier est classé : facture, bon de commande et bon de livraison, agrafés ensemble.<b>${achatsRecus().length}/${CONFIG.NB_ACHATS}</b></div>
-      <div class="m2-dossiers">${dossiers}</div><div class="m2-cl-classeur cpt-cache-mobile">${COMPTA.classeur({ titre:"Factures fournisseurs", sous:V(deno, "") + " · " + ANNEE(), couleur:"#1e3a6e", feuilles:finis.length, tampon:courant.condition === "comptant" ? "Payée" : "À payer" })}</div></div>`;
+      <div class="m2-dossiers">${dossiers}</div><div class="m2-cl-classeur cpt-cache-mobile">${COMPTA.classeur({ titre:"Factures fournisseurs", sous:V(deno, "") + " · " + ANNEE(), couleur:"#1e3a6e", feuilles:finis.length, tampon:courant.condition === "comptant" ? "Payée" : "À payer" })}${vol}</div></div>`;
   }
+  /** Les feuilles s'envolent vers le classeur quand le film du paiement est fini (ou tout de suite s'il n'y a pas de film). */
+  const envoler = () => { const v = un("#main .m2-vol"); if (v && !v.classList.contains("go")){ v.classList.add("go"); COMPTA.son("papier"); } };
   function acPaiement(){
     const a = A(), o = offreChoisie(a); if (!o || !M1) return;
     const comptant = a.condition === "comptant";
@@ -3426,13 +3806,15 @@ const DECOR = (() => {
       poser(carte, "beforeend", "cote", () => `<div class="m2-ordre-cote cpt-cache-mobile" aria-hidden="true">${comptant ? telephone(a, o) : calendrier(a, o)}</div>`);
       return;
     }
-    if (etatPaiement[S.i] === "attente"){ etatPaiement[S.i] = "paye"; COMPTA.son(comptant ? "caisse" : "papier"); }
+    let film = null;
+    if (etatPaiement[S.i] === "attente"){ etatPaiement[S.i] = "paye"; film = filmPaiement(a, o); }
     const ex = un("#main .extrait");
     arrivee([ex], "releve-" + S.i);
     if (ex){ ex.classList.add("cpt-releve", "m2-releve"); poser(ex, "afterbegin", "tete", () => COMPTA.entete({ logo:"banque", titre:"Extrait de compte", sous:a.extrait ? a.extrait.date : "" })); poser(ex, "beforeend", "mention", COMPTA.mention); }
     const ec = un("#main .ecriture"); if (ec) ec.classList.add("cpt-registre", "m2-journal");
     const navs = tous("#main > .nav"), dernier = navs[navs.length - 1];
     if (dernier) poser(dernier, "beforebegin", "classement", classement);
+    if (film) COMPTA.film(Object.assign({ cle:"paiement-" + S.i }, film)).then(envoler); else envoler();
   }
 
   // ─── Bilan (écran bilan et fin) : un document, avec sa balance ───
@@ -3442,6 +3824,8 @@ const DECOR = (() => {
     bl.classList.add("m2-bilan-doc");
     arrivee([bl], "bilan-" + ecran());
     poser(bl, "afterbegin", "tete", () => `<div class="m2-bilan-tete" aria-hidden="true"><div><b>Bilan après équipement</b><small>${X(V(deno, ""))} · ${X(today())}</small>${COMPTA.mention()}</div>${COMPTA.balance(d.equilibre, { couleurTexte:"#14284b" })}${S.done && S.done.bilan ? `<span class="tampon vert frappe" data-anim="m2-bilan-ok">Validé</span>` : ""}</div>`);
+    // Le surligneur passe une fois sur ce que l'équipement a changé : le matériel, la TVA à récupérer, les dettes, la banque
+    if (COMPTA.premiereFois("fluo-" + ecran())) tous(".l", bl).forEach((l) => { if (/^(Mobilier|Matériel|TVA à récupérer|Dettes fournisseurs|Banque)/.test(String((l.querySelector(".k") || l).textContent).trim())) l.classList.add("m2-fluo"); });
   }
 
   // ─── Fin : la boutique équipée, allumée, en fête ───
@@ -3457,7 +3841,7 @@ const DECOR = (() => {
   }
   function fin(){
     const cadre = un("#main .duo .front-wrap");
-    if (cadre){ cadre.classList.add("m2-fete-cadre"); poser(cadre, "beforeend", "guirlande", guirlande()); poser(cadre, "beforeend", "ruban", `<span class="m2-ruban" aria-hidden="true">Équipée !</span>`); }
+    if (cadre){ cadre.classList.add("m2-fete-cadre"); poser(cadre, "beforeend", "guirlande", guirlande()); poser(cadre, "beforeend", "ruban", `<span class="m2-ruban" aria-hidden="true">Équipée !</span>`); poser(cadre, "beforeend", "confettis", () => COMPTA.confettis(40)); }
     const j = un("#main table.journal"); if (j) j.classList.add("cpt-registre", "m2-registre-table");
     bilanDoc();
   }
@@ -3482,13 +3866,26 @@ const DECOR = (() => {
 
   const ECRANS = { briefing, budget, ac_bien:acBien, ac_methode:acMethode, ac_offres:acOffres, ac_commande:acCommande, ac_livraison:acLivraison, ac_facture:acFacture, ac_paiement:acPaiement,
     bilan:bilanDoc, fin, ferme:() => nuit(false), bloque:() => nuit(true) };
+  /** Au passage d'un écran à l'autre (pas au chargement de la page) : le film de la recherche ou de l'envoi du bon de commande. */
+  let precedent = null;
+  function films(cle){
+    if (precedent === cle) return;
+    const avant = precedent; precedent = cle;
+    if (!avant || MODE !== "mission" || S.phase !== "achats") return;
+    const a = A(), f = avant === "ac_methode:" + S.i && cle === "ac_offres:" + S.i ? filmRecherche(a)
+      : avant === "ac_commande:" + S.i && cle === "ac_livraison:" + S.i ? filmEnvoi(a, offreChoisie(a)) : null;
+    if (f) COMPTA.film(Object.assign({ cle:cle }, f));
+  }
   function decorer(){
     try {
-      if (!document.getElementById("main")) return;
+      const main = document.getElementById("main"); if (!main) return;
       COMPTA.coachs(document);                                        // Nadia dessinée à la place de l'émoji
-      const e = ecran();
+      const e = ecran(), cle = e + ":" + (S.phase === "achats" ? S.i : "");
       if (ECRANS[e]) ECRANS[e]();
       jeton();
+      COMPTA.cascade(main, cle);                                      // les blocs de l'écran arrivent l'un après l'autre (une fois)
+      COMPTA.xpSaute(S.xp || 0);
+      films(cle);
     } catch(e) { console.warn("décor :", e); }
   }
   // ─── Accroche (seules affectations permises : render, refreshLive, vitrine, toast, confetti) ───
@@ -3500,6 +3897,7 @@ const DECOR = (() => {
   confetti = function(){ confettiOrigine(); COMPTA.son("fanfare"); };
   window.__decor = { renduOrigine, decorer, ecran };
   COMPTA.creditsImages();                                             // crédits des photos de matières (CC0), au bas de la page
+  COMPTA.vivant();                                                    // cartes qui réagissent, reflets, notifications façon téléphone
   if (document.querySelector("#main svg.front, #side svg.front")) render(); else decorer();
   return { decorer, ecran };
 })();
