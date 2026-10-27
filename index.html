@@ -1144,9 +1144,25 @@ table.m2-registre-table tr.tot td{border-top:2px solid #14284b !important; font-
 @media (prefers-reduced-motion:reduce){ .m2-pose,.m2-glisse-d,.m2-glisse,.m2-tombe,.m2-tel-attente i{animation:none !important} }
 
 /* ─── Écrans moyens et téléphone ─── */
+.m2-defile-aide{display:none}
 @media (max-width:900px){
   .m2-accueil{grid-template-columns:minmax(0,1fr)}
   .m2-reception.checks{grid-template-columns:minmax(0,1fr) 230px}
+  /* Journal des achats plus large que l'écran (8 colonnes avec « En trop ») : il défile dans sa carte au lieu d'élargir la page */
+  table.m2-registre-table{display:block; overflow-x:auto; background-attachment:local}
+  table.m2-registre-table.cpt-registre td{white-space:nowrap}   /* puisqu'il défile, chaque écriture tient sur une ligne, comme dans un vrai journal */
+  .m2-defile-aide{display:block; margin:0 0 8px; font:600 12.5px var(--ui); color:var(--muted)}
+}
+/* De 901 à 1 279 px (vidéoprojecteur en 1 024 px, portable zoomé), la colonne à côté du tableau de bord est trop étroite
+   pour le comparatif des offres et le journal des achats : on empile comme sur tablette, le tableau de bord passe dessous */
+@media (min-width:901px) and (max-width:1279px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .layout aside{position:static}
+  .dash{position:static; max-height:none}
+}
+/* Tableau de bord empilé (tablette, écran moyen) : la vitrine et la carte de l'entreprise côte à côte */
+@media (min-width:641px) and (max-width:1279px){
+  .dash{grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; align-items:center}
 }
 @media (max-width:640px){
   .m2-jeton{gap:7px; padding:3px 10px 3px 3px}
@@ -3842,7 +3858,8 @@ const DECOR = (() => {
   function fin(){
     const cadre = un("#main .duo .front-wrap");
     if (cadre){ cadre.classList.add("m2-fete-cadre"); poser(cadre, "beforeend", "guirlande", guirlande()); poser(cadre, "beforeend", "ruban", `<span class="m2-ruban" aria-hidden="true">Équipée !</span>`); poser(cadre, "beforeend", "confettis", () => COMPTA.confettis(40)); }
-    const j = un("#main table.journal"); if (j) j.classList.add("cpt-registre", "m2-registre-table");
+    const j = un("#main table.journal");
+    if (j){ j.classList.add("cpt-registre", "m2-registre-table"); poser(j, "beforebegin", "defile", `<p class="m2-defile-aide" aria-hidden="true">↔ Fais glisser le journal pour voir toutes les colonnes.</p>`); }
     bilanDoc();
   }
 
