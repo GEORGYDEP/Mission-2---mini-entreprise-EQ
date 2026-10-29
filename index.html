@@ -411,6 +411,19 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opac
 .biz{box-shadow:0 18px 44px rgba(0,0,0,.45);padding-top:22px} .biz::before{display:none}
 .biz .band{position:absolute;left:0;top:0;right:0;height:10px;background:linear-gradient(90deg,var(--brand),color-mix(in srgb,var(--brand) 35%,#fff))}
 .biz .wm{position:absolute;right:-6px;bottom:-14px;font-size:84px;opacity:.09;pointer-events:none;line-height:1}
+/* ---------- V3 (28/10/2026) : comptes à quatre chiffres, écritures, journal, extrait de compte à colonnes, ordre de virement ---------- */
+.cpt{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.02em}
+.ecriture td.cpt,.jrn td.cpt,.journal td.cpt{color:var(--gold2);font-weight:600;font-size:13px}
+.ind{display:inline-block;width:22px}
+.jrn-wrap{overflow-x:auto;margin-top:6px} table.jrn{min-width:640px;font-size:13.5px}
+.jrn .ecr-h td{background:rgba(255,255,255,.05);font-weight:600;padding-top:9px;border-bottom:0} .jrn .jl{font-weight:500;color:var(--text)}
+.jtag{display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.04em;background:rgba(255,255,255,.1);color:var(--text)}
+.jtag.j-ACH{color:var(--coral)} .jtag.j-FIN{color:var(--steel)}
+.extrait .el{grid-template-columns:52px 1fr 92px 92px} .extrait .el .m{text-align:right} .extrait .el .m.neg{color:#b42318} .extrait .el .m.pos{color:#0f7a4a}
+.extrait .eth{font-weight:700;color:#5B6478;font-size:11.5px;border-bottom:1px solid #1b2233;text-transform:uppercase;letter-spacing:.04em}
+.bilan .l .cpt{color:inherit;opacity:.72;margin-right:4px}   /* hérite de l'encre du document : lisible sur papier clair comme sur fond sombre */
+.paper .signed{font-size:18px;color:#1f3a8a}
+@media (max-width:640px){ .extrait .el{grid-template-columns:44px 1fr 72px 72px;font-size:12px} }
 </style>
 <style id="kit-realiste">
 /* ═══ KIT RÉALISTE COMMUN v1, version EQ — début (identique dans les missions 1, 2 et 3 : ne pas modifier ici, modifier outils/kit-realiste-eq) ═══ */
@@ -1400,30 +1413,30 @@ table.m2-registre-table tr.tot td{border-top:2px solid #14284b !important; font-
 //  CATALOGUE — 8 entreprises fictives (mêmes identifiants que les missions suivantes)
 // ======================================================================
 const TYPES = [
-{ id:"ferme", secteur:"primaire", famille:"fabrique", bs:"biens", emoji:"🐄", nom:"La ferme avec son magasin", nace:"01.50 – Culture et élevage associés",
-  desc:"Tu élèves des vaches et tu cultives des légumes. Dans le magasin de la ferme, tu vends tes produits frais aux habitants de la région.",
-  achete:"semences, aliments pour animaux, emballages", vend:"légumes de saison, lait, œufs, fromages",
+{ id:"ferme", secteur:"primaire", famille:"produit", bs:"biens", emoji:"🐄", nom:"La ferme avec son magasin", nace:"01.50 – Culture et élevage associés (avec vente à la ferme)",
+  desc:"Tu élèves des vaches et tu cultives des fruits et des légumes. Dans le magasin de la ferme, tu vends ta production et celle des producteurs voisins, que tu achètes à la coopérative.",
+  achete:"cageots, paniers et produits du terroir à la coopérative, emballages", vend:"fruits et légumes de saison, paniers, produits du terroir",
   noms:["La Ferme du Terril","Les Saveurs du Pré","Ferme des Trois Tilleuls","Le Panier Fermier"], slogans:["Du champ à ton assiette","Le goût du vrai","Frais, local et fait avec amour"],
   symboles:["🐄","🌾","🥕","🧀","🥚","🌻"], vitrine:["🥕","🥚","🧀","🥛"],
-  strat:["Des légumes et du lait à petits prix, pour les familles qui veulent économiser.","Des produits frais et de qualité, à des prix corrects.","Des produits bio et des fromages affinés : plus chers, mais d'exception."],
+  strat:["Des légumes et des fruits à petits prix, pour les familles qui veulent économiser.","Des produits frais et de qualité, à des prix corrects.","Des produits bio et des paniers gourmands : plus chers, mais d'exception."],
   marche:{ familles:[55,38], jeunes:[15,14], passionnes:[30,62] } },
-{ id:"pepiniere", secteur:"primaire", famille:"fabrique", bs:"biens", emoji:"🌱", nom:"La pépinière", nace:"01.30 – Reproduction de plantes",
-  desc:"Tu fais pousser des plantes, des fleurs et des arbres dans tes serres, puis tu les vends aux particuliers et aux jardiniers.",
-  achete:"graines, bulbes, pots, terreau", vend:"plantes, fleurs, arbustes, arbres fruitiers",
+{ id:"pepiniere", secteur:"primaire", famille:"produit", bs:"biens", emoji:"🌱", nom:"La pépinière et sa jardinerie", nace:"01.30 – Reproduction de plantes (avec vente aux particuliers)",
+  desc:"Tu fais pousser des plantes dans tes serres et tu les vends aux particuliers et aux jardiniers. Pour élargir ton choix, tu complètes avec les plantes d'un grossiste horticole.",
+  achete:"plantes, fleurs et arbustes du grossiste, pots, terreau", vend:"plantes, fleurs, arbustes, arbres fruitiers",
   noms:["Au Jardin Fleuri","Vert Passion","Graines de Bonheur","Les Serres du Borinage"], slogans:["Faites fleurir vos envies","Des plantes qui ont du caractère","Le vert, c'est notre nature"],
   symboles:["🌱","🌷","🌻","🌳","🍓","🌵"], vitrine:["🌷","🌻","🌵","🌳"],
   strat:["Des plantes et des fleurs pas chères, vendues en grande quantité.","Un grand choix de plantes en bonne santé, à prix raisonnables.","Des plantes rares et des conseils de spécialiste, à prix élevés."],
   marche:{ familles:[50,45], jeunes:[12,18], passionnes:[38,85] } },
-{ id:"chocolaterie", secteur:"secondaire", famille:"fabrique", bs:"biens", emoji:"🍫", nom:"La chocolaterie artisanale", nace:"10.82 – Fabrication de cacao, chocolat et confiseries",
-  desc:"Dans ton atelier, tu transformes le cacao, le sucre et le lait en pralines et en tablettes, que tu vends dans ta boutique.",
-  achete:"cacao, sucre, noisettes, emballages", vend:"pralines, tablettes, coffrets cadeaux",
+{ id:"chocolaterie", secteur:"tertiaire", famille:"distribue", bs:"biens", emoji:"🍫", nom:"La boutique de chocolats", nace:"47.24 – Commerce de détail de confiserie et de chocolat",
+  desc:"Tu vends dans ta boutique les pralines, tablettes et coffrets d'un atelier-grossiste belge, et tu composes des cadeaux pour toutes les occasions.",
+  achete:"sachets, ballotins et coffrets de l'atelier-grossiste, emballages cadeaux", vend:"pralines, chocolats, coffrets cadeaux",
   noms:["L'Atelier Cacao","Praline & Cie","Douceur Noire","Les Chocolats du Borinage"], slogans:["Le chocolat belge, avec passion","Craquez pour nos pralines","Fait main, fait pour vous"],
   symboles:["🍫","🍬","🎁","💝","🌰","👑"], vitrine:["🍫","🍬","🎁","💝"],
-  strat:["Des tablettes simples à petit prix, pour tous les jours.","De bonnes pralines, pour se faire plaisir sans se ruiner.","Des pralines de luxe dans des coffrets élégants, pour les grandes occasions."],
+  strat:["Des sachets et des tablettes à petit prix, pour tous les jours.","De bonnes pralines, pour se faire plaisir sans se ruiner.","Des pralines de luxe dans des coffrets élégants, pour les grandes occasions."],
   marche:{ familles:[45,22], jeunes:[25,12], passionnes:[30,48] } },
-{ id:"textile", secteur:"secondaire", famille:"fabrique", bs:"biens", emoji:"👕", nom:"L'atelier de T-shirts personnalisés", nace:"18.12 – Autre imprimerie (impression sur textile)",
-  desc:"Tu imprimes des dessins, des prénoms ou des logos sur des T-shirts, des sweats et des casquettes, selon les envies de tes clients.",
-  achete:"T-shirts blancs, sweats, encres, vinyle", vend:"vêtements personnalisés",
+{ id:"textile", secteur:"tertiaire", famille:"distribue", bs:"biens", emoji:"👕", nom:"La boutique de vêtements personnalisés", nace:"47.71 – Commerce de détail d'habillement",
+  desc:"Tu vends des T-shirts, des sweats et des vestes imprimés ou brodés par un atelier partenaire, aux couleurs des clubs, des écoles et des entreprises de la région.",
+  achete:"T-shirts, sweats et vestes personnalisés par l'atelier-grossiste", vend:"vêtements personnalisés",
   noms:["Borinage Print","L'Atelier du T-shirt","Street Ink","Mon Style Unique"], slogans:["Ton style, ton message","On imprime tes idées","Unique comme toi"],
   symboles:["👕","🎨","✂️","⚡","🔥","⭐"], vitrine:["👕","🧢","🎨","👕"],
   strat:["Des T-shirts imprimés à petits prix, prêts en un jour.","Des vêtements de bonne qualité, personnalisés avec soin.","Des pièces uniques en coton bio, avec des dessins faits sur mesure."],
@@ -1458,7 +1471,7 @@ const TYPES = [
   marche:{ familles:[55,42], jeunes:[15,25], passionnes:[30,95] } }
 ];
 const SECTEURS = { primaire:"Secteur primaire", secondaire:"Secteur secondaire", tertiaire:"Secteur tertiaire" };
-const FAMILLES = { fabrique:"fabrique des biens", distribue:"distribue des biens", mixte:"vend des biens et rend des services" };
+const FAMILLES = { fabrique:"fabrique des biens", produit:"produit et vend des biens", distribue:"distribue des biens", mixte:"vend des biens et rend des services" };
 
 // ======================================================================
 //  ÉTUDE DE MARCHÉ : trois clientèles possibles (sur 100 passants interrogés)
@@ -1501,7 +1514,22 @@ const EMPLACEMENTS = [
   { id:"peripherie", emoji:"🛣️", nom:"Zone commerciale en périphérie", loyer:450, passage:"faible", passants:120, surface:"110 m²", desc:"Un grand local accessible en voiture, loin du centre.", pro:"Loyer bas, grand parking, grande surface", con:"Peu de passants : il faudra faire de la publicité" }
 ];
 const MOIS_GARANTIE = 2;             // garantie locative = 2 mois de loyer (bloqués sur un compte, rendus à la fin du bail)
-const CHARGES_AUTRES = 180;          // assurances, énergie, abonnements : montant mensuel simplifié pour le jeu
+// V3 (28/10/2026) : les « autres charges » en trois lignes réalistes (assurances sans TVA ; énergie et télécom avec 21 % de TVA déductible)
+const CHARGES_LIGNES = [ { id:"assurances", compte:"assurances", emoji:"🛡️", nom:"Assurances (incendie, responsabilité)", ht:90, tva:0 }, { id:"energie", compte:"energie", emoji:"🔌", nom:"Énergie (électricité, chauffage)", ht:150, tva:0.21 }, { id:"telecom", compte:"telecom", emoji:"📶", nom:"Télécom et abonnements", ht:60, tva:0.21 } ];
+const CHARGES_AUTRES = 300;          // total HT des trois lignes : la charge du mois au compte de résultats
+const CHARGES_AUTRES_TVAC = 344.1;   // ce qui sort réellement de la banque chaque mois (TVA comprise)
+// V3 : plan comptable (numéros à quatre chiffres : PCMN + 0, à aligner sur le plan « 370 » du cours). Un seul endroit à modifier.
+const PLAN = {
+  capital:["1000","Capital"], apport:["1100","Apport des fondateurs"], benefReporte:["1400","Bénéfice reporté"], perteReportee:["1410","Perte reportée"],
+  emprunt:["1730","Emprunt bancaire (dettes envers les établissements de crédit)"], fraisEtab:["2000","Frais d'établissement"],
+  mobilier:["2400","Mobilier"], matBureau:["2410","Matériel de bureau"], matInfo:["2420","Matériel informatique"], garantie:["2880","Cautionnements versés (garantie locative)"],
+  stock:["3400","Marchandises (stock)"], clients:["4000","Clients"], tvaRecup:["4110","TVA à récupérer"], fournisseurs:["4400","Fournisseurs"], tvaPayer:["4510","TVA à payer"],
+  banque:["5500","Banque (Borinage Banque)"], caisse:["5700","Caisse"],
+  achats:["6040","Achats de marchandises"], rrrObtenus:["6080","Remises, ristournes et rabais obtenus"], varStock:["6090","Variation des stocks de marchandises"],
+  loyer:["6100","Loyer"], assurances:["6110","Assurances"], energie:["6120","Énergie (électricité, chauffage)"], telecom:["6130","Télécom et abonnements"], publicite:["6140","Publicité"],
+  interets:["6500","Intérêts de l'emprunt"], escAccordes:["6530","Escomptes accordés"],
+  ventes:["7000","Ventes de marchandises"], rrrAccordes:["7080","Remises, ristournes et rabais accordés"], escObtenus:["7570","Escomptes obtenus"] };
+const cpt = (k) => PLAN[k][0], lib = (k) => PLAN[k][1];
 
 // ======================================================================
 //  FORME JURIDIQUE ET FINANCEMENT
@@ -1609,7 +1637,7 @@ const emprunt = () => (S.emprunt && empruntAccepte()) ? S.emprunt : 0;
 const mensualite = () => { const P = emprunt(); if (!P) return 0; const i = TAUX / 12; return r2(P * i / (1 - Math.pow(1 + i, -DUREE_MOIS))); };
 const interetsTotaux = () => r2(mensualite() * DUREE_MOIS - emprunt());
 const tresorerie = () => capital() + emprunt() - fraisCreation() - garantie();
-const chargesMensuelles = () => (S.emplacement ? loyer() + CHARGES_AUTRES : 0) + mensualite();
+const chargesMensuelles = () => (S.emplacement ? loyer() + CHARGES_AUTRES_TVAC : 0) + mensualite();   // V3 : sorties fixes du mois (loyer, assurances, énergie et télécom TVA comprise, mensualité)
 const autonomie = () => chargesMensuelles() > 0 ? Math.floor(tresorerie() / chargesMensuelles()) : null;
 const totalBilan = () => capital() + emprunt();
 const financementPret = () => !!S.direction && !!S.apport && S.emprunt != null && empruntAccepte() && tresorerie() >= TRESO_MIN;
@@ -1756,13 +1784,14 @@ function extraitBCE(){
     <div class="foot"><span>Toute entreprise belge est identifiée par un numéro unique à 10 chiffres.</span><div class="seal"><b>BCE</b>inscription ${ANNEE()}</div></div></div>`;
 }
 function bilanHTML(opts={}){
-  const d = bilanData();
-  const col = (titre, sous, lignes) => { let rub = null;
+  const d = bilanData(), tP = d.totalPassif != null ? d.totalPassif : d.total;
+  const col = (titre, sous, lignes, total) => { let rub = null;
     return `<div class="col"><h5>${titre}<small>${sous}</small></h5>${lignes.map(l => { const h = l.rubrique !== rub ? `<div class="sect">${esc(l.rubrique)}</div>` : ""; rub = l.rubrique;
-      return h + `<div class="l"><span class="k"><b>${esc(opts.court ? l.court : l.libelle)}</b></span><span class="v">${euro(l.montant)}</span></div>`; }).join("")}
-      <div class="t"><span>Total</span><span>${euro(d.total)}</span></div></div>`; };
-  return `<div class="bilan">${col("ACTIF", "ce que l'entreprise possède", d.actif)}${col("PASSIF", "d'où vient l'argent", d.passif)}</div>
-    ${opts.foot === false ? "" : `<div class="bilan-foot"><span>Les deux totaux sont égaux : <b>Actif = Passif</b>. Chaque euro possédé a une origine.</span><span class="money">${euro(d.total)} = ${euro(d.total)}</span></div>`}`;
+      return h + `<div class="l"><span class="k">${l.compte ? `<small class="cpt">${esc(l.compte)}</small>` : ""}<b>${esc(opts.court ? l.court : l.libelle)}</b></span><span class="v">${euro(l.montant)}</span></div>`; }).join("")}
+      <div class="t"><span>Total</span><span>${euro(total)}</span></div></div>`; };
+  // V3 : chaque colonne a son propre total, le pied compare vraiment l'actif au passif, et chaque poste porte son numéro de compte
+  return `<div class="bilan">${col("ACTIF", "ce que l'entreprise possède", d.actif, d.total)}${col("PASSIF", "d'où vient l'argent", d.passif, tP)}</div>
+    ${opts.foot === false ? "" : `<div class="bilan-foot"><span>Les deux totaux sont égaux : <b>Actif = Passif</b>. Chaque euro possédé a une origine.</span><span class="money">${euro(d.total)} = ${euro(tP)}</span></div>`}`;
 }
 function planFinancier(){
   const l = (k, v, cls="") => `<tr class="${cls}"><td>${k}</td><td class="n">${euro(v)}</td></tr>`;
@@ -1815,11 +1844,11 @@ const CONFIG = {
   SUPABASE_URL: "https://ecewwrefhgxqvmmykhio.supabase.co",           // base de données de l'école (Supabase)
   SUPABASE_CLE: "sb_publishable_f5Gc6ezEciyzfSYz9wGzgw_IxZqpB_W",     // clé publique : faite pour être dans la page
   HORS_LIGNE: false,                                                  // true en mode test : rien ne part vers la base
-  APP_ID: "mini-entreprise-compta", MISSION: "2", VERSION: "4.0", DOMAINE: "istlm.org",
-  CLASSE_DEFAUT: "4e Technicien en comptabilité", STORAGE_PREFIX: "mini-entreprise-compta-m2v4-", NB_ACHATS: 3
+  APP_ID: "mini-entreprise-compta", MISSION: "2", VERSION: "2026.11-v3", DOMAINE: "istlm.org",
+  CLASSE_DEFAUT: "3e et 4e Technicien en comptabilité", STORAGE_PREFIX: "mini-entreprise-compta-m2v5-", NB_ACHATS: 3
 };
 const MODE_TEST = new URLSearchParams(location.search).has("test");   // ?test : mission de démonstration, rien n'est enregistré
-const TVA = 0.21, ESCOMPTE = 0.02, DELAI_PAIEMENT = 30;     // TVA 21 % · escompte 2 % si paiement comptant · crédit fournisseur à 30 jours
+const TVA = 0.21, ESCOMPTE = 0.02, DELAI_PAIEMENT = 30, DELAI_COMPTANT = 8;     // TVA 21 % · escompte 2 % (retranché avant la TVA, fiche 340) si paiement au comptant dans les 8 jours · crédit fournisseur à 30 jours date de facture
 const BUDGETS = [2000, 2500, 4000, 6000];            // V2 : 1 500 € était impossible (les trois offres les moins chères font 1 886,39 € TTC)
 const BIENS = [
   { id:"mobilier", nom:"Le mobilier", court:"mobilier", icone:"🪑", rubrique:"Mobilier", pourquoi:"Pour accueillir tes clients et travailler confortablement : une table, des chaises et un comptoir.",
@@ -1855,21 +1884,22 @@ const METHODES = [
 ];
 const RAISONS_OFFRE = ["Le total TTC le plus bas","La meilleure qualité","La livraison la plus rapide","La garantie la plus longue","La livraison gratuite","Cohérent avec mon positionnement"];
 const ETAPES = [["bien","Choisir"],["methode","Chercher"],["offres","Comparer"],["commande","Commander"],["livraison","Réceptionner"],["facture","Contrôler"],["paiement","Payer"]];
-const ERREURS_FACTURE = [["remise","La remise promise n'a pas été déduite"],["livraison","Des frais de livraison sont facturés alors qu'ils étaient gratuits"],["quantite","La quantité facturée est de 2 au lieu de 1"],["tva","La TVA n'est pas calculée à 21 %"]];
+const ERREURS_FACTURE = [["remise","La remise promise n'a pas été déduite"],["livraison","Des frais de livraison sont facturés alors qu'ils étaient gratuits"],["quantite","La quantité facturée est de 2 au lieu de 1"],["tva","La TVA est calculée à 6 % au lieu de 21 %"]];
 const M2_MOTS = {
   investissement:{mot:"Investissement", def:"Un achat qui sert l'entreprise pendant plusieurs années (mobilier, matériel). Il ne disparaît pas : il va à l'actif du bilan."},
   immobilisation:{mot:"Immobilisation", def:"Le nom comptable d'un investissement : un bien qui reste durablement dans l'entreprise. Rubrique « actif immobilisé »."},
   httc:{mot:"HT, TVA, TTC", def:"Hors taxe = le prix du fournisseur. TVA = 21 % en plus, pour l'État. TTC = HT + TVA, ce que tu paies vraiment."},
   tvaDed:{mot:"TVA déductible", def:"La TVA payée sur les achats n'est pas perdue : l'entreprise la récupère auprès de l'État. C'est une créance à l'actif : « TVA à récupérer »."},
   offre:{mot:"Offre de prix", def:"Le document écrit par lequel un fournisseur s'engage sur un prix et des conditions pendant une durée (ici 30 jours). On dit aussi devis."},
-  bc:{mot:"Bon de commande", def:"Le document par lequel l'acheteur commande officiellement. Signé, il engage l'entreprise : c'est un contrat."},
+  bc:{mot:"Bon de commande", def:"Le document par lequel l'acheteur commande officiellement, sur la base d'une offre écrite. Signé, il engage l'acheteur ; le contrat est conclu quand le fournisseur confirme la commande."},
   bl:{mot:"Bon de livraison", def:"Le document qui accompagne la marchandise. On vérifie et on signe : la signature prouve que tu as bien reçu ce qui est écrit."},
   facture:{mot:"Facture", def:"Le document qui réclame le paiement. Elle doit correspondre au bon de commande et au bon de livraison : c'est le contrôle à trois documents."},
   credit:{mot:"Crédit fournisseur", def:"Quand le fournisseur accepte d'être payé plus tard (30 jours), l'entreprise a une dette envers lui : « dettes fournisseurs » au passif."},
-  escompte:{mot:"Escompte", def:"Une réduction accordée pour un paiement immédiat. Pour l'entreprise, c'est un petit gain : un produit financier."},
-  nc:{mot:"Note de crédit", def:"Le document par lequel un fournisseur corrige une facture erronée : il annule le montant facturé en trop."},
+  escompte:{mot:"Escompte", def:"Une réduction de 2 % accordée pour un paiement rapide (dans les 8 jours après la facture), retranchée avant la TVA. Pour l'entreprise qui l'obtient, c'est un produit financier (7570)."},
+  fc:{mot:"Facture complémentaire", def:"Le document par lequel un fournisseur corrige une facture erronée en sa défaveur : article oublié, prix ou TVA trop bas. Elle s'ajoute à la facture, elle ne la remplace pas."},
+  nc:{mot:"Note de crédit", def:"Le document par lequel un fournisseur corrige une facture erronée en sa faveur : il annule le montant facturé en trop. Au journal, elle diminue la dette fournisseur (4400) et ce qui avait été enregistré en trop."},
   extrait:{mot:"Extrait de compte", def:"Le relevé de la banque qui prouve chaque mouvement : ce qui entre, ce qui sort, et le nouveau solde."},
-  dettes:{mot:"Dettes fournisseurs", def:"Les factures reçues mais pas encore payées. Au passif, dans les dettes à un an au plus : il faudra de la trésorerie à l'échéance."},
+  dettes:{mot:"Dettes fournisseurs", def:"Les factures reçues mais pas encore payées (compte 4400). Au passif, dans les dettes à un an au plus : il faudra de la trésorerie à l'échéance."},
   budget:{mot:"Budget d'investissement", def:"L'enveloppe maximale qu'on se fixe avant d'acheter, pour ne pas mettre la trésorerie en danger."}
 };
 const M2_NIVEAUX = [[0,"Premiers achats"],[300,"Acheteur averti"],[600,"Contrôleur de factures"],[900,"Gestionnaire d'actifs"],[1150,"Directeur des achats"]];
@@ -1877,20 +1907,20 @@ const M2_BADGES = [["budget","🎯","Budget fixé"],["compare","🔎","Comparate
 const M2_QUIZ = {
   offres:{ q:"Une offre à 1 000 € HT avec 5 % de remise et livraison gratuite. Combien paie l'entreprise TTC ?", opts:["1 000 € : la TVA ne compte pas","950 € + 21 % de TVA = 1 149,50 €","1 000 € + 21 % = 1 210 €"], ok:1, exp:"On déduit d'abord la remise (950 € HT), puis on ajoute 21 % de TVA : 1 149,50 € TTC. Et comme la TVA est déductible, le coût réel pour l'entreprise reste 950 €." },
   facture:{ q:"Tu reçois une facture qui ne correspond pas à ton bon de commande. Que fais-tu ?", opts:["Je paie, puis je réclame","Je conteste avant de payer et j'attends une note de crédit","Je corrige la facture moi-même au stylo"], ok:1, exp:"On ne paie jamais une facture erronée : on la conteste par écrit et le fournisseur émet une note de crédit (ou une facture corrigée). Une facture ne se modifie jamais à la main." },
-  bilan:{ q:"Tu as payé 1 180 € HT de mobilier par virement. Au bilan…", opts:["L'actif diminue de 1 180 €","L'actif ne change pas : la banque baisse, le mobilier monte","Le passif augmente de 1 180 €"], ok:1, exp:"Un investissement payé comptant déplace de l'argent d'un poste de l'actif (banque) vers un autre (mobilier). Le total du bilan ne bouge pas : c'est le principe de la partie double." }
+  bilan:{ q:"Tu as payé 1 356,41 € TVAC de mobilier (1 121 € HT) par virement. Au bilan…", opts:["L'actif diminue de 1 356,41 €","L'actif ne change pas : la banque baisse, le mobilier (2400) et la TVA à récupérer (4110) montent","Le passif augmente de 1 356,41 €"], ok:1, exp:"Un investissement payé comptant déplace de l'argent d'un poste de l'actif (5500 Banque) vers d'autres postes de l'actif : 2400 Mobilier pour 1 121 € et 4110 TVA à récupérer pour 235,41 €. Le total du bilan ne bouge pas : c'est le principe de la partie double." }
 };
 const M2_COACH = {
-  budget:"Ton compte est garni, mais attention : tes <b>charges fixes</b> tombent chaque mois. Avant d'acheter quoi que ce soit, fixe-toi une enveloppe. Un bon gestionnaire décide du budget avant de regarder les catalogues.",
+  budget:"Ton compte est garni, mais attention : tes <b>sorties fixes</b> (loyer, assurances, énergie, télécom, mensualité de l'emprunt) tombent chaque mois. Avant d'acheter quoi que ce soit, fixe-toi une enveloppe. Un bon gestionnaire décide du budget avant de regarder les catalogues.",
   bien:"Trois investissements indispensables pour ouvrir. L'ordre t'appartient. Chacun ira à l'<b>actif immobilisé</b> du bilan : ce n'est pas de l'argent perdu, c'est de l'argent transformé.",
   methode:"Première règle d'un bon acheteur : ne jamais acheter sur une seule offre. Choisis comment tu vas obtenir <b>trois offres de prix</b> à comparer.",
   offres:"Les fournisseurs affichent des prix <b>hors TVA</b>. Compare les totaux <b>TTC</b>, c'est ce qui sortira de la banque… mais souviens-toi que la TVA te sera remboursée. Prix, qualité, délai, garantie : à toi d'arbitrer.",
-  commande:"Le bon de commande t'engage. Relis chaque ligne : fournisseur, référence, prix, conditions. Et choisis comment payer : <b>comptant avec 2 % d'escompte</b>, ou <b>à 30 jours</b> pour préserver ta trésorerie.",
+  commande:"Le bon de commande t'engage. Relis chaque ligne : fournisseur, référence, prix, conditions. Et choisis comment payer : <b>au comptant (8 jours) avec 2 % d'escompte</b>, retranché avant la TVA, ou <b>à 30 jours date de facture</b> pour préserver ta trésorerie.",
   livraison:"Le livreur attend ta signature. Ne signe jamais sans vérifier : une fois signé, le bon de livraison prouve que tu as reçu exactement ce qui est écrit.",
   facture:"Le contrôle qui fait toute la différence : la facture doit correspondre au <b>bon de commande</b> et au <b>bon de livraison</b>. Vérifie chaque montant avant d'accepter. Les fournisseurs se trompent parfois… rarement en ta faveur.",
   paiement:"Chaque paiement laisse une trace sur l'<b>extrait de compte</b> de la banque. Et chaque opération se traduit par une écriture comptable : regarde comment l'argent change de poste sans jamais disparaître.",
   bilan:"Ton entreprise est équipée. Compare ce bilan à celui de la fondation : la banque a baissé, mais l'actif immobilisé a grandi, la TVA à récupérer est apparue, et peut-être des dettes fournisseurs. <b>Actif = Passif</b>, toujours."
 };
-const ROAD = [["Fonde ton entreprise","Terminée ✓"],["Équipe ton entreprise","Aujourd'hui"],["Première commande client","Marge et facture de vente"],["Fin d'exercice","Résultat et bilan"]];
+const ROAD = [["Fonde ton entreprise","Terminée ✓"],["Équipe ton entreprise","Aujourd'hui"],["Première commande client","Marge et facture de vente"],["Fin d'exercice","À venir"]];
 
 // ======================================================================
 //  ÉTAT DE LA MISSION 2 ET ACCÈS AUX DONNÉES DE LA MISSION 1
@@ -1898,8 +1928,8 @@ const ROAD = [["Fonde ton entreprise","Terminée ✓"],["Équipe ton entreprise"
 let MODE = "login";          // login | briefing | ferme | bloque | mission | consultation
 let SESSION = { email:"", diag:null, reouvert:false, bloque:"" };
 let M1 = null;               // l'entreprise fondée en mission 1, même forme que l'état de l'application 1 (normaliser)
-const freshAchat = () => ({ bien:null, methode:null, offres:[], choix:null, raisons:[], condition:null, bc:null, verifBC:false, signBC:"", envoyeBC:false, notif:null, bl:null, checks:[false,false,false], signBL:"", facture:null, decision:null, contestation:false, erreurChoisie:null, nc:null, paye:false, payeLe:"", extrait:null, fini:false, etape:0 });
-const fresh = () => ({ v:4, phase:"budget", i:0, briefing:false, eleve:{email:"", prenom:"", nom:"", classe:CONFIG.CLASSE_DEFAUT}, budget:null,
+const freshAchat = () => ({ bien:null, methode:null, offres:[], choix:null, raisons:[], condition:null, bc:null, verifBC:false, signBC:"", envoyeBC:false, notif:null, bl:null, checks:[false,false,false], signBL:"", facture:null, decision:null, contestation:false, erreurChoisie:null, nc:null, paye:false, payeLe:"", extrait:null, fini:false, etape:0, livraisonISO:null, payeISO:"", contestations:0, mauvaiseLigne:false, fc:null });
+const fresh = () => ({ v:5, phase:"budget", i:0, briefing:false, eleve:{email:"", prenom:"", nom:"", classe:CONFIG.CLASSE_DEFAUT}, budget:null,
   achats:[freshAchat(), freshAchat(), freshAchat()], quiz:{}, xp:0, done:{}, mots:[], envoi:null, startedAt:null, finishedAt:null, majLocale:0 });
 let S = fresh();
 const cleLocale = () => CONFIG.STORAGE_PREFIX + (S.eleve.email || SESSION.email);
@@ -1930,40 +1960,79 @@ function hash(s){ let h = 7; for (const c of String(s)) h = (h * 31 + c.charCode
 function bceFixe(n){ const base = "0" + String(n % 1e7).padStart(7, "0"); const k = base + String(97 - (parseInt(base, 10) % 97)).padStart(2, "0"); return `${k.slice(0,4)}.${k.slice(4,7)}.${k.slice(7)}`; }
 
 // ======================================================================
-//  L'ÉCONOMIE DE LA MISSION : HT, TVA, TTC, escompte, crédit fournisseur, bilan
+//  L'ÉCONOMIE DE LA MISSION : HT, TVA, TTC, escompte retranché avant la TVA (fiche 340), crédit fournisseur, bilan
 // ======================================================================
+// — V3 : dates ISO « AAAA-MM-JJ » (figées à la création de chaque document) et lisibles —
+const isoL = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const deIso = (s) => { const p = String(s).split("-").map(Number); return new Date(p[0], p[1] - 1, p[2], 12); };
+const dateFrIso = (s) => s ? dateFr(deIso(s)) : "";
+const dateCourteIso = (s) => s ? dateCourte(deIso(s)) : "";
+const jourLongIso = (s) => s ? jourLong(deIso(s)) : "";
+const ouvresApres = (d, n) => { let x = new Date(d), k = 0; while (k < n){ x = joursApres(x, 1); if (ouvre(x)) k++; } return x; };
+/** Livraison « sous n jours ouvrés » à partir d'une date (le n-ième jour, ramené au dernier jour ouvré avant lui s'il tombe un week-end ou un jour férié, sinon le suivant). */
+const dateLivraisonDepuis = (iso, n) => { const d = joursApres(deIso(iso), n); for (let k = n; k > 1 && !ouvre(d); k--) d.setDate(d.getDate() - 1); return isoL(jourOuvre(d)); };
+/** V3 : IBAN belge fixe (clés justes) et communication structurée (+++xxx/xxxx/xxxxx+++, reste de la division par 97). */
+function ibanFixe(n){ const bank = ["001","063","068","310","363","523","732","751"][n % 8], b10 = bank + String(n % 1e7).padStart(7, "0"), bban = b10 + String(mod97(b10) || 97).padStart(2, "0"); return ("BE" + String(98 - mod97(bban + "111400")).padStart(2, "0") + bban).match(/.{1,4}/g).join(" "); }
+function commStruct(n){ const b = String(n % 1e10).padStart(10, "0"), k = String((parseInt(b, 10) % 97) || 97).padStart(2, "0"), s = b + k; return `+++${s.slice(0,3)}/${s.slice(3,7)}/${s.slice(7)}+++`; }
+const COMPTES_BIEN = { mobilier:"mobilier", caisse:"matBureau", ordinateur:"matInfo" };
+const JOURNAUX = { ACH:"journal des achats", FIN:"journal financier" };
+const condTxt = (c) => c === "comptant" ? `au comptant : paiement dans les ${DELAI_COMPTANT} jours après réception de la facture, escompte de ${Math.round(ESCOMPTE * 100)} %` : `à ${DELAI_PAIEMENT} jours date de facture`;
 const tresoDepart = () => V1(tresorerie);
-const chargesMois = () => V1(chargesMensuelles);
-const montantFacture = (a) => a.facture ? (a.decision === "acceptee" ? a.facture.totalTTC : a.facture.correct.totalTTC) : (offreChoisie(a) ? offreChoisie(a).totalTTC : 0);   // TTC réellement dû
-const tropPaye = (a) => a.facture && a.decision === "acceptee" && a.facture.erreur ? r2(a.facture.totalTTC - a.facture.correct.totalTTC) : 0;
-const escompteDe = (a) => a.condition === "comptant" ? r2(montantFacture(a) * ESCOMPTE) : 0;
-const montantPaye = (a) => a.condition === "comptant" ? r2(montantFacture(a) - escompteDe(a)) : montantFacture(a);
+const chargesMois = () => V1(chargesMensuelles);                                                  // sorties fixes du mois (loyer, assurances, énergie et télécom TVA comprise, mensualité)
+const chargesCR = () => V1(() => r2(loyer() + CHARGES_AUTRES + r2(emprunt() * TAUX / 12)));        // ce qui est une charge au compte de résultats (sans le capital remboursé, sans la TVA)
+/** V3 : les montants d'une facture dans l'ordre de la fiche 340 : total des articles − remise = net commercial ; − escompte (au comptant, 8 jours) = net HTVA ;
+ *  + frais de port = montant taxable ; + TVA = total à payer. L'escompte ne porte que sur les articles, pas sur le port. */
+function montantsFacture(articles, remise, livraison, cond, taux){
+  const t = taux == null ? TVA : taux, brut = r2(articles), netCom = r2(brut - remise), esc = cond === "comptant" ? r2(netCom * ESCOMPTE) : 0, netHTVA = r2(netCom - esc), taxable = r2(netHTVA + livraison), tva = r2(taxable * t);
+  return { brut, remise, netCommercial:netCom, escompte:esc, netHTVA, livraison, totalHT:taxable, tauxTva:Math.round(t * 100), tva, totalTTC:r2(taxable + tva), cond:cond || "30j" };
+}
+const montantsOffre = (o, cond) => montantsFacture(o.prixHT, o.remise, o.livraison, cond);
+/** Ce qui est réellement dû sur une facture : telle quelle si elle est acceptée (même fausse), sinon la facture corrigée (note de crédit ou facture complémentaire). */
+const factureDue = (a) => a.facture ? (a.decision === "acceptee" && a.facture.erreur && a.facture.erreur.type !== "tva" ? a.facture : a.facture.correct) : null;
+const montantFacture = (a) => { const f = factureDue(a); return f ? f.totalTTC : (offreChoisie(a) ? montantsOffre(offreChoisie(a), a.condition).totalTTC : 0); };   // TTC réellement dû (escompte déjà déduit si comptant)
+const tropPaye = (a) => a.facture && a.decision === "acceptee" && a.facture.erreur && a.facture.erreur.type !== "tva" ? r2(a.facture.totalTTC - a.facture.correct.totalTTC) : 0;
+const escompteDe = (a) => { const f = factureDue(a); return f ? f.escompte : (a.condition === "comptant" && offreChoisie(a) ? montantsOffre(offreChoisie(a), "comptant").escompte : 0); };
+const montantPaye = (a) => montantFacture(a);
+const immoDe = (a) => { const f = factureDue(a); return f ? r2(f.netCommercial + f.livraison) : (offreChoisie(a) ? offreChoisie(a).totalHT : 0); };   // valeur d'acquisition : net commercial + port (l'escompte est un produit financier, pas une réduction du prix)
+const tvaDe = (a) => { const f = factureDue(a); return f ? f.tva : (offreChoisie(a) ? offreChoisie(a).tva : 0); };
 const decaisse = () => r2(S.achats.filter(a => a.paye).reduce((s, a) => s + montantPaye(a), 0));
 const banque = () => r2(tresoDepart() - decaisse());
-const dettes = () => r2(S.achats.filter(a => a.fini && a.condition === "30j").reduce((s, a) => s + montantFacture(a), 0));
-const tvaRecup = () => r2(S.achats.filter(a => a.fini).reduce((s, a) => s + offreChoisie(a).tva, 0));
-const resultat = () => r2(S.achats.filter(a => a.fini).reduce((s, a) => s + escompteDe(a) - tropPaye(a), 0));
+const dettes = () => r2(S.achats.filter(a => a.fini && !a.paye).reduce((s, a) => s + montantFacture(a), 0));
+const tvaRecup = () => r2(S.achats.filter(a => a.fini).reduce((s, a) => s + tvaDe(a), 0));
+const resultat = () => r2(S.achats.filter(a => a.fini).reduce((s, a) => s + escompteDe(a), 0));   // V3 : les escomptes obtenus (7570). Un trop-payé n'est pas une charge : l'immobilisation est surévaluée
 const engage = () => r2(achatsFaits().reduce((s, a) => s + offreChoisie(a).totalTTC, 0));
 const budgetRestant = () => r2((S.budget || 0) - engage());
 const budgetRespecte = () => S.budget != null && engage() <= S.budget;
 const autonomieNow = () => chargesMois() > 0 ? Math.floor((banque() - dettes()) / chargesMois()) : null;
 function bilanData(){
   const actif = [], passif = [];
-  const frais = V1(fraisCreation), gar = V1(garantie), cap = V1(capital), emp = V1(emprunt);
-  if (frais) actif.push({ libelle:"Frais d'établissement", court:"Frais d'établ.", montant:frais, rubrique:"Actif immobilisé" });
-  BIENS.forEach(b => { const a = S.achats.find(x => x.fini && x.bien === b.id); if (a) actif.push({ libelle:`${b.rubrique} (${offreChoisie(a).fournisseur.nom})`, court:b.rubrique, montant:offreChoisie(a).totalHT, rubrique:"Actif immobilisé" }); });
-  if (gar) actif.push({ libelle:"Garantie locative (créance)", court:"Garantie locative", montant:gar, rubrique:"Actif immobilisé" });
-  if (tvaRecup()) actif.push({ libelle:"TVA à récupérer (créance sur l'État)", court:"TVA à récupérer", montant:tvaRecup(), rubrique:"Actif circulant" });
-  actif.push({ libelle:"Banque (trésorerie)", court:"Banque", montant:banque(), rubrique:"Actif circulant" });
-  passif.push({ libelle:"Capital", court:"Capital", montant:cap, rubrique:"Fonds propres" });
-  if (resultat()) passif.push({ libelle:resultat() > 0 ? "Résultat de la période (escomptes obtenus)" : "Résultat de la période (perte : trop payé)", court:"Résultat", montant:resultat(), rubrique:"Fonds propres" });
-  if (emp) passif.push({ libelle:"Emprunt bancaire", court:"Emprunt", montant:emp, rubrique:"Dettes à plus d'un an" });
-  if (dettes()) passif.push({ libelle:"Dettes fournisseurs (à 30 jours)", court:"Dettes fourn.", montant:dettes(), rubrique:"Dettes à un an au plus" });
+  const frais = V1(fraisCreation), gar = V1(garantie), cap = V1(capital), emp = V1(emprunt), srl = M1.direction === "plusieurs";
+  if (frais) actif.push({ compte:cpt("fraisEtab"), libelle:"Frais d'établissement", court:"Frais d'établ.", montant:frais, rubrique:"Actif immobilisé" });
+  BIENS.forEach(b => { const a = S.achats.find(x => x.fini && x.bien === b.id); if (a) actif.push({ compte:cpt(COMPTES_BIEN[b.id]), libelle:`${b.rubrique} (${offreChoisie(a).fournisseur.nom})`, court:b.rubrique, montant:immoDe(a), rubrique:"Actif immobilisé" }); });
+  if (gar) actif.push({ compte:cpt("garantie"), libelle:"Garantie locative (cautionnement)", court:"Garantie locative", montant:gar, rubrique:"Actif immobilisé" });
+  if (tvaRecup()) actif.push({ compte:cpt("tvaRecup"), libelle:"TVA à récupérer (créance sur l'État)", court:"TVA à récupérer", montant:tvaRecup(), rubrique:"Actif circulant" });
+  actif.push({ compte:cpt("banque"), libelle:"Banque (trésorerie)", court:"Banque", montant:banque(), rubrique:"Actif circulant" });
+  passif.push({ compte:cpt(srl ? "apport" : "capital"), libelle:srl ? "Apport des fondateurs" : "Capital", court:srl ? "Apport" : "Capital", montant:cap, rubrique:"Fonds propres" });
+  if (resultat()) passif.push({ compte:cpt("benefReporte"), libelle:"Résultat de la période (escomptes obtenus)", court:"Résultat", montant:resultat(), rubrique:"Fonds propres" });
+  if (emp) passif.push({ compte:cpt("emprunt"), libelle:"Emprunt bancaire", court:"Emprunt", montant:emp, rubrique:"Dettes à plus d'un an" });
+  if (dettes()) passif.push({ compte:cpt("fournisseurs"), libelle:"Dettes fournisseurs (à 30 jours)", court:"Dettes fourn.", montant:dettes(), rubrique:"Dettes à un an au plus" });
   const tA = r2(actif.reduce((s, l) => s + l.montant, 0)), tP = r2(passif.reduce((s, l) => s + l.montant, 0));
   return { actif, passif, total:tA, totalPassif:tP, equilibre: Math.abs(tA - tP) < 0.02 };
 }
 const totalBilanNow = () => bilanData().total;
 const EQUIPEMENT_VITRINE = () => { const e = S.achats ? S : S2; return e && e.achats ? e.achats.filter(a => a.fini).map(a => bien(a.bien).icone) : []; };
+/** V3 : les écritures d'un achat terminé : la facture telle que reçue (journal des achats), la note de crédit ou la facture complémentaire s'il y en a une, le virement (journal financier). */
+function ecrituresAchat(a){
+  const o = offreChoisie(a), f = a.facture; if (!o || !f || !a.fini) return [];
+  const k = COMPTES_BIEN[a.bien], E = [], four = o.fournisseur.nom;
+  E.push({ d:f.dateISO, j:"ACH", p:f.numero, l:`Facture ${four} : ${bien(a.bien).court}${f.erreur && a.decision !== "acceptee" ? " (telle que reçue, contestée)" : ""}`, L:[[k, r2(f.netCommercial + f.livraison), 0], ["tvaRecup", f.tva, 0]].concat(f.escompte ? [["escObtenus", 0, f.escompte]] : []).concat([["fournisseurs", 0, f.totalTTC]]) });
+  if (a.nc){ const c = f.correct, dI = r2(f.netCommercial + f.livraison - c.netCommercial - c.livraison), dT = r2(f.tva - c.tva), dE = r2(f.escompte - c.escompte), dTTC = r2(f.totalTTC - c.totalTTC);
+    E.push({ d:a.nc.dateISO, j:"ACH", p:a.nc.numero, l:`Note de crédit ${four} : ${f.erreur.texte.toLowerCase()}`, L:[["fournisseurs", dTTC, 0]].concat(dE ? [["escObtenus", dE, 0]] : []).concat([[k, 0, dI]]).concat(dT ? [["tvaRecup", 0, dT]] : []) }); }
+  if (a.fc) E.push({ d:a.fc.dateISO, j:"ACH", p:a.fc.numero, l:`Facture complémentaire ${four} : complément de TVA (21 % au lieu de 6 %)`, L:[["tvaRecup", a.fc.montant, 0], ["fournisseurs", 0, a.fc.montant]] });
+  if (a.paye) E.push({ d:a.payeISO || f.dateISO, j:"FIN", p:a.extrait ? `Extrait ${a.extrait.numero}` : "Extrait", l:`Virement à ${four} (facture ${f.numero}${a.nc ? " − note de crédit" : ""}${a.fc ? " + facture complémentaire" : ""})`, L:[["fournisseurs", montantPaye(a), 0], ["banque", 0, montantPaye(a)]] });
+  return E;
+}
+const ecrituresM2 = () => S.achats.filter(a => a.fini).map(ecrituresAchat).flat().sort((x, y) => x.d < y.d ? -1 : x.d > y.d ? 1 : 0);
 
 // ======================================================================
 //  DOCUMENTS : offres, bon de commande, bon de livraison, facture (avec parfois une erreur), extrait
@@ -1972,65 +2041,67 @@ function genererOffres(bienId){
   const b = bien(bienId), d = new Date();
   return b.fournisseurs.map((f, k) => {
     const remise = r2(f.prix * f.remise / 100), totalHT = r2(f.prix - remise + f.livraison), tva = r2(totalHT * TVA);
-    return { numero:`OP-${f.code}-${String(hash(S.eleve.email + bienId) % 9000 + 1000)}`, date:dateFr(d), validite:"30 jours",
-      fournisseur:{ code:f.code, nom:f.nom, forme:f.forme, rue:f.rue, cp:f.cp, ville:f.ville, tel:f.tel, web:f.web, atout:f.atout, bce:bceFixe(hash(f.code)) },
+    return { numero:`OP-${f.code}-${String(hash(S.eleve.email + bienId) % 9000 + 1000)}`, date:dateFr(d), dateISO:isoL(d), validite:"30 jours",
+      fournisseur:{ code:f.code, nom:f.nom, forme:f.forme, rue:f.rue, cp:f.cp, ville:f.ville, tel:f.tel, web:f.web, atout:f.atout, bce:bceFixe(hash(f.code)), iban:ibanFixe(hash(f.code)) },
       ref:f.ref, article:f.article, detail:f.detail, qualite:f.qualite, quantite:1, prixHT:f.prix, remisePct:f.remise, remise, livraison:f.livraison, totalHT, tva, totalTTC:r2(totalHT + tva),
       delai:f.delai, garantie:f.garantie, niveau:["petit","milieu","haut"][k] };
   });
 }
 /** Numéro de l'achat qui recevra une facture erronée (un seul par élève, choisi une fois pour toutes). */
 const achatPiege = () => hash(S.eleve.email + "piege") % CONFIG.NB_ACHATS;
+/** V3 : la facture suit la condition choisie sur le bon de commande (escompte avant la TVA au comptant) ; datée du jour de la livraison, fixé à la commande.
+ *  Un achat sur trois reçoit une erreur : remise oubliée, port facturé à tort, quantité doublée (note de crédit), ou TVA à 6 % (facture complémentaire). */
 function genererFacture(a, k){
-  const o = offreChoisie(a), f = o.fournisseur, d = dateLivraison(o.delai);    // V2 : facture datée du jour de la livraison (un jour ouvré)
-  const base = { lignes:[{ libelle:`${o.article} (réf. ${o.ref})`, qte:1, pu:o.prixHT, montant:o.prixHT }], remisePct:o.remisePct, remise:o.remise, livraison:o.livraison, totalHT:o.totalHT, tauxTva:21, tva:o.tva, totalTTC:o.totalTTC };
-  const fac = { numero:`F-${f.code}-${ANNEE()}-${String(hash(S.eleve.email + o.numero) % 900 + 100)}`, date:dateFr(d), echeance:dateFr(joursApres(d, DELAI_PAIEMENT)), correct:JSON.parse(JSON.stringify(base)), erreur:null };
-  Object.assign(fac, JSON.parse(JSON.stringify(base)));
+  const o = offreChoisie(a), f = o.fournisseur, d = a.livraisonISO || dateLivraisonDepuis(isoL(new Date()), o.delai);
+  const build = (qte, pct, livraison, taux) => Object.assign({ lignes:[{ libelle:`${o.article} (réf. ${o.ref})`, ref:o.ref, unite:"pièce", qte, pu:o.prixHT, montant:r2(o.prixHT * qte) }], remisePct:pct }, montantsFacture(o.prixHT * qte, r2(o.prixHT * qte * pct / 100), livraison, a.condition, taux));
+  const correct = build(1, o.remisePct, o.livraison, TVA), ech = isoL(joursApres(deIso(d), a.condition === "comptant" ? DELAI_COMPTANT : DELAI_PAIEMENT));
+  const fac = Object.assign({}, correct, { numero:`F-${f.code}-${deIso(d).getFullYear()}-${String(hash(S.eleve.email + o.numero) % 900 + 100)}`, dateISO:d, date:dateFrIso(d), echeanceISO:ech, echeance:dateFrIso(ech), correct:JSON.parse(JSON.stringify(correct)), erreur:null, communication:commStruct(hash(S.eleve.email + o.numero)) });
   if (k === achatPiege()){
-    let type = o.remise > 0 ? "remise" : (o.livraison === 0 ? "livraison" : "quantite");
-    if (type === "remise"){ fac.remise = 0; fac.remisePct = 0; }
-    else if (type === "livraison"){ fac.livraison = 35; }
-    else { fac.lignes[0].qte = 2; fac.lignes[0].montant = r2(o.prixHT * 2); }
-    fac.totalHT = r2(fac.lignes[0].montant - fac.remise + fac.livraison); fac.tva = r2(fac.totalHT * TVA); fac.totalTTC = r2(fac.totalHT + fac.tva);
-    fac.erreur = { type, texte: ERREURS_FACTURE.find(e => e[0] === type)[1], surcoutTTC: r2(fac.totalTTC - base.totalTTC) };
+    const type = hash(S.eleve.email + "piegeType") % 3 === 0 ? "tva" : (o.remise > 0 ? "remise" : (o.livraison === 0 ? "livraison" : "quantite"));
+    const faux = type === "remise" ? build(1, 0, o.livraison, TVA) : type === "livraison" ? build(1, o.remisePct, 35, TVA) : type === "quantite" ? build(2, o.remisePct, o.livraison, TVA) : build(1, o.remisePct, o.livraison, 0.06);
+    Object.assign(fac, faux);
+    fac.erreur = { type, texte:ERREURS_FACTURE.find(e => e[0] === type)[1], surcoutTTC:r2(fac.totalTTC - correct.totalTTC) };
   }
   return fac;
 }
+/** V3 : l'extrait de compte (fiche 350) : numéro, date, date de valeur, débit, ancien et nouveau solde ; le virement part deux jours ouvrés après la facture. */
 function genererExtrait(a){
-  const o = offreChoisie(a), d = dateLivraison(o.delai);                        // V2 : virement le jour de la facture
-  const avant = r2(banque() + montantPaye(a));   // solde avant ce paiement (appelé juste après avoir marqué payé)
-  return { date:dateFr(d), lignes:[{ date:dateCourte(d), libelle:`Virement à ${o.fournisseur.nom} ${o.fournisseur.forme} · facture ${a.facture.numero}`, montant:-montantPaye(a) }], soldeAvant:avant, soldeApres:banque() };
+  const o = offreChoisie(a), f = a.facture, d = a.payeISO || f.dateISO, avant = r2(banque() + montantPaye(a));   // solde avant ce paiement (appelé juste après avoir marqué payé)
+  return { numero:S.achats.filter(x => x.extrait).length + 1, dateISO:d, date:dateFrIso(d), lignes:[{ date:dateCourteIso(d), valeur:dateCourteIso(d), libelle:`Virement à ${o.fournisseur.nom} ${o.fournisseur.forme} · ${f.communication}`, montant:-montantPaye(a) }], soldeAvant:avant, soldeApres:banque() };
 }
 
 // ======================================================================
-//  PAQUET ENVOYÉ À LA BASE (même format qu'avec le Google Sheet ; compatible avec la mission 3)
+//  PAQUET ENVOYÉ À LA BASE (même format qu'avec le Google Sheet ; compatible avec la mission 3 ; V3 : dates ISO, écritures, comptes)
 // ======================================================================
 function payload(statut){
   const a = A();
-  const fourn = (o) => ({ nom:o.fournisseur.nom, forme:o.fournisseur.forme, denomination:`${o.fournisseur.nom} ${o.fournisseur.forme}`, adresse:`${o.fournisseur.rue}, ${o.fournisseur.cp} ${o.fournisseur.ville}`, numeroEntreprise:o.fournisseur.bce, numeroTVA:"BE " + o.fournisseur.bce, telephone:o.fournisseur.tel, site:o.fournisseur.web, atout:o.fournisseur.atout });
-  const offreD = (o, cond) => ({ numero:o.numero, fournisseur:fourn(o), reference:o.ref, article:o.article, detail:o.detail, niveau:o.niveau, prix:o.prixHT, prixHT:o.prixHT, remisePourcent:o.remisePct, remise:o.remise, fraisLivraison:o.livraison, totalHT:o.totalHT, tva:o.tva, totalTTC:o.totalTTC, totalAPayer:o.totalTTC, delaiJours:o.delai, garantieAns:o.garantie, paiement: cond === "30j" ? "à 30 jours" : "comptant à la livraison (escompte 2 %)" });
-  const d = bilanData();
-  const patrimoine = { possede:d.actif.map(l => ({ libelle:l.libelle, montant:l.montant })), origine:d.passif.map(l => ({ libelle:l.libelle, montant:l.montant })), valeur:d.total, argentEnBanque:banque() };
+  const fourn = (o) => ({ nom:o.fournisseur.nom, forme:o.fournisseur.forme, denomination:`${o.fournisseur.nom} ${o.fournisseur.forme}`, adresse:`${o.fournisseur.rue}, ${o.fournisseur.cp} ${o.fournisseur.ville}`, numeroEntreprise:o.fournisseur.bce, numeroTVA:"BE " + o.fournisseur.bce, iban:o.fournisseur.iban, telephone:o.fournisseur.tel, site:o.fournisseur.web, atout:o.fournisseur.atout });
+  const offreD = (o, cond) => ({ numero:o.numero, fournisseur:fourn(o), reference:o.ref, article:o.article, detail:o.detail, niveau:o.niveau, prix:o.prixHT, prixHT:o.prixHT, remisePourcent:o.remisePct, remise:o.remise, fraisLivraison:o.livraison, totalHT:o.totalHT, tva:o.tva, totalTTC:o.totalTTC, totalAPayer:o.totalTTC, delaiJours:o.delai, garantieAns:o.garantie, paiement: cond === "comptant" ? "au comptant (8 jours), escompte 2 %" : "à 30 jours date de facture" });
+  const d = bilanData(), srl = M1.direction === "plusieurs";
+  const patrimoine = { possede:d.actif.map(l => ({ compte:l.compte, libelle:l.libelle, montant:l.montant })), origine:d.passif.map(l => ({ compte:l.compte, libelle:l.libelle, montant:l.montant })), valeur:d.total, argentEnBanque:banque() };
+  const fin = (f) => f ? { brut:f.brut, remise:f.remise, netCommercial:f.netCommercial, escompte:f.escompte, netHTVA:f.netHTVA, fraisPort:f.livraison, montantTaxable:f.totalHT, totalHT:f.totalHT, tauxTVA:f.tauxTva, tva:f.tva, totalTTC:f.totalTTC } : null;
   const p = {
     app:CONFIG.APP_ID, version:CONFIG.VERSION, mission:+CONFIG.MISSION, statut, envoyeLe:new Date().toISOString(),
     eleve:{ email:S.eleve.email, prenom:S.eleve.prenom, nom:S.eleve.nom, classe:S.eleve.classe },
     etape:{ phase:S.phase, achat:S.i + 1, etape: a ? ETAPES[Math.min(a.etape, 6)][0] : "", achatsTermines:achatsRecus().length, achatsRequis:CONFIG.NB_ACHATS },
     budget:{ montant:S.budget, engage:engage(), respecte:S.budget != null ? budgetRespecte() : null },
-    entreprise:{ typeId:M1.typeId,
-      equipements: S.achats.filter(x => x.fini).map(x => { const o = offreChoisie(x); return { bien:bien(x.bien).nom, rubrique:bien(x.bien).rubrique, fournisseur:`${o.fournisseur.nom} ${o.fournisseur.forme}`, article:o.article, valeur:o.totalHT, tva:o.tva, ttc:o.totalTTC, condition:x.condition, paye:x.paye }; }),
+    entreprise:{ typeId:M1.typeId, fondsPropres:{ compte:cpt(srl ? "apport" : "capital"), libelle:srl ? "Apport des fondateurs" : "Capital" },
+      equipements: S.achats.filter(x => x.fini).map(x => { const o = offreChoisie(x); return { bien:bien(x.bien).nom, rubrique:bien(x.bien).rubrique, compte:cpt(COMPTES_BIEN[x.bien]), fournisseur:`${o.fournisseur.nom} ${o.fournisseur.forme}`, article:o.article, valeur:immoDe(x), tva:tvaDe(x), ttc:montantFacture(x), condition:x.condition, paye:x.paye }; }),
       patrimoine, argent:{ argentDeDepart:V1(capital), fraisDeCreation:V1(fraisCreation), argentEnBanque:banque() },
-      tresorerie:banque(), dettesFournisseurs:dettes(), tvaARecuperer:tvaRecup(), resultatPeriode:resultat(), budgetInvestissement:S.budget, autonomieMois:autonomieNow() },
+      tresorerie:banque(), dettesFournisseurs:dettes(), tvaARecuperer:tvaRecup(), resultatPeriode:resultat(), escomptesObtenus:resultat(), tropPaye:r2(S.achats.reduce((s, x) => s + tropPaye(x), 0)), budgetInvestissement:S.budget, autonomieMois:autonomieNow() },
     achats: S.achats.map((x, k) => { const o = offreChoisie(x);
       return { numero:k + 1, bien: x.bien ? { id:x.bien, nom:bien(x.bien).nom } : null, methode: x.methode ? { id:x.methode, nom:METHODES.find(m => m.id === x.methode).nom } : null,
         offresRecues:(x.offres || []).map(z => offreD(z, x.condition)), offreChoisie: o ? offreD(o, x.condition) : null, raisonsDuChoix:x.raisons, conditionPaiement:x.condition,
-        bonDeCommande: x.bc ? { numero:x.bc.numero, date:x.bc.date, montantTTC:o.totalTTC, verifie:x.verifBC, signature:x.signBC, envoyeParEmail:x.envoyeBC } : null,
-        notification: x.notif ? { canal:"SMS et e-mail", recuLe:x.notif.date, livraisonPrevue:x.notif.livraison } : null,
-        bonDeLivraison: x.bl ? { numero:x.bl.numero, date:x.bl.date, verifications:{ bonArticle:x.checks[0], bonneQuantite:x.checks[1], colisBonEtat:x.checks[2] }, signature:x.signBL, accepte:x.checks.every(Boolean) } : null,
-        facture: x.facture ? { numero:x.facture.numero, date:x.facture.date, echeance:x.facture.echeance, totalHT:x.facture.totalHT, tva:x.facture.tva, totalTTC:x.facture.totalTTC, erreur:x.facture.erreur, decision:x.decision, erreurTrouvee: x.facture.erreur ? x.decision === "contestee" && x.erreurChoisie === x.facture.erreur.type : null, noteDeCredit:x.nc, tropPaye:tropPaye(x) } : null,
-        paiement: x.fini ? { montant:montantPaye(x), montantTTC:montantFacture(x), escompte:escompteDe(x), mode: x.condition === "comptant" ? "virement comptant à la livraison" : "virement à 30 jours", date: x.payeLe || "", echeance: x.facture ? x.facture.echeance : "", paye:x.paye, accepte:true } : null,
+        bonDeCommande: x.bc ? { numero:x.bc.numero, date:x.bc.date, dateISO:x.bc.dateISO, montantTTC:o.totalTTC, verifie:x.verifBC, signature:x.signBC, envoyeParEmail:x.envoyeBC } : null,
+        notification: x.notif ? { canal:"SMS et e-mail", recuLe:x.notif.date, livraisonPrevue:x.notif.livraison, livraisonISO:x.livraisonISO } : null,
+        bonDeLivraison: x.bl ? { numero:x.bl.numero, date:x.bl.date, dateISO:x.bl.dateISO, verifications:{ bonArticle:x.checks[0], bonneQuantite:x.checks[1], colisBonEtat:x.checks[2] }, signature:x.signBL, accepte:x.checks.every(Boolean) } : null,
+        facture: x.facture ? Object.assign({ numero:x.facture.numero, date:x.facture.date, dateISO:x.facture.dateISO, echeance:x.facture.echeance, echeanceISO:x.facture.echeanceISO, communication:x.facture.communication, erreur:x.facture.erreur, decision:x.decision, contestations:x.contestations || 0, erreurTrouvee: x.facture.erreur ? x.decision === "contestee" && x.erreurChoisie === x.facture.erreur.type : null, noteDeCredit:x.nc, factureComplementaire:x.fc, tropPaye:tropPaye(x), montantsRecus:fin(x.facture), montantsCorrects:fin(x.facture.correct), montantsDus:fin(factureDue(x)) }, fin(x.facture)) : null,
+        paiement: x.fini ? { montant:montantPaye(x), montantTTC:montantFacture(x), escompte:escompteDe(x), mode: x.condition === "comptant" ? "virement au comptant (8 jours), escompte 2 %" : "virement à 30 jours date de facture", date: x.payeLe || "", dateISO:x.payeISO || "", echeance: x.facture ? x.facture.echeance : "", echeanceISO: x.facture ? x.facture.echeanceISO : "", paye:x.paye, virementRefuse:!!x.virementRefuse, accepte:true } : null,
         termine:x.fini };
     }),
     bilan:d, patrimoine,
-    journalAchats: S.achats.filter(x => x.fini).map(x => { const o = offreChoisie(x); return { date:x.facture.date, fournisseur:`${o.fournisseur.nom} ${o.fournisseur.forme}`, piece:x.facture.numero, ht:o.totalHT, tva:o.tva, enTrop:tropPaye(x), ttc:montantFacture(x), paye:x.paye, condition:x.condition }; }),
+    journalAchats: S.achats.filter(x => x.fini).map(x => { const o = offreChoisie(x), f = factureDue(x); return { date:x.facture.date, dateISO:x.facture.dateISO, fournisseur:`${o.fournisseur.nom} ${o.fournisseur.forme}`, piece:x.facture.numero + (x.nc ? " + NC" : "") + (x.fc ? " + FC" : ""), compte:cpt(COMPTES_BIEN[x.bien]), ht:immoDe(x), escompte:escompteDe(x), tva:tvaDe(x), enTrop:tropPaye(x), ttc:montantFacture(x), paye:x.paye, condition:x.condition }; }).sort((x, y) => x.dateISO < y.dateISO ? -1 : x.dateISO > y.dateISO ? 1 : 0),
+    ecritures: ecrituresM2().map(e => ({ date:e.d, journal:e.j, piece:e.p, libelle:e.l, lignes:e.L.map(l => ({ compte:cpt(l[0]), libelle:lib(l[0]), debit:l[1], credit:l[2] })) })),
     defisEclair: Object.keys(M2_QUIZ).map(k => ({ defi:k, question:M2_QUIZ[k].q, reponse: S.quiz[k] ? M2_QUIZ[k].opts[S.quiz[k].rep] : "", reussi: S.quiz[k] ? !!S.quiz[k].ok : null })),
     recompenses:{ xp:S.xp, niveau:niv(), badges:M2_BADGES.filter(b => S.done["b_" + b[0]]).map(b => b[2]), motsDePro:S.mots.map(m => M2_MOTS[m].mot) },
     xp:S.xp, dureeMinutes: S.startedAt ? Math.round((Date.now() - S.startedAt) / 60000) : null,
@@ -2040,7 +2111,7 @@ function payload(statut){
 }
 function restaurer(etat){
   const s = fresh();
-  if (etat && etat.v === 4) Object.keys(etat).forEach(k => { if (etat[k] !== undefined && etat[k] !== null && k in s) s[k] = etat[k]; });
+  if (etat && etat.v === 5) Object.keys(etat).forEach(k => { if (etat[k] !== undefined && etat[k] !== null && k in s) s[k] = etat[k]; });   // V3 : version 5 de l'état (escompte avant TVA, dates figées, écritures)
   s.achats = (s.achats || []).map(a => Object.assign(freshAchat(), a)); while (s.achats.length < CONFIG.NB_ACHATS) s.achats.push(freshAchat());
   s.quiz = s.quiz || {}; s.done = s.done || {}; s.mots = s.mots || [];
   return s;
@@ -2109,57 +2180,85 @@ function confetti(){
 }
 
 // ======================================================================
-//  DOCUMENTS (papier)
+//  DOCUMENTS (papier) — V3 : mentions des fiches 320 (bon de commande), 330 (bon de livraison), 340 (facture), 350 (virement, extrait)
 // ======================================================================
 const entete = (titre, sous, ref) => `<div class="ph"><div><h4>${titre}</h4><small>${sous}</small></div><div class="ref">${ref}</div></div>`;
-const parties = (o) => `<div class="parties"><div><b>Fournisseur</b>${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}<br>${esc(o.fournisseur.rue)}, ${esc(o.fournisseur.cp)} ${esc(o.fournisseur.ville)}<br><span class="money" style="font-size:12px">BE ${esc(o.fournisseur.bce)}</span></div>
-  <div><b>Client</b>${esc(V1(deno))}<br>${esc(V1(adresse1))}, ${esc(V1(adresse2))}<br><span class="money" style="font-size:12px">BE ${esc(M1.ids ? M1.ids.bce : "")}</span></div></div>`;
+const bceM1 = () => M1 && M1.ids ? M1.ids.bce : "", ibanM1 = () => M1 && M1.ids ? M1.ids.iban : "";
+const blocFourn = (o, titre) => `<div><b>${titre}</b>${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}<br>${esc(o.fournisseur.rue)}, ${esc(o.fournisseur.cp)} ${esc(o.fournisseur.ville)}<br><span class="money" style="font-size:12px">BCE ${esc(o.fournisseur.bce)} · TVA BE ${esc(o.fournisseur.bce)}<br>IBAN ${esc(o.fournisseur.iban || ibanFixe(hash(o.fournisseur.code)))}</span></div>`;
+const blocClient = (titre) => `<div><b>${titre}</b>${esc(V1(deno))}<br>${esc(V1(adresse1))}, ${esc(V1(adresse2))}<br><span class="money" style="font-size:12px">BCE ${esc(bceM1())} · TVA BE ${esc(bceM1())}<br>IBAN ${esc(ibanM1())}</span></div>`;
+const parties = (o, bc) => bc ? `<div class="parties">${blocClient("Acheteur (émetteur)")}${blocFourn(o, "Fournisseur")}</div>` : `<div class="parties">${blocFourn(o, "Fournisseur")}${blocClient("Client")}</div>`;
+const docOffre = (o, cond) => Object.assign({ lignes:[{ libelle:`${o.article} (réf. ${o.ref})`, unite:"pièce", qte:1, pu:o.prixHT, montant:o.prixHT }], remisePct:o.remisePct }, montantsOffre(o, cond));
+/** Les lignes d'un document, dans l'ordre de la fiche 340 : articles − remise = net commercial ; − escompte = net HTVA ; + port = montant taxable ; + TVA = total à payer. */
 function lignesDoc(d, opts={}){
   const err = (t) => opts.marque && d.erreur && d.erreur.type === t ? "err" : "";
-  return `<table class="doc-lines"><thead><tr><th>Désignation</th><th class="n">Qté</th><th class="n">PU HT</th><th class="n">Montant HT</th></tr></thead><tbody>
-    ${d.lignes.map(l => `<tr class="${err("quantite")}"><td>${esc(l.libelle)}</td><td class="n">${l.qte}</td><td class="n">${euro(l.pu)}</td><td class="n">${euro(l.montant)}</td></tr>`).join("")}
-    ${d.remisePct || err("remise") ? `<tr class="sub ${err("remise")}"><td colspan="3">Remise ${d.remisePct} %</td><td class="n">− ${euro(d.remise)}</td></tr>` : ""}
-    <tr class="sub ${err("livraison")}"><td colspan="3">Frais de livraison</td><td class="n">${d.livraison ? euro(d.livraison) : "offerts"}</td></tr>
-    <tr><td colspan="3"><b>Total hors TVA</b></td><td class="n"><b>${euro(d.totalHT)}</b></td></tr>
-    <tr class="sub ${err("tva")}"><td colspan="3">TVA ${d.tauxTva || 21} %</td><td class="n">${euro(d.tva)}</td></tr>
-    <tr class="tot"><td colspan="3">Total TTC à payer</td><td class="n">${euro(d.totalTTC)}</td></tr></tbody></table>`;
+  return `<table class="doc-lines"><thead><tr><th>Désignation</th><th>Unité</th><th class="n">Qté</th><th class="n">PU HT</th><th class="n">Montant HT</th></tr></thead><tbody>
+    ${d.lignes.map(l => `<tr class="${err("quantite")}"><td>${esc(l.libelle)}</td><td>${esc(l.unite || "pièce")}</td><td class="n">${l.qte}</td><td class="n">${euro(l.pu)}</td><td class="n">${euro(l.montant)}</td></tr>`).join("")}
+    <tr class="sub"><td colspan="4">Total des articles</td><td class="n">${euro(d.brut)}</td></tr>
+    ${d.remisePct || err("remise") ? `<tr class="sub ${err("remise")}"><td colspan="4">− Remise ${d.remisePct} %</td><td class="n">− ${euro(d.remise)}</td></tr><tr class="sub"><td colspan="4">= Net commercial</td><td class="n">${euro(d.netCommercial)}</td></tr>` : ""}
+    ${d.cond === "comptant" ? `<tr class="sub"><td colspan="4">− Escompte ${Math.round(ESCOMPTE * 100)} % (paiement dans les ${DELAI_COMPTANT} jours)</td><td class="n">− ${euro(d.escompte)}</td></tr><tr class="sub"><td colspan="4">= Net HTVA</td><td class="n">${euro(d.netHTVA)}</td></tr>` : ""}
+    <tr class="sub ${err("livraison")}"><td colspan="4">+ Frais de port</td><td class="n">${d.livraison ? euro(d.livraison) : "offerts"}</td></tr>
+    <tr><td colspan="4"><b>= Montant taxable</b></td><td class="n"><b>${euro(d.totalHT)}</b></td></tr>
+    <tr class="sub ${err("tva")}"><td colspan="4">TVA ${d.tauxTva || 21} %</td><td class="n">${euro(d.tva)}</td></tr>
+    <tr class="tot"><td colspan="4">Total à payer (TVAC)</td><td class="n">${euro(d.totalTTC)}</td></tr></tbody></table>`;
 }
-function bonDeCommande(a){ const o = offreChoisie(a), d = { lignes:[{ libelle:`${o.article} (réf. ${o.ref})`, qte:1, pu:o.prixHT, montant:o.prixHT }], remisePct:o.remisePct, remise:o.remise, livraison:o.livraison, totalHT:o.totalHT, tva:o.tva, totalTTC:o.totalTTC };
-  return `<div class="paper">${entete("Bon de commande", `N° ${a.bc ? a.bc.numero : "BC-" + ANNEE() + "-00" + (S.i + 1)} · ${esc(V1(adresse2).split(" ").slice(1).join(" "))}, le ${esc(a.bc ? a.bc.date : today())}`, `Suivant votre offre<br>${esc(o.numero)} du ${esc(o.date)}`)}${parties(o)}${lignesDoc(d)}
-    <div class="cond">Livraison : sous ${o.delai} jours ouvrables, à l'adresse du client. Garantie : ${o.garantie} an${o.garantie > 1 ? "s" : ""}. Paiement : ${a.condition === "comptant" ? "comptant, par virement dans les 8 jours suivant la facture, avec escompte de 2 %" : a.condition === "30j" ? "par virement à 30 jours, date de facture" : "<i>à préciser</i>"}.</div>
+/** V3 : l'offre de prix du fournisseur, en document (fiche 320 : on commande sur la base d'une offre écrite). */
+function offreDoc(o){ const d = docOffre(o, "30j");
+  return `<div class="paper doc-sm">${entete("Offre de prix", `N° ${esc(o.numero)} · ${esc(o.date)}`, `Valable ${esc(o.validite)}<br>Livraison sous ${o.delai} jours ouvrés`)}${parties(o)}${lignesDoc(d)}
+    <div class="cond">Conditions de paiement : ${esc(condTxt("comptant"))}, ou ${esc(condTxt("30j"))} · Garantie ${o.garantie} an${o.garantie > 1 ? "s" : ""} · ${o.livraison ? "Frais de port " + euro(o.livraison) : "Franco de port"}.</div></div>`; }
+function bonDeCommande(a){ const o = offreChoisie(a), d = docOffre(o, a.condition);
+  return `<div class="paper">${entete("Bon de commande", `N° ${a.bc ? a.bc.numero : "BC-" + ANNEE() + "-00" + (S.i + 1)} · ${esc(V1(adresse2).split(" ").slice(1).join(" "))}, le ${esc(a.bc ? a.bc.date : today())}`, `Suivant votre offre<br>${esc(o.numero)} du ${esc(o.date)}`)}${parties(o, true)}${lignesDoc(d)}
+    <div class="cond">Livraison : sous ${o.delai} jours ouvrés, à l'adresse de l'acheteur. Garantie : ${o.garantie} an${o.garantie > 1 ? "s" : ""}. Paiement par virement : ${a.condition ? esc(condTxt(a.condition)) : "<i>à préciser</i>"}.</div>
     <div class="sigline"><div><input data-bind="signBC" value="${esc(a.signBC)}" placeholder="Signe ici (prénom et nom)" maxlength="40" ${a.bc ? "disabled" : ""} aria-label="Signature du bon de commande">${esc(S.eleve.prenom)} ${esc(S.eleve.nom)}, ${esc(V1(fonction).toLowerCase())}</div></div></div>`; }
-function bonDeLivraison(a){ const o = offreChoisie(a);
-  return `<div class="paper">${entete("Bon de livraison", `N° ${esc(a.bl.numero)} · ${esc(a.bl.date)}`, `Votre commande<br>${esc(a.bc.numero)}`)}${parties(o)}
-    <table class="doc-lines"><thead><tr><th>Désignation</th><th class="n">Commandé</th><th class="n">Livré</th></tr></thead><tbody><tr><td>${esc(o.article)} (réf. ${esc(o.ref)})<br><small style="color:var(--paper-muted)">${esc(o.detail)}</small></td><td class="n">1</td><td class="n">1</td></tr></tbody></table>
-    <div class="cond">Colis : 1 · État à la réception : à vérifier par le client. La signature vaut acceptation de la livraison.</div>
+function bonDeLivraison(a){ const o = offreChoisie(a), transporteur = ["Trans-Borinage", "Hainaut Express", "Colis Wallonie"][hash(a.bl.numero) % 3];
+  return `<div class="paper">${entete("Bon de livraison", `N° ${esc(a.bl.numero)} · ${esc(a.bl.date)}`, `Votre commande ${esc(a.bc.numero)}<br>du ${esc(a.bc.date)}`)}${parties(o)}
+    <table class="doc-lines"><thead><tr><th>Désignation</th><th>Unité</th><th class="n">Commandé</th><th class="n">Livré</th></tr></thead><tbody><tr><td>${esc(o.article)} (réf. ${esc(o.ref)})<br><small style="color:var(--paper-muted)">${esc(o.detail)}</small></td><td>pièce</td><td class="n">1</td><td class="n">1</td></tr></tbody></table>
+    <div class="cond">Colis : 1 · Transporteur : ${transporteur} · Livré le ${esc(jourLongIso(a.livraisonISO || a.bl.dateISO))} · La signature vaut réception ; les réserves éventuelles s'écrivent sur le bon.</div>
     <div class="sigline"><div><input data-bind="signBL" value="${esc(a.signBL)}" placeholder="Signe après vérification" maxlength="40" ${a.etape > 4 ? "disabled" : ""} aria-label="Signature du bon de livraison">${esc(S.eleve.prenom)} ${esc(S.eleve.nom)}, réception</div></div></div>`; }
 function facture(a, opts={}){ const o = offreChoisie(a), f = a.facture;
-  return `<div class="paper">${entete("Facture", `N° ${esc(f.numero)} · ${esc(f.date)}`, `Bon de commande ${esc(a.bc.numero)}<br>Bon de livraison ${esc(a.bl.numero)}`)}${parties(o)}${lignesDoc(f, opts)}
-    <div class="cond">Échéance : ${a.condition === "comptant" ? "comptant, dans les 8 jours (escompte de 2 %)" : "le " + esc(f.echeance)} · Paiement par virement sur le compte ${esc(o.fournisseur.nom)} · Communication : ${esc(f.numero)}.</div></div>`; }
-function noteDeCredit(a){ const o = offreChoisie(a), f = a.facture, nc = a.nc;
+  return `<div class="paper">${entete("Facture", `N° ${esc(f.numero)} · ${esc(f.date)}`, `Votre commande ${esc(a.bc.numero)} du ${esc(a.bc.date)}<br>Bon de livraison ${esc(a.bl.numero)}<br>Échéance : ${esc(f.echeance)}`)}${parties(o)}${lignesDoc(f, opts)}
+    <div class="cond">Paiement par virement ${esc(condTxt(a.condition))} · IBAN ${esc(o.fournisseur.iban || ibanFixe(hash(o.fournisseur.code)))} · Communication structurée : ${esc(f.communication || f.numero)} · Assujetti à la TVA.</div></div>`; }
+function noteDeCredit(a){ const o = offreChoisie(a), f = a.facture, c = f.correct, nc = a.nc, dTax = r2(f.totalHT - c.totalHT), dTva = r2(f.tva - c.tva), dTTC = r2(f.totalTTC - c.totalTTC);
   return `<div class="paper" style="border:2px solid var(--mint)">${entete("Note de crédit", `N° ${esc(nc.numero)} · ${esc(nc.date)}`, `Annule partiellement<br>la facture ${esc(f.numero)}`)}${parties(o)}
-    <table class="doc-lines"><tbody><tr><td>Correction : ${esc(f.erreur.texte.toLowerCase())}</td><td class="n">− ${euro(r2(f.totalTTC - f.correct.totalTTC - (f.tva - f.correct.tva)))}</td></tr><tr class="sub"><td>TVA 21 %</td><td class="n">− ${euro(r2(f.tva - f.correct.tva))}</td></tr><tr class="tot"><td>Montant porté à votre crédit (TTC)</td><td class="n">− ${euro(f.erreur.surcoutTTC)}</td></tr></tbody></table>
-    <div class="cond">Reste dû sur la facture ${esc(f.numero)} : <b class="money">${euro(f.correct.totalTTC)}</b>. Avec nos excuses.</div><div style="margin-top:8px"><span class="stamp">CORRIGÉ</span></div></div>`; }
+    <table class="doc-lines"><tbody><tr><td>Correction : ${esc(f.erreur.texte.toLowerCase())}</td><td class="n"></td></tr><tr class="sub"><td>Montant taxable facturé en trop</td><td class="n">− ${euro(dTax)}</td></tr><tr class="sub"><td>TVA ${f.tauxTva} % sur ce montant</td><td class="n">− ${euro(dTva)}</td></tr><tr class="tot"><td>Montant porté à votre crédit (TVAC)</td><td class="n">− ${euro(dTTC)}</td></tr></tbody></table>
+    <div class="cond">Reste dû sur la facture ${esc(f.numero)} : <b class="money">${euro(c.totalTTC)}</b>, pour le ${esc(f.echeance)}. Avec nos excuses.</div><div style="margin-top:8px"><span class="stamp">CORRIGÉ</span></div></div>`; }
+/** V3 : la facture complémentaire (fiche 340) : la TVA avait été calculée à 6 % au lieu de 21 %. */
+function factureComplementaire(a){ const o = offreChoisie(a), f = a.facture, c = f.correct, fc = a.fc;
+  return `<div class="paper" style="border:2px solid var(--amber)">${entete("Facture complémentaire", `N° ${esc(fc.numero)} · ${esc(fc.date)}`, `Complète la facture<br>${esc(f.numero)}`)}${parties(o)}
+    <table class="doc-lines"><tbody><tr><td>Montant taxable de la facture ${esc(f.numero)}</td><td class="n">${euro(c.totalHT)}</td></tr><tr class="sub"><td>TVA due : 21 % (matériel)</td><td class="n">${euro(c.tva)}</td></tr><tr class="sub"><td>TVA facturée par erreur : ${f.tauxTva} %</td><td class="n">− ${euro(f.tva)}</td></tr><tr class="tot"><td>Complément de TVA à payer</td><td class="n">${euro(fc.montant)}</td></tr></tbody></table>
+    <div class="cond">À payer avec la facture ${esc(f.numero)} : total ${esc(euro(c.totalTTC))} pour le ${esc(f.echeance)}. Avec nos excuses.</div></div>`; }
+/** V3 : l'extrait de compte (fiche 350) : numéro, dates, date de valeur, débit et crédit, ancien et nouveau solde. */
 function extraitCompte(a){ const e = a.extrait;
-  return `<div class="extrait"><div class="eh"><span>Borinage Banque · extrait de compte</span><small>${esc(M1.ids ? M1.ids.iban : "")}</small></div>
-    <div class="el"><span class="d"></span><span>Solde précédent</span><span class="m">${euro(e.soldeAvant)}</span></div>
-    ${e.lignes.map(l => `<div class="el"><span class="d">${esc(l.date)}</span><span>${esc(l.libelle)}</span><span class="m ${l.montant < 0 ? "neg" : "pos"}">${l.montant < 0 ? "− " : "+ "}${euro(Math.abs(l.montant))}</span></div>`).join("")}
+  return `<div class="extrait"><div class="eh"><span>Borinage Banque · extrait de compte n° ${e.numero || 1}</span><small>${esc(ibanM1())} · ${esc(e.date)}</small></div>
+    <div class="el eth"><span class="d">Date</span><span>Description (date de valeur)</span><span class="m">Débit</span><span class="m">Crédit</span></div>
+    <div class="el"><span class="d"></span><span>Ancien solde</span><span class="m"></span><span class="m">${euro(e.soldeAvant)}</span></div>
+    ${e.lignes.map(l => `<div class="el"><span class="d">${esc(l.date)}</span><span>${esc(l.libelle)} <small>(val. ${esc(l.valeur || l.date)})</small></span><span class="m neg">${l.montant < 0 ? "− " + euro(Math.abs(l.montant)) : ""}</span><span class="m pos">${l.montant > 0 ? "+ " + euro(l.montant) : ""}</span></div>`).join("")}
     <div class="eb"><span>Nouveau solde</span><span>${euro(e.soldeApres)}</span></div></div>`; }
-function ecriture(a){ const o = offreChoisie(a), b = bien(a.bien), comptant = a.condition === "comptant";
-  const l = (c, lib, deb, cre) => `<tr><td class="n" style="color:var(--muted)">${c}</td><td>${lib}</td><td class="n">${deb ? euro(deb) : ""}</td><td class="n">${cre ? euro(cre) : ""}</td></tr>`;
-  return `<div class="ecriture"><h4>🎓 L'écriture comptable (journal des achats)</h4><table><thead><tr><th>Compte</th><th>Libellé</th><th class="n">Débit</th><th class="n">Crédit</th></tr></thead><tbody>
-    ${l(b.id === "mobilier" ? "24" : b.id === "caisse" ? "24" : "24", `${b.rubrique} · ${esc(o.article)}`, o.totalHT, 0)}${l("411", "TVA à récupérer", o.tva, 0)}
-    ${comptant ? l("550", "Banque (virement)", 0, montantPaye(a)) + (escompteDe(a) ? l("757", "Escomptes obtenus", 0, escompteDe(a)) : "") + (tropPaye(a) ? l("66", "Charge : facture payée en trop (TVA indue comprise)", tropPaye(a), 0) : "") : l("440", `Fournisseur ${esc(o.fournisseur.nom)}`, 0, montantFacture(a)) + (tropPaye(a) ? l("66", "Charge : facture acceptée en trop (TVA indue comprise)", tropPaye(a), 0) : "")}
-    </tbody></table><div class="help">Débit = ce qui entre ou ce qu'on possède en plus ; crédit = d'où ça vient. Les deux colonnes sont toujours égales : partie double.</div></div>`; }
+/** V3 : l'ordre de virement (fiche 350) : donneur d'ordre, bénéficiaire et son IBAN, montant, communication structurée, date d'exécution. */
+function ordreVirement(a){ const o = offreChoisie(a), f = a.facture, d = dateExecution(a);
+  return `<div class="paper"><div class="ph"><div><h4>Ordre de virement</h4><small>Borinage Banque · compte professionnel</small></div><div class="ref">Date d'exécution souhaitée<br>${esc(dateFrIso(d))}</div></div>
+    <dl><dt>Donneur d'ordre</dt><dd>${esc(V1(deno))} · <span class="num">${esc(ibanM1())}</span></dd><dt>Bénéficiaire</dt><dd>${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}, ${esc(o.fournisseur.cp)} ${esc(o.fournisseur.ville)}</dd><dt>IBAN du bénéficiaire</dt><dd><span class="num">${esc(o.fournisseur.iban || ibanFixe(hash(o.fournisseur.code)))}</span> · BIC BORIBEBB</dd>
+      <dt>Montant</dt><dd><span class="num"><b>${euro(montantPaye(a))}</b></span>${a.condition === "comptant" ? ` <small style="color:var(--paper-muted)">(facture ${esc(f.numero)}, escompte de ${euro(escompteDe(a))} déjà déduit)</small>` : ""}</dd><dt>Communication structurée</dt><dd><span class="num">${esc(f.communication || f.numero)}</span></dd></dl>
+    <div class="foot"><span>Vérifie l'IBAN et la communication : un virement parti ne se rattrape pas.</span><span class="signed" style="font-family:'Playfair Display',serif;font-style:italic">${esc(S.eleve.prenom)} ${esc(S.eleve.nom)}</span></div></div>`; }
+const dateExecution = (a) => a.payeISO || (a.facture ? isoL(ouvresApres(deIso(a.facture.dateISO), 2)) : isoL(new Date()));
+/** V3 : une écriture du journal, en document (compte, libellé, débit, crédit, totaux). */
+function ecritureDoc(e, titre){ if (!e) return ""; const td = r2(e.L.reduce((s, l) => s + l[1], 0)), tc = r2(e.L.reduce((s, l) => s + l[2], 0));
+  return `<div class="ecriture"><h4>🎓 ${esc(titre || "L'écriture comptable")} <small>${esc(JOURNAUX[e.j])} · ${esc(dateFrIso(e.d))} · pièce : ${esc(e.p)}</small></h4><table><thead><tr><th>Compte</th><th>Libellé</th><th class="n">Débit</th><th class="n">Crédit</th></tr></thead><tbody>
+  ${e.L.map(l => `<tr><td class="n cpt">${cpt(l[0])}</td><td>${l[2] && !l[1] ? "<span class='ind'></span>" : ""}${esc(lib(l[0]))}</td><td class="n">${l[1] ? euro(l[1]) : ""}</td><td class="n">${l[2] ? euro(l[2]) : ""}</td></tr>`).join("")}<tr class="tot"><td></td><td>Totaux</td><td class="n">${euro(td)}</td><td class="n">${euro(tc)}</td></tr></tbody></table><div class="help">${esc(e.l)}. Débit = crédit : partie double.</div></div>`; }
+/** V3 : les écritures d'un achat : la facture (journal des achats), la note de crédit ou la facture complémentaire, le virement (journal financier). */
+function ecritures(a){ return ecrituresAchat(a).map(e => ecritureDoc(e, e.j === "FIN" ? "L'écriture du virement (journal financier)" : /^NC-/.test(e.p) ? "L'écriture de la note de crédit (journal des achats)" : /^FC-/.test(e.p) ? "L'écriture de la facture complémentaire (journal des achats)" : "L'écriture de la facture (journal des achats)")).join(""); }
+function journalDoc(E){ const td = r2(E.reduce((s, e) => s + e.L.reduce((t, l) => t + l[1], 0), 0)), tc = r2(E.reduce((s, e) => s + e.L.reduce((t, l) => t + l[2], 0), 0));
+  return `<div class="jrn-wrap"><table class="led journal jrn"><thead><tr><th>Date</th><th>Journal</th><th>Pièce</th><th>Compte</th><th>Libellé</th><th class="n">Débit</th><th class="n">Crédit</th></tr></thead><tbody>
+    ${E.map(e => `<tr class="ecr-h"><td>${esc(dateCourteIso(e.d))}</td><td><span class="jtag j-${e.j}">${e.j}</span></td><td class="money">${esc(e.p)}</td><td colspan="4" class="jl">${esc(e.l)}</td></tr>${e.L.map(l => `<tr><td></td><td></td><td></td><td class="n cpt">${cpt(l[0])}</td><td>${l[2] && !l[1] ? "<span class='ind'></span>" : ""}${esc(lib(l[0]))}</td><td class="n">${l[1] ? euro(l[1]) : ""}</td><td class="n">${l[2] ? euro(l[2]) : ""}</td></tr>`).join("")}`).join("")}
+    <tr class="tot"><td colspan="5">Totaux</td><td class="n">${euro(td)}</td><td class="n">${euro(tc)}</td></tr></tbody></table></div>`; }
 function offreCard(o, k, a){ const on = a.choix === k, minTTC = Math.min(...a.offres.map(x => x.totalTTC));
   return `<button class="offer ${on ? "on" : ""}" data-choix="${k}">
     <div class="oh"><b>${esc(o.fournisseur.nom)} <small>${esc(o.fournisseur.forme)}</small></b><small>${esc(o.fournisseur.ville)} · ${esc(o.fournisseur.atout)}</small>${!on && o.totalTTC === minTTC ? `<span class="best">le moins cher</span>` : ""}</div>
     <div class="ob"><b>${esc(o.article)}</b><p>${esc(o.detail)}<br><i>${esc(o.qualite)}</i></p>
-      <div class="ol"><span>Prix HT</span><span>${euro(o.prixHT)}</span></div>${o.remise ? `<div class="ol"><span>Remise ${o.remisePct} %</span><span>− ${euro(o.remise)}</span></div>` : ""}<div class="ol"><span>Livraison</span><span>${o.livraison ? euro(o.livraison) : "gratuite"}</span></div>
-      <div class="ol"><span><b>Total HT</b></span><span><b>${euro(o.totalHT)}</b></span></div><div class="ol"><span>TVA 21 %</span><span>${euro(o.tva)}</span></div>
-      <div class="ol"><span>Délai</span><span>${o.delai} jours</span></div><div class="ol"><span>Garantie</span><span>${o.garantie} an${o.garantie > 1 ? "s" : ""}</span></div></div>
-    <div class="ot"><small>Total TTC</small><b>${euro(o.totalTTC)}</b></div></button>`; }
-function comparatif(a){ const rows = [["Total HT", o => euro(o.totalHT)], ["TVA 21 %", o => euro(o.tva)], ["Total TTC", o => `<b>${euro(o.totalTTC)}</b>`], ["Délai de livraison", o => o.delai + " j"], ["Garantie", o => o.garantie + " an" + (o.garantie > 1 ? "s" : "")], ["Niveau", o => STRATEGIES.find(s => s.id === o.niveau).icone + " " + STRATEGIES.find(s => s.id === o.niveau).nom]];
+      <div class="ol"><span>Prix HT</span><span>${euro(o.prixHT)}</span></div>${o.remise ? `<div class="ol"><span>Remise ${o.remisePct} %</span><span>− ${euro(o.remise)}</span></div>` : ""}<div class="ol"><span>Livraison</span><span>${o.livraison ? euro(o.livraison) : "gratuite"}</span></div>
+      <div class="ol"><span><b>Total HT</b></span><span><b>${euro(o.totalHT)}</b></span></div><div class="ol"><span>TVA 21 %</span><span>${euro(o.tva)}</span></div>
+      <div class="ol"><span>Délai</span><span>${o.delai} jours ouvrés</span></div><div class="ol"><span>Garantie</span><span>${o.garantie} an${o.garantie > 1 ? "s" : ""}</span></div></div>
+    <div class="ot"><small>Total TTC (à 30 jours)</small><b>${euro(o.totalTTC)}</b></div></button>`; }
+function comparatif(a){ const rows = [["Total HT", o => euro(o.totalHT)], ["TVA 21 %", o => euro(o.tva)], ["Total TTC à 30 jours", o => `<b>${euro(o.totalTTC)}</b>`], ["Au comptant (8 jours), escompte déduit", o => euro(montantsOffre(o, "comptant").totalTTC)], ["Délai de livraison", o => o.delai + " j ouvrés"], ["Garantie", o => o.garantie + " an" + (o.garantie > 1 ? "s" : "")], ["Niveau", o => STRATEGIES.find(s => s.id === o.niveau).icone + " " + STRATEGIES.find(s => s.id === o.niveau).nom]];
   return `<div class="cmp"><table class="led"><thead><tr><th></th>${a.offres.map(o => `<th class="n">${esc(o.fournisseur.nom)}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr><td>${r[0]}</td>${a.offres.map((o, k) => `<td class="n ${a.choix === k ? "pos" : ""}">${r[1](o)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`; }
 
 // ======================================================================
@@ -2170,7 +2269,7 @@ let LOGIN = { email:"", busy:false, err:"", lent:false };
 const road = () => `<ol class="road">${ROAD.map((r,i) => `<li class="${i === 1 ? "now" : ""}"><span class="n">Mission ${i+1}${i > 1 ? " · 🔒" : ""}</span><b>${r[0]}</b><span>${r[1]}</span></li>`).join("")}</ol>`;
 R.login = () => `<div class="hero"><span class="school"><span class="mark">SL</span>Institut Saint-Luc de Frameries · Technicien en comptabilité</span>
     <h2>Ton entreprise existe.<br><span class="grad">Équipe-la</span> sans la mettre en danger.</h2>
-    <p class="lead">Un budget, trois investissements, des fournisseurs à comparer, des documents à contrôler, une banque qui garde la trace de tout. Et un bilan qui doit rester équilibré.</p>
+    <p class="lead">Un budget, trois investissements, des offres à comparer, des documents à contrôler, une banque qui garde la trace de tout, des écritures à comprendre. Et un bilan qui doit rester équilibré.</p>
     <div class="login card"><label class="f" for="em" style="margin-top:0">Ton adresse e-mail de l'école</label>
       <input class="inp" id="em" type="text" inputmode="email" autocapitalize="off" value="${esc(LOGIN.email)}" placeholder="prenom.nom@istlm.org" autocomplete="email" spellcheck="false">
       ${LOGIN.lent ? `<div class="help" style="color:var(--amber)">⏳ La connexion prend un peu plus de temps que d'habitude. Ne ferme pas la page.</div>` : LOGIN.err ? `<div class="err">${LOGIN.err}</div>` : `<div class="help">La même adresse qu'en mission 1.</div>`}
@@ -2178,12 +2277,12 @@ R.login = () => `<div class="hero"><span class="school"><span class="mark">SL</s
     <h3 class="sub" style="margin-top:40px">L'année de ton entreprise</h3>${road()}</div>`;
 R.briefing = () => `<div class="hero" style="padding-top:10px"><div class="kick">Briefing de mission</div>
     <h2 style="font-size:clamp(30px,4.5vw,50px)">${esc(S.eleve.prenom)}, <span class="grad">${esc(V1(deno))}</span> a besoin de matériel.</h2>
-    <p class="lead">Tu as <b class="money" style="color:var(--mint)">${euro0(tresoDepart())}</b> en banque et <b class="money">${euro0(chargesMois())}</b> de charges fixes chaque mois. Il te faut du mobilier, une caisse et un ordinateur. Dépense bien, pas trop.</p>
+    <p class="lead">Tu as <b class="money" style="color:var(--mint)">${euro0(tresoDepart())}</b> en banque et <b class="money">${euro0(chargesMois())}</b> de sorties fixes chaque mois (loyer, assurances, énergie, télécom, mensualité de l'emprunt), dont ${euro0(chargesCR())} de vraies charges. Il te faut du mobilier, une caisse et un ordinateur. Dépense bien, pas trop.</p>
     <div class="goals">
       <div class="goal"><div class="gi">🎯</div><b>Fixer un budget</b><p>Avant d'acheter, décide combien tu peux investir sans menacer ta trésorerie.</p></div>
       <div class="goal"><div class="gi">🔎</div><b>Comparer trois offres</b><p>Prix HT, TVA, TTC, délai, garantie : choisir, c'est arbitrer.</p></div>
       <div class="goal"><div class="gi">🧾</div><b>Contrôler chaque document</b><p>Bon de commande, bon de livraison, facture : rien ne se paie sans vérification. Un fournisseur se trompera.</p></div>
-      <div class="goal"><div class="gi">📘</div><b>Garder le bilan équilibré</b><p>Comptant ou à crédit, chaque achat se retrouve au bilan. Actif = Passif, quoi qu'il arrive.</p></div></div>
+      <div class="goal"><div class="gi">📘</div><b>Garder le bilan équilibré</b><p>Comptant ou à crédit, chaque achat se retrouve au journal et au bilan. Actif = Passif, quoi qu'il arrive.</p></div></div>
     <div class="note warn"><span class="i">⚠️</span><div><b>Chaque achat est définitif</b> et se retrouve dans ta comptabilité. Lis les documents jusqu'au bout avant de signer.</div></div>
     <div class="nav"><span class="help">Trois achats, sept étapes chacun. Des défis éclair t'attendent.</span><button class="btn btn-main" data-act="brief">Je suis prêt(e), on y va</button></div></div>`;
 R.ferme = () => `<div class="hero" style="text-align:center;margin:0 auto"><div style="font-size:60px">🔒</div><h2 style="max-width:none;font-size:clamp(30px,4vw,46px)">La mission 2 est fermée</h2>
@@ -2194,7 +2293,7 @@ R.bloque = () => `<div class="hero" style="text-align:center;margin:0 auto"><div
     <p class="lead" style="margin:0 auto">${SESSION.bloque === "ancien" ? "Ton entreprise a été fondée avec une ancienne version de la mission 1 : il manque ton plan de financement. Demande à ton professeur de réinitialiser ta mission 1, puis refais-la avec la nouvelle version." : "La mission 2 reprend l'entreprise que tu fondes en mission 1. Termine d'abord la mission 1 (jusqu'à la signature de l'acte de fondation), puis reviens ici."}</p>
     <div class="nav" style="justify-content:center"><button class="btn btn-main" data-act="retry">Réessayer</button></div></div>`;
 
-const coach = (key, html) => `<div class="coach"><div class="av" aria-hidden="true">👩‍💼</div><div><p>${html || M2_COACH[key]}</p><small>Nadia, expert-comptable, ta conseillère</small></div></div>`;
+const coach = (key, html) => `<div class="coach"><div class="av" aria-hidden="true">👩‍💼</div><div><p>${html || M2_COACH[key]}</p><small>Nadia, experte-comptable, ta conseillère</small></div></div>`;
 const head = (kick, titre, lead) => `<div class="kick">${kick}</div><h2 class="title">${titre}</h2>${lead ? `<p class="lead">${lead}</p>` : ""}`;
 function nav(ok, manque, opts={}){
   return `<div class="nav">${opts.back ? `<button class="btn btn-ghost" data-act="back">Retour</button>` : "<span></span>"}
@@ -2207,11 +2306,11 @@ function quiz(key){ const q = M2_QUIZ[key], r = S.quiz[key];
 const subSteps = (a) => `<div class="sub-steps">${ETAPES.map((e, k) => `<span class="ss ${a.etape > k ? "done" : a.etape === k ? "now" : ""}"><i>${a.etape > k ? "✓" : k + 1}</i>${e[1]}</span>`).join("")}</div>`;
 const achatTag = () => `<div class="achat-tag">Achat <b>${S.i + 1}/${CONFIG.NB_ACHATS}</b>${A().bien ? ` · ${bien(A().bien).icone} <b>${esc(bien(A().bien).nom)}</b>` : ""}</div>`;
 
-R.budget = () => { const t = tresoDepart(), c = chargesMois(), opts = BUDGETS.filter(b => b <= t - 500);
-  return head("Décision préalable", "Combien peux-tu <span class='grad'>investir</span> ?", `Tu as ${euro0(t)} en banque. Chaque euro investi ne sera plus disponible pour payer les charges fixes (${euro0(c)} par mois). Fixe ton enveloppe.`) + coach("budget")
+R.budget = () => { const t = tresoDepart(), c = chargesMois(); let opts = BUDGETS.filter(b => b <= t - 500); if (!opts.length) opts = [BUDGETS[0]];
+  return head("Décision préalable", "Combien peux-tu <span class='grad'>investir</span> ?", `Tu as ${euro0(t)} en banque. Chaque euro investi ne sera plus disponible pour payer tes sorties fixes (${euro0(c)} par mois : loyer, assurances, énergie, télécom, mensualité). Fixe ton enveloppe.`) + coach("budget")
     + `<div class="card"><h3>Ton budget d'investissement</h3>
       <div class="money-opts">${opts.map(b => { const reste = t - b, auto = c ? Math.floor(reste / c) : null; return `<button class="choice budget-opt ${S.budget === b ? "on" : ""}" data-budget="${b}"><b>${euro0(b)}</b><small>reste ${euro0(reste)} en banque<br>${auto != null ? auto + " mois d'autonomie" : ""}</small></button>`; }).join("")}</div>
-      ${S.budget ? `<div class="note" style="margin:14px 0 0"><span class="i">📊</span><div>Avec ${euro0(S.budget)} d'achats payés comptant, il te resterait ${euro0(t - S.budget)}, soit <b>${Math.floor((t - S.budget) / c)} mois</b> de charges fixes. ${S.budget >= 4000 ? "Ambitieux : du matériel haut de gamme, mais moins de marge de sécurité." : S.budget <= 2000 ? "Prudent : tu devras choisir les offres les moins chères." : "Équilibré : de la qualité sans vider le compte."} Tu pourras aussi payer à 30 jours pour garder de la trésorerie.</div></div>` : ""}</div>`
+      ${S.budget ? `<div class="note" style="margin:14px 0 0"><span class="i">📊</span><div>Avec ${euro0(S.budget)} d'achats payés comptant, il te resterait ${euro0(t - S.budget)}, soit <b>${Math.floor((t - S.budget) / c)} mois</b> de sorties fixes. ${S.budget >= 4000 ? "Ambitieux : du matériel haut de gamme, mais moins de marge de sécurité." : S.budget <= 2000 ? "Prudent : tu devras choisir les offres les moins chères." : "Équilibré : de la qualité sans vider le compte."} Tu pourras aussi payer à 30 jours pour garder de la trésorerie.</div></div>` : ""}</div>`
     + nav(!!S.budget, "Choisis une enveloppe pour continuer.");
 };
 
@@ -2219,7 +2318,7 @@ R.achat = () => { const a = A(), k = ETAPES[a.etape][0]; return achatTag() + sub
 
 R.ac_bien = (a) => { const pris = S.achats.filter((x, j) => j !== S.i && x.bien).map(x => x.bien);
   return head(`Achat ${S.i + 1} · étape 1`, "Que vas-tu <span class='grad'>acheter</span> ?", "Trois investissements pour ouvrir. Dans l'ordre que tu veux.") + coach("bien")
-    + `<div class="grid g3">${BIENS.map(b => { const done = pris.includes(b.id), on = a.bien === b.id; return `<button class="choice ${on ? "on" : ""} ${done ? "full" : ""}" data-bien="${b.id}" ${done ? 'aria-disabled="true"' : ""}><div class="ico">${b.icone}</div><h4>${esc(b.nom)}</h4><p>${esc(b.pourquoi)}</p><span class="tag">${esc(b.rubrique)} · actif immobilisé</span>${done ? `<span class="tag" style="color:var(--mint)">déjà acheté</span>` : ""}</button>`; }).join("")}</div>`
+    + `<div class="grid g3">${BIENS.map(b => { const done = pris.includes(b.id), on = a.bien === b.id; return `<button class="choice ${on ? "on" : ""} ${done ? "full" : ""}" data-bien="${b.id}" ${done ? 'aria-disabled="true"' : ""}><div class="ico">${b.icone}</div><h4>${esc(b.nom)}</h4><p>${esc(b.pourquoi)}</p><span class="tag">${cpt(COMPTES_BIEN[b.id])} ${esc(b.rubrique)} · actif immobilisé</span>${done ? `<span class="tag" style="color:var(--mint)">déjà acheté</span>` : ""}</button>`; }).join("")}</div>`
     + nav(!!a.bien, "Choisis le bien à acheter."); };
 
 R.ac_methode = (a) => head(`Achat ${S.i + 1} · étape 2`, "Comment trouver <span class='grad'>trois offres</span> ?", `Pour ${esc(bien(a.bien).nom.toLowerCase())}, il te faut au moins trois offres de prix à comparer. Choisis ta méthode.`) + coach("methode")
@@ -2232,75 +2331,80 @@ R.ac_offres = (a) => { const m = METHODES.find(x => x.id === a.methode), o = off
   else if (o && budgetRestant() - o.totalTTC < 0) conseil = `Attention : avec cette offre, tu dépasses ton budget de <b class="money">${euro(o.totalTTC - budgetRestant())}</b>. Tu peux continuer, mais le dépassement sera visible dans ton bilan… et par ton professeur.`;
   return head(`Achat ${S.i + 1} · étape 3`, "Compare les <span class='grad'>offres</span>", `${esc(m.recit)} Budget restant : <b class="money">${euro0(budgetRestant())}</b>.`) + coach("offres", conseil)
     + `<div class="offers">${a.offres.map((x, k) => offreCard(x, k, a)).join("")}</div>${comparatif(a)}
-    ${o ? `<div class="card" style="margin-top:14px"><label class="f" style="margin-top:0">Pourquoi cette offre ? Une ou deux raisons :</label><div class="chips">${RAISONS_OFFRE.map(r => `<button class="chip ${a.raisons.includes(r) ? "on" : ""}" data-raison="${esc(r)}">${esc(r)}</button>`).join("")}</div></div>` : ""}
+    ${o ? `<div class="grid g2" style="margin-top:14px;align-items:start"><div>${offreDoc(o)}</div><div class="card" style="margin:0"><label class="f" style="margin-top:0">Pourquoi cette offre ? Une ou deux raisons :</label><div class="chips">${RAISONS_OFFRE.map(r => `<button class="chip ${a.raisons.includes(r) ? "on" : ""}" data-raison="${esc(r)}">${esc(r)}</button>`).join("")}</div><p class="help">L'offre écrite du fournisseur est la base de ton bon de commande (fiche 320) : garde-la dans ton classeur.</p></div></div>` : ""}
     ${quiz("offres")}` + nav(a.choix != null && a.raisons.length >= 1, "Choisis une offre et au moins une raison.", {label:"Commander chez " + (o ? esc(o.fournisseur.nom) : "…")}); };
 
-R.ac_commande = (a) => { const o = offreChoisie(a), solde = banque(), comptantOK = solde >= r2(o.totalTTC * (1 - ESCOMPTE));
+R.ac_commande = (a) => { const o = offreChoisie(a), solde = banque(), mc = montantsOffre(o, "comptant"), m30 = montantsOffre(o, "30j"), comptantOK = solde >= mc.totalTTC;
   const ok = !!a.condition && a.verifBC && a.signBC.trim().length >= 3 && a.envoyeBC;
-  return head(`Achat ${S.i + 1} · étape 4`, "Rédige ton <span class='grad'>bon de commande</span>", "Choisis tes conditions de paiement, vérifie chaque ligne, signe, envoie.") + coach("commande")
+  return head(`Achat ${S.i + 1} · étape 4`, "Rédige ton <span class='grad'>bon de commande</span>", "Choisis tes conditions de paiement (fiche 310), vérifie chaque ligne, signe, envoie.") + coach("commande")
     + `<div class="card" style="margin-bottom:14px"><h3>Conditions de paiement</h3><div class="grid g2">
-        <button class="choice ${a.condition === "comptant" ? "on" : ""} ${comptantOK ? "" : "full"}" data-cond="comptant" ${comptantOK ? "" : 'aria-disabled="true"'}><div class="ico">⚡</div><h4>Comptant (sous 8 jours)</h4><p>Tu paies la facture dès réception, dans les 8 jours. Le fournisseur t'accorde <b>2 % d'escompte</b>.</p><span class="pro">Tu économises ${euro(r2(o.totalTTC * ESCOMPTE))}</span><span class="con">${euro(r2(o.totalTTC * (1 - ESCOMPTE)))} sortent tout de suite de la banque</span>${comptantOK ? "" : `<span class="tag" style="color:var(--coral)">Solde insuffisant (${euro0(solde)}) : la banque refuserait le virement</span>`}</button>
-        <button class="choice ${a.condition === "30j" ? "on" : ""}" data-cond="30j"><div class="ico">📅</div><h4>À 30 jours</h4><p>Le fournisseur te fait crédit : tu paies le mois prochain, prix plein.</p><span class="pro">Ta trésorerie reste disponible</span><span class="con">Une dette fournisseur de ${euro(o.totalTTC)} apparaît au passif</span></button></div></div>
+        <button class="choice ${a.condition === "comptant" ? "on" : ""} ${comptantOK ? "" : "full"}" data-cond="comptant" ${comptantOK ? "" : 'aria-disabled="true"'}><div class="ico">⚡</div><h4>Au comptant (8 jours)</h4><p>Tu paies dans les 8 jours après réception de la facture. Le fournisseur t'accorde <b>2 % d'escompte</b>, retranché avant la TVA.</p><span class="pro">Escompte : ${euro(mc.escompte)} (un produit financier, 7570)</span><span class="con">${euro(mc.totalTTC)} sortent de la banque dans les 8 jours</span>${comptantOK ? "" : `<span class="tag" style="color:var(--coral)">Solde insuffisant (${euro0(solde)}) : la banque refuserait le virement</span>`}</button>
+        <button class="choice ${a.condition === "30j" ? "on" : ""}" data-cond="30j"><div class="ico">📅</div><h4>À 30 jours date de facture</h4><p>Le fournisseur te fait crédit : tu paies le mois prochain, prix plein.</p><span class="pro">Ta trésorerie reste disponible</span><span class="con">Une dette fournisseur de ${euro(m30.totalTTC)} apparaît au passif (4400)</span></button></div></div>
       ${bonDeCommande(a)}
       <div class="checks" style="margin-top:14px">
-        <label class="check ${a.verifBC ? "ok" : ""}"><input type="checkbox" data-chk="verifBC" ${a.verifBC ? "checked" : ""}><span>J'ai vérifié : fournisseur, référence <b>${esc(o.ref)}</b>, prix HT <b>${euro(o.prixHT)}</b>${o.remise ? ", remise " + o.remisePct + " %" : ""}, livraison ${o.livraison ? euro(o.livraison) : "gratuite"}, total TTC <b>${euro(o.totalTTC)}</b>, conditions de paiement.</span></label>
-        <label class="check ${a.envoyeBC ? "ok" : ""}"><input type="checkbox" data-chk="envoyeBC" ${a.envoyeBC ? "checked" : ""}><span>J'envoie le bon de commande signé par e-mail à <b>${esc(o.fournisseur.web.replace("www.", "commandes@"))}</b> et j'en garde une copie.</span></label></div>`
+        <label class="check ${a.verifBC ? "ok" : ""}"><input type="checkbox" data-chk="verifBC" ${a.verifBC ? "checked" : ""}><span>J'ai vérifié : fournisseur, référence <b>${esc(o.ref)}</b>, prix HT <b>${euro(o.prixHT)}</b>${o.remise ? ", remise " + o.remisePct + " %" : ""}, livraison ${o.livraison ? euro(o.livraison) : "gratuite"}, total à payer <b>${a.condition ? euro(montantsOffre(o, a.condition).totalTTC) : "…"}</b>, conditions de paiement et de livraison.</span></label>
+        <label class="check ${a.envoyeBC ? "ok" : ""}"><input type="checkbox" data-chk="envoyeBC" ${a.envoyeBC ? "checked" : ""}><span>J'envoie le bon de commande signé par e-mail à <b>${esc(o.fournisseur.web.replace("www.", "commandes@"))}</b> (adresse fictive) et j'en garde une copie.</span></label></div>`
     + nav(ok, "Conditions, vérification, signature et envoi sont obligatoires.", {label:"Envoyer la commande"}); };
 
 R.ac_livraison = (a) => { const o = offreChoisie(a), ok = a.checks.every(Boolean) && a.signBL.trim().length >= 3;
-  return head(`Achat ${S.i + 1} · étape 5`, "Réceptionne la <span class='grad'>livraison</span>", "Le colis est là. Vérifie avant de signer.") + coach("livraison")
+  return head(`Achat ${S.i + 1} · étape 5`, "Réceptionne la <span class='grad'>livraison</span>", "Le colis est là. Vérifie avant de signer (fiche 330).") + coach("livraison")
     + `<div class="sms"><div class="from"><span>${esc(o.fournisseur.nom)} · SMS et e-mail</span><span>${esc(a.notif.date)}</span></div>Bonjour ${esc(S.eleve.prenom)}, votre commande <b>${esc(a.bc.numero)}</b> est confirmée. Livraison prévue le <b>${esc(a.notif.livraison)}</b> entre 9 h et 12 h. Merci de votre confiance !</div>
-      <div class="note"><span class="i">🚚</span><div><b>${esc(a.notif.livraison)}.</b> Le livreur te tend le bon de livraison et un colis. Coche chaque vérification, puis signe.</div></div>
+      <div class="note"><span class="i">🚚</span><div><b>${esc(a.notif.livraison)}.</b> Le livreur te tend le bon de livraison et un colis. Contrôle extérieur (colis), quantitatif (combien), qualitatif (quoi), et compare avec ton bon de commande. Puis signe.</div></div>
       ${bonDeLivraison(a)}
       <div class="checks" style="margin-top:14px">
         ${[`C'est bien l'article commandé : <b>${esc(o.article)}</b>, réf. ${esc(o.ref)}`, "La quantité livrée correspond à la quantité commandée : <b>1</b>", "Le colis est en bon état, rien n'est cassé ni manquant"].map((t, i) => `<label class="check ${a.checks[i] ? "ok" : ""}"><input type="checkbox" data-chk="checks.${i}" ${a.checks[i] ? "checked" : ""}><span>${t}</span></label>`).join("")}</div>`
     + nav(ok, "Trois vérifications et une signature.", {label:"Accepter la livraison"}); };
 
-R.ac_facture = (a) => { const f = a.facture, o = offreChoisie(a), decided = !!a.decision, bonneReponse = f.erreur && a.decision === "contestee" && a.erreurChoisie === f.erreur.type;
+R.ac_facture = (a) => { const f = a.facture, o = offreChoisie(a), decided = !!a.decision, bonneReponse = f.erreur && a.decision === "contestee" && a.erreurChoisie === f.erreur.type, tvaErr = f.erreur && f.erreur.type === "tva";
   let verdict = "";
   if (decided){
     if (!f.erreur && a.decision === "acceptee") verdict = `<div class="note ok"><span class="i">✅</span><div><b>Facture conforme.</b> Elle correspond au bon de commande et au bon de livraison : tu peux la payer.</div></div>`;
     else if (!f.erreur && a.decision === "contestee") verdict = `<div class="note warn"><span class="i">📩</span><div><b>Le fournisseur a vérifié : la facture est correcte.</b> Pas de note de crédit. Contester sans raison fait perdre du temps à tout le monde… mais mieux vaut ça que payer trop.</div></div>`;
-    else if (bonneReponse) verdict = `<div class="note ok"><span class="i">🦅</span><div><b>Bien vu !</b> ${esc(f.erreur.texte)} : ${euro(f.erreur.surcoutTTC)} de trop. Le fournisseur t'envoie une note de crédit. Reste dû : <b class="money">${euro(f.correct.totalTTC)}</b>.</div></div>`;
-    else if (f.erreur && a.decision === "contestee") verdict = `<div class="note warn"><span class="i">📩</span><div><b>Tu as contesté, mais pas la bonne ligne.</b> Le fournisseur a quand même retrouvé l'erreur : ${esc(f.erreur.texte.toLowerCase())}. Note de crédit de ${euro(f.erreur.surcoutTTC)}. La prochaine fois, compare ligne par ligne.</div></div>`;
-    else verdict = `<div class="note bad"><span class="i">💸</span><div><b>Tu as accepté une facture erronée.</b> ${esc(f.erreur.texte)} : tu vas payer <b class="money">${euro(f.erreur.surcoutTTC)}</b> de trop, TVA comprise (une TVA facturée à tort ne se récupère pas). En comptabilité, c'est une charge : une perte pour l'entreprise. Compare toujours la facture au bon de commande.</div></div>`;
+    else if (bonneReponse && tvaErr) verdict = `<div class="note ok"><span class="i">🦅</span><div><b>Bien vu !</b> ${esc(f.erreur.texte)} : la TVA sur du matériel est de 21 %, pas 6 %. Ici l'erreur est en ta faveur, mais une facture fausse reste fausse : le fournisseur émet une <b>facture complémentaire</b> de ${euro(a.fc.montant)} de TVA (fiche 340). Total à payer : <b class="money">${euro(f.correct.totalTTC)}</b>.</div></div>`;
+    else if (bonneReponse) verdict = `<div class="note ok"><span class="i">🦅</span><div><b>Bien vu !</b> ${esc(f.erreur.texte)} : ${euro(f.erreur.surcoutTTC)} de trop. Le fournisseur t'envoie une <b>note de crédit</b>. Reste dû : <b class="money">${euro(f.correct.totalTTC)}</b>.</div></div>`;
+    else if (f.erreur && a.decision === "contestee") verdict = `<div class="note warn"><span class="i">📩</span><div><b>Tu as contesté deux fois sans trouver la bonne ligne.</b> Le fournisseur a quand même retrouvé l'erreur : ${esc(f.erreur.texte.toLowerCase())}. ${tvaErr ? `Facture complémentaire de ${euro(a.fc.montant)} de TVA.` : `Note de crédit de ${euro(f.erreur.surcoutTTC)}.`} La prochaine fois, compare ligne par ligne.</div></div>`;
+    else if (tvaErr) verdict = `<div class="note bad"><span class="i">📩</span><div><b>Tu as accepté une facture fausse</b> : TVA à 6 % sur du matériel, alors que le taux est de 21 %. Le fournisseur s'en est aperçu et t'envoie une <b>facture complémentaire</b> de ${euro(a.fc.montant)} : tu paies le bon montant, ${euro(f.correct.totalTTC)}, mais tu n'as rien vu. Compare toujours le taux de TVA à ce qui est acheté.</div></div>`;
+    else verdict = `<div class="note bad"><span class="i">💸</span><div><b>Tu as accepté une facture erronée.</b> ${esc(f.erreur.texte)} : tu vas payer <b class="money">${euro(f.erreur.surcoutTTC)}</b> de trop, TVA comprise. Ce n'est pas une charge : ton matériel est enregistré pour plus qu'il ne vaut (immobilisation surévaluée) et une TVA facturée à tort ne se récupère pas. Compare toujours la facture au bon de commande.</div></div>`;
   }
-  return head(`Achat ${S.i + 1} · étape 6`, "Contrôle la <span class='grad'>facture</span>", `La facture de ${esc(o.fournisseur.nom)} est arrivée. Compare-la avec ton bon de commande (${euro(o.totalTTC)} TTC) et ton bon de livraison.`) + coach("facture")
+  return head(`Achat ${S.i + 1} · étape 6`, "Contrôle la <span class='grad'>facture</span>", `La facture de ${esc(o.fournisseur.nom)} est arrivée. Compare-la avec ton bon de commande (${euro(montantsOffre(o, a.condition).totalTTC)} à payer) et ton bon de livraison : le contrôle à trois documents.`) + coach("facture")
     + `<div class="grid g2" style="align-items:start"><div>${facture(a, {marque:decided})}</div>
-      <div><div class="card tight"><h3>Rappel de ta commande ${esc(a.bc.numero)}</h3><table class="led"><tbody><tr><td>Article</td><td class="n">1 × ${esc(o.ref)}</td></tr><tr><td>Prix HT</td><td class="n">${euro(o.prixHT)}</td></tr><tr><td>Remise</td><td class="n">${o.remise ? "− " + euro(o.remise) : "aucune"}</td></tr><tr><td>Livraison</td><td class="n">${o.livraison ? euro(o.livraison) : "gratuite"}</td></tr><tr><td>Total HT</td><td class="n">${euro(o.totalHT)}</td></tr><tr><td>TVA 21 %</td><td class="n">${euro(o.tva)}</td></tr><tr class="tot"><td>Total TTC</td><td class="n">${euro(o.totalTTC)}</td></tr></tbody></table><p class="help">Livré : 1 article, colis conforme (BL ${esc(a.bl.numero)}).</p></div>
+      <div><div class="card tight"><h3>Rappel de ta commande ${esc(a.bc.numero)}</h3>${(() => { const m = montantsOffre(o, a.condition); return `<table class="led"><tbody><tr><td>Article</td><td class="n">1 × ${esc(o.ref)}</td></tr><tr><td>Prix HT</td><td class="n">${euro(o.prixHT)}</td></tr><tr><td>Remise</td><td class="n">${o.remise ? "− " + euro(o.remise) : "aucune"}</td></tr>${m.escompte ? `<tr><td>Escompte 2 % (comptant)</td><td class="n">− ${euro(m.escompte)}</td></tr>` : ""}<tr><td>Livraison</td><td class="n">${o.livraison ? euro(o.livraison) : "gratuite"}</td></tr><tr><td>Montant taxable</td><td class="n">${euro(m.totalHT)}</td></tr><tr><td>TVA 21 %</td><td class="n">${euro(m.tva)}</td></tr><tr class="tot"><td>Total à payer</td><td class="n">${euro(m.totalTTC)}</td></tr></tbody></table>`; })()}<p class="help">Livré : 1 article, colis conforme (BL ${esc(a.bl.numero)}).</p></div>
+        ${a.mauvaiseLigne && !decided ? `<div class="note warn" style="margin-top:12px"><span class="i">📩</span><div><b>Le fournisseur maintient sa facture :</b> « la ligne que vous contestez est correcte ». Relis ligne par ligne, puis accepte ou conteste à nouveau (dernier essai).</div></div>` : ""}
         ${decided ? "" : `<div class="decision"><button class="btn btn-ghost" data-act="accepter" style="justify-content:center;border-color:rgba(52,211,153,.6)">✓ Conforme, j'accepte</button><button class="btn btn-ghost" data-act="contester" style="justify-content:center;border-color:rgba(251,113,133,.6)">✗ Je conteste</button></div>`}
         ${!decided && a.decision === null && a.contestation ? `<div class="card tight" style="margin-top:12px"><h3>Qu'est-ce qui cloche ?</h3><div class="chips">${ERREURS_FACTURE.map(e => `<button class="chip" data-err="${e[0]}">${esc(e[1])}</button>`).join("")}</div></div>` : ""}
         ${verdict}</div></div>
-    ${a.nc ? `<div style="margin-top:14px">${noteDeCredit(a)}</div>` : ""}
+    ${a.nc ? `<div style="margin-top:14px">${noteDeCredit(a)}</div>` : ""}${a.fc ? `<div style="margin-top:14px">${factureComplementaire(a)}</div>` : ""}
     ${decided ? quiz("facture") : ""}`
     + nav(decided, "Accepte ou conteste la facture.", {label: a.condition === "comptant" ? "Passer au paiement" : "Enregistrer la dette"}); };
 
 R.ac_paiement = (a) => { const o = offreChoisie(a), comptant = a.condition === "comptant", due = montantFacture(a);
-  return head(`Achat ${S.i + 1} · étape 7`, comptant ? "Paie par <span class='grad'>virement</span>" : "Enregistre ta <span class='grad'>dette</span>", comptant ? `Montant dû ${euro(due)} TTC, moins 2 % d'escompte : <b class="money">${euro(montantPaye(a))}</b>.` : `Rien ne sort aujourd'hui : tu dois <b class="money">${euro(due)}</b> à ${esc(o.fournisseur.nom)} pour le ${esc(a.facture.echeance)}.`) + coach("paiement")
-    + (a.fini ? `${a.virementRefuse ? `<div class="note warn"><span class="i">🏦</span><div><b>La banque a refusé le virement : solde insuffisant.</b> La facture acceptée était plus chère que ta commande. Le fournisseur accepte un paiement à 30 jours, sans escompte : une dette fournisseur apparaît au passif.</div></div>` : ""}${comptant ? extraitCompte(a) : `<div class="note gold"><span class="i">📅</span><div><b>Dette fournisseur enregistrée.</b> ${euro(due)} à payer le ${esc(a.facture.echeance)}. Ta banque n'a pas bougé : ${euro(banque())}. Mais au passif, une dette est apparue : il faudra la trésorerie à l'échéance.</div></div>`}${ecriture(a)}`
-      : `<div class="card"><h3>${comptant ? "Ordre de virement" : "Facture à payer"}</h3><table class="led"><tbody><tr><td>Bénéficiaire</td><td class="n">${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}</td></tr><tr><td>Communication</td><td class="n">${esc(a.facture.numero)}</td></tr><tr><td>Montant facturé TTC</td><td class="n">${euro(due)}</td></tr>${comptant ? `<tr><td>Escompte 2 %</td><td class="n pos">− ${euro(escompteDe(a))}</td></tr><tr class="tot"><td>Montant du virement</td><td class="n">${euro(montantPaye(a))}</td></tr>` : `<tr class="tot"><td>Échéance</td><td class="n">${esc(a.facture.echeance)}</td></tr>`}</tbody></table>
-        ${comptant && montantPaye(a) > banque() ? `<div class="note warn" style="margin:12px 0 0"><span class="i">⚠️</span><div>Solde insuffisant (${euro(banque())}) : la banque refusera ce virement. Le fournisseur te laissera alors 30 jours, sans escompte.</div></div>` : ""}<div class="nav" style="margin-top:14px"><span class="help">Solde actuel : ${euro(banque())}</span><button class="btn btn-main" data-act="payer">${comptant ? "Confirmer le virement" : "Enregistrer la facture à payer"}</button></div></div>`)
+  return head(`Achat ${S.i + 1} · étape 7`, comptant ? "Paie par <span class='grad'>virement</span>" : "Enregistre ta <span class='grad'>dette</span>", comptant ? `Total à payer dans les 8 jours, escompte de ${euro(escompteDe(a))} déjà retranché sur la facture : <b class="money">${euro(due)}</b>.` : `Rien ne sort aujourd'hui : tu dois <b class="money">${euro(due)}</b> à ${esc(o.fournisseur.nom)} pour le ${esc(a.facture.echeance)}.`) + coach("paiement")
+    + (a.fini ? `${a.virementRefuse ? `<div class="note warn"><span class="i">🏦</span><div><b>La banque a refusé le virement : solde insuffisant.</b> La facture acceptée était plus chère que ta commande. Le fournisseur a annulé l'escompte et réémis sa facture à 30 jours : une dette fournisseur apparaît au passif.</div></div>` : ""}${comptant ? extraitCompte(a) : `<div class="note gold"><span class="i">📅</span><div><b>Dette fournisseur enregistrée.</b> ${euro(due)} à payer le ${esc(a.facture.echeance)}. Ta banque n'a pas bougé : ${euro(banque())}. Mais au passif, une dette est apparue (4400) : il faudra la trésorerie à l'échéance.</div></div>`}${ecritures(a)}`
+      : `${comptant ? ordreVirement(a) : `<div class="card"><h3>Facture à payer</h3><table class="led"><tbody><tr><td>Bénéficiaire</td><td class="n">${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}</td></tr><tr><td>Communication</td><td class="n">${esc(a.facture.communication || a.facture.numero)}</td></tr><tr><td>Montant à payer (TVAC)</td><td class="n">${euro(due)}</td></tr><tr class="tot"><td>Échéance</td><td class="n">${esc(a.facture.echeance)}</td></tr></tbody></table></div>`}
+        ${comptant && montantPaye(a) > banque() ? `<div class="note warn" style="margin:12px 0 0"><span class="i">⚠️</span><div>Solde insuffisant (${euro(banque())}) : la banque refusera ce virement. Le fournisseur te laissera alors 30 jours, sans escompte.</div></div>` : ""}<div class="nav" style="margin-top:14px"><span class="help">Solde actuel : ${euro(banque())}</span><button class="btn btn-main" data-act="payer">${comptant ? "Confirmer le virement" : "Enregistrer la facture à payer"}</button></div>`)
     + (a.fini ? nav(true, "", {label: achatsRecus().length < CONFIG.NB_ACHATS ? "Achat suivant" : "Voir mon bilan"}) : ""); };
 
-R.bilan = () => { const d = bilanData(), t = tresoDepart(), ok = !!S.done.bilan;
+R.bilan = () => { const d = bilanData(), t = tresoDepart(), ok = !!S.done.bilan, trop = r2(S.achats.reduce((s, a) => s + tropPaye(a), 0));
   return head("Dernière étape", "Ton <span class='grad'>bilan</span> après équipement", `Au jour de la fondation : ${euro0(V1(totalBilan))} de bilan, ${euro0(t)} en banque. Aujourd'hui, les trois achats ont transformé ta trésorerie en actif immobilisé.`) + coach("bilan")
-    + `<div class="m2-stats"><div class="stat"><b>${euro0(banque())}</b><span>en banque</span></div><div class="stat"><b>${euro0(tvaRecup())}</b><span>TVA à récupérer</span></div><div class="stat"><b style="color:${dettes() ? "var(--amber)" : "var(--mint)"}">${euro0(dettes())}</b><span>dettes fournisseurs</span></div><div class="stat"><b style="color:${resultat() >= 0 ? "var(--mint)" : "var(--coral)"}">${resultat() >= 0 ? "+" : "−"} ${euro(Math.abs(resultat()))}</b><span>résultat (escomptes − pertes)</span></div></div>
+    + `<div class="m2-stats"><div class="stat"><b>${euro0(banque())}</b><span>en banque</span></div><div class="stat"><b>${euro0(tvaRecup())}</b><span>TVA à récupérer</span></div><div class="stat"><b style="color:${dettes() ? "var(--amber)" : "var(--mint)"}">${euro0(dettes())}</b><span>dettes fournisseurs</span></div><div class="stat"><b style="color:var(--mint)">+ ${euro(resultat())}</b><span>résultat (escomptes obtenus)</span></div></div>
     ${bilanHTML()}
-    <div class="note" style="margin-top:14px"><span class="i">🎓</span><div>Tes achats sont à l'actif immobilisé pour leur valeur <b>hors TVA</b> : la TVA, elle, est une créance sur l'État. ${dettes() ? `Les factures à 30 jours sont au passif, en <b>dettes à un an au plus</b>. ` : ""}${resultat() ? `Le <b>résultat</b> apparaît déjà dans les fonds propres : ${resultat() > 0 ? "tes escomptes sont un gain" : "ce que tu as payé en trop est une perte"}. ` : ""}Budget ${budgetRespecte() ? `respecté : ${euro0(engage())} engagés sur ${euro0(S.budget)} ✔` : `dépassé : ${euro0(engage())} engagés pour ${euro0(S.budget)} prévus.`}</div></div>
+    <div class="note" style="margin-top:14px"><span class="i">🎓</span><div>Tes achats sont à l'actif immobilisé (2400, 2410, 2420) pour leur valeur <b>hors TVA</b>, port compris : la TVA, elle, est une créance sur l'État (4110). ${dettes() ? `Les factures à 30 jours sont au passif, en <b>dettes à un an au plus</b> (4400). ` : ""}${resultat() ? `Les <b>escomptes obtenus</b> (7570) sont un produit financier : c'est le résultat de la période, dans les fonds propres. ` : ""}${trop ? `Tu as payé ${euro(trop)} de trop sur une facture fausse : ce n'est pas une charge, mais ton matériel est enregistré au-dessus de sa vraie valeur. ` : ""}Budget ${budgetRespecte() ? `respecté : ${euro0(engage())} engagés sur ${euro0(S.budget)} ✔` : `dépassé : ${euro0(engage())} engagés pour ${euro0(S.budget)} prévus.`}</div></div>
     ${quiz("bilan")}`
     + nav(d.equilibre, "Le bilan n'est pas équilibré : préviens ton professeur.", {label: ok ? "Terminer la mission 🚀" : "Valider mon bilan", act: ok ? "send" : "validerBilan"}); };
 
-R.fin = () => { const lecture = MODE === "consultation", e = S.envoi || {}, defis = Object.values(S.quiz).filter(q => q.ok).length, trop = S.achats.some(a => tropPaye(a) > 0);
+R.fin = () => { const lecture = MODE === "consultation", e = S.envoi || {}, defis = Object.values(S.quiz).filter(q => q.ok).length, trop = S.achats.some(a => tropPaye(a) > 0), E = ecrituresM2();
   const status = lecture ? `<div class="status ok">🔒 Ta mission 2 est enregistrée chez ton professeur. Tes achats sont définitifs.</div>` : e.mode === "ok" ? `<div class="status ok">✓ Mission enregistrée chez ton professeur.</div>` : e.mode === "ferme" ? `<div class="status err">L'accès a été fermé avant l'envoi. Demande à ton professeur de rouvrir, puis <button class="btn btn-ghost" data-act="resend" style="padding:8px 16px;font-size:14px">Réessayer l'envoi</button></div>` : e.mode === "err" ? `<div class="status err">L'envoi n'a pas pu être confirmé. <button class="btn btn-ghost" data-act="resend" style="padding:8px 16px;font-size:14px">Réessayer l'envoi</button></div>` : `<div class="status wait"><span class="spin"></span>Enregistrement chez ton professeur en cours…</div>`;
+  const achats = S.achats.slice().sort((x, y) => x.facture.dateISO < y.facture.dateISO ? -1 : x.facture.dateISO > y.facture.dateISO ? 1 : 0);
   return `<div class="hero" style="padding-top:6px"><div class="kick">Mission 2 ${lecture ? "terminée" : "accomplie"}</div><h2 style="font-size:clamp(32px,4.8vw,54px)"><span class="grad">${esc(V1(deno))}</span> est équipée.</h2><p class="lead">Mobilier, caisse, ordinateur : tout est là, payé ou à payer, et ta comptabilité est à jour. Bravo ${esc(S.eleve.prenom)}.</p></div>${status}
     <div class="stats"><div class="stat"><b>${S.xp}</b><span>XP gagnés</span></div><div class="stat"><b style="font-family:var(--display);font-size:20px;padding:4px 0">${esc(niv())}</b><span>Ton niveau</span></div><div class="stat"><b>${M2_BADGES.filter(b => S.done["b_" + b[0]]).length}/${M2_BADGES.length}</b><span>Badges</span></div><div class="stat"><b>${defis}/${Object.keys(M2_QUIZ).length}</b><span>Défis éclair réussis</span></div></div>
-    <div class="duo"><div class="front-wrap">${V1(() => vitrine("fin"))}</div><div><div class="card tight"><h3>Ton équipement</h3>${S.achats.map(a => { const o = offreChoisie(a), b = bien(a.bien); return `<div class="fourn" style="margin-bottom:8px"><div class="fi">${b.icone}</div><div><b>${esc(o.article)}</b><br><span class="help" style="margin:0">${esc(o.fournisseur.nom)} · ${euro(o.totalHT)} HT · ${a.condition === "comptant" ? "payé comptant" : "à payer le " + esc(a.facture.echeance)}</span></div></div>`; }).join("")}</div></div></div>
-    <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">Journal des achats</h3><table class="led journal"><thead><tr><th>Date</th><th>Fournisseur</th><th>Pièce</th><th class="n">HT</th><th class="n">TVA</th>${trop ? `<th class="n">En trop</th>` : ""}<th class="n">TTC</th><th>Paiement</th></tr></thead><tbody>${S.achats.map(a => { const o = offreChoisie(a); return `<tr><td>${esc(a.facture.date)}</td><td>${esc(o.fournisseur.nom)}</td><td class="money">${esc(a.facture.numero)}${a.nc ? " + NC" : ""}</td><td class="n">${euro(o.totalHT)}</td><td class="n">${euro(o.tva)}</td>${trop ? `<td class="n">${tropPaye(a) ? euro(tropPaye(a)) : "–"}</td>` : ""}<td class="n">${euro(montantFacture(a))}</td><td>${a.paye ? "✓ payé " + euro(montantPaye(a)) : "📅 " + esc(a.facture.echeance)}</td></tr>`; }).join("")}<tr class="tot"><td colspan="3">Total</td><td class="n">${euro(r2(S.achats.reduce((s, a) => s + offreChoisie(a).totalHT, 0)))}</td><td class="n">${euro(tvaRecup())}</td>${trop ? `<td class="n">${euro(r2(S.achats.reduce((s, a) => s + tropPaye(a), 0)))}</td>` : ""}<td class="n">${euro(r2(S.achats.reduce((s, a) => s + montantFacture(a), 0)))}</td><td></td></tr></tbody></table>${trop ? `<p class="help" style="margin:10px 0 0">« En trop » : la facture fausse que tu as acceptée, TVA comprise. C'est une charge pour l'entreprise. HT + TVA + en trop = TTC.</p>` : ""}</div>
+    <div class="duo"><div class="front-wrap">${V1(() => vitrine("fin"))}</div><div><div class="card tight"><h3>Ton équipement</h3>${S.achats.map(a => { const o = offreChoisie(a), b = bien(a.bien); return `<div class="fourn" style="margin-bottom:8px"><div class="fi">${b.icone}</div><div><b>${esc(o.article)}</b><br><span class="help" style="margin:0">${esc(o.fournisseur.nom)} · ${cpt(COMPTES_BIEN[a.bien])} ${esc(b.rubrique)} · ${euro(immoDe(a))} HT · ${a.paye ? "payé au comptant, escompte " + euro(escompteDe(a)) : "à payer le " + esc(a.facture.echeance)}</span></div></div>`; }).join("")}</div></div></div>
+    <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">Journal des achats (une ligne par facture)</h3><div class="jrn-wrap"><table class="led journal"><thead><tr><th>Date</th><th>Fournisseur</th><th>Pièce</th><th>Compte</th><th class="n">HT</th><th class="n">Escompte</th><th class="n">TVA</th>${trop ? `<th class="n">En trop</th>` : ""}<th class="n">TVAC</th><th>Paiement</th></tr></thead><tbody>${achats.map(a => { const o = offreChoisie(a); return `<tr><td>${esc(a.facture.date)}</td><td>${esc(o.fournisseur.nom)}</td><td class="money">${esc(a.facture.numero)}${a.nc ? " + NC" : ""}${a.fc ? " + FC" : ""}</td><td class="n cpt">${cpt(COMPTES_BIEN[a.bien])}</td><td class="n">${euro(immoDe(a))}</td><td class="n">${escompteDe(a) ? "− " + euro(escompteDe(a)) : "–"}</td><td class="n">${euro(tvaDe(a))}</td>${trop ? `<td class="n">${tropPaye(a) ? euro(tropPaye(a)) : "–"}</td>` : ""}<td class="n">${euro(montantFacture(a))}</td><td>${a.paye ? "✓ payé " + euro(montantPaye(a)) : "📅 " + esc(a.facture.echeance)}</td></tr>`; }).join("")}<tr class="tot"><td colspan="4">Total</td><td class="n">${euro(r2(S.achats.reduce((s, a) => s + immoDe(a), 0)))}</td><td class="n">− ${euro(resultat())}</td><td class="n">${euro(tvaRecup())}</td>${trop ? `<td class="n">${euro(r2(S.achats.reduce((s, a) => s + tropPaye(a), 0)))}</td>` : ""}<td class="n">${euro(r2(S.achats.reduce((s, a) => s + montantFacture(a), 0)))}</td><td></td></tr></tbody></table></div><p class="help" style="margin:10px 0 0">HT − escompte + TVA = TVAC à payer. ${trop ? "« En trop » : la part de la facture fausse que tu as acceptée, TVA comprise (ton matériel est surévalué d'autant)." : ""}</p></div>
+    <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">📒 Tes écritures (journal des achats et journal financier)</h3>${journalDoc(E)}<p class="help" style="margin:10px 0 0">Chaque facture passe au journal des achats (ACH) ; chaque virement au journal financier (FIN), avec l'extrait de compte comme pièce. Débit = crédit, toujours.</p></div>
     <h3 class="sub">Ton bilan après équipement</h3>${bilanHTML()}
     <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">Tes badges</h3><div class="badges">${M2_BADGES.map(b => `<div class="badge ${S.done["b_" + b[0]] ? "" : "lockd"}"><div class="i">${S.done["b_" + b[0]] ? b[1] : "🔒"}</div><b>${esc(b[2])}</b></div>`).join("")}</div>
       <h3 class="sub">Ton carnet de mots de pro</h3><div class="words">${S.mots.map(m => `<div class="word"><b>${esc(M2_MOTS[m].mot)}</b><span>${esc(M2_MOTS[m].def)}</span></div>`).join("")}</div>
       <div class="nav" style="margin-top:22px"><button class="btn btn-ghost" data-act="print">Imprimer mon dossier d'achats</button></div></div>
-    <div class="next"><div class="ic">🛍️</div><div><b>Prochaine mission : ta première commande client.</b><br><span class="help" style="margin:0">Il va falloir acheter de la marchandise, fixer un prix de vente avec une marge, livrer, facturer… et encaisser. ${dettes() ? "Sans oublier de payer tes fournisseurs à l'échéance." : ""}</span></div></div>`; };
+    <div class="next"><div class="ic">🛍️</div><div><b>Prochaine mission : ton premier mois de ventes.</b><br><span class="help" style="margin:0">Il va falloir acheter de la marchandise, fixer un prix de vente avec une marge, livrer, facturer, encaisser… et tenir ton journal. ${dettes() ? "Sans oublier de payer tes fournisseurs à l'échéance." : ""}</span></div></div>`; };
 
 // ======================================================================
 //  COQUILLE : barre des phases, tableau de bord, barre du haut
@@ -2364,7 +2468,7 @@ function appliquerConnexion(r, email){
   if (!M1 || !m1 || m1.statut !== "termine"){ S = fresh(); S.eleve = id; SESSION.bloque = "m1"; MODE = "bloque"; render(true); return; }
   if (M1.ancien || !M1.apport || !M1.emplacement){ S = fresh(); S.eleve = id; SESSION.bloque = "ancien"; MODE = "bloque"; render(true); return; }
   M1.eleve = { prenom:id.prenom, nom:id.nom, email };
-  const serveur = m2 && m2.etatApp && m2.etatApp.v === 4 ? m2.etatApp : null, local = lireLocal(email);
+  const serveur = m2 && m2.etatApp && m2.etatApp.v === 5 ? m2.etatApp : null, local = lireLocal(email);   // V3 : version 5 de l'état
   if (r.statut === "termine" && serveur){ S = restaurer(serveur); MODE = "consultation"; S.phase = "fin"; S.envoi = {mode:"ok"}; }
   else if (r.statut === "termine"){ S = restaurer(null); MODE = "ancien"; }
   else if (!r.ouvert){ S = restaurer(serveur || local); MODE = "ferme"; }
@@ -2383,7 +2487,7 @@ async function verifierOuvert(){
 }
 async function controlerEnFond(){ if (pingAutorise() && !(await verifierOuvert())){ annulerSauvegardePrevue(); if (MODE === "mission"){ MODE = "ferme"; save(); render(true); } } }
 
-/** Passage à l'étape suivante d'un achat (ou à la phase suivante). */
+/** Passage à l'étape suivante d'un achat (ou à la phase suivante). V3 : chaque date est fixée au moment où le document naît (ISO + lisible). */
 function suivant(){
   if (S.phase === "budget"){ if (!S.budget) return; award("budget", 100, "budget"); unlockMots(["budget","investissement"]); S.phase = "achats"; S.i = 0; save(); render(true); sauvegarder(true); controlerEnFond(); return; }
   if (S.phase === "achats"){
@@ -2392,24 +2496,30 @@ function suivant(){
     else if (k === "methode"){ if (!a.methode) return; a.offres = genererOffres(a.bien); a.etape = 2; unlockMots(["offre"]); }
     else if (k === "offres"){ if (a.choix == null || !a.raisons.length) return; award("compare" + n, 50, "compare"); unlockMots(n === 0 ? ["httc","immobilisation"] : []); a.etape = 3; }
     else if (k === "commande"){ if (!(a.condition && a.verifBC && a.signBC.trim().length >= 3 && a.envoyeBC)) return;
-      const o = offreChoisie(a); a.bc = { numero:`BC-${ANNEE()}-00${n + 1}`, date:today() }; a.notif = { date:today(), livraison:jourLong(dateLivraison(o.delai)) }; a.bl = { numero:`BL-${o.fournisseur.code}-${String(hash(S.eleve.email + o.numero) % 90000 + 10000)}`, date:dateFr(dateLivraison(o.delai)) };
+      const o = offreChoisie(a), dBC = isoL(new Date()); a.bc = { numero:`BC-${ANNEE()}-00${n + 1}`, date:today(), dateISO:dBC }; a.livraisonISO = dateLivraisonDepuis(dBC, o.delai);
+      a.notif = { date:today(), dateISO:dBC, livraison:jourLongIso(a.livraisonISO) }; a.bl = { numero:`BL-${o.fournisseur.code}-${String(hash(S.eleve.email + o.numero) % 90000 + 10000)}`, date:dateFrIso(a.livraisonISO), dateISO:a.livraisonISO };
       award("bc" + n, 50, "bc"); unlockMots(["bc", a.condition === "30j" ? "credit" : "escompte"]); if (a.condition === "30j") award("credit", 0, "credit"); a.etape = 4; }
     else if (k === "livraison"){ if (!(a.checks.every(Boolean) && a.signBL.trim().length >= 3)) return;
       a.facture = genererFacture(a, n); award("bl" + n, 50, "bl"); unlockMots(["bl"]); a.etape = 5; }
-    else if (k === "facture"){ if (!a.decision) return; if (a.facture.erreur && a.decision === "acceptee") toast("<div>Facture erronée acceptée : pas de badge « Contrôle facture » cette fois.</div>"); else award("fact" + n, 50, "facture"); unlockMots(["facture", a.nc ? "nc" : "tvaDed"]); a.etape = 6; }
+    else if (k === "facture"){ if (!a.decision) return; if (a.facture.erreur && !a.nc && !a.fc && (a.decision === "contestee" || a.facture.erreur.type === "tva")) rectifier(a);   // sécurité : la rectification du fournisseur existe toujours quand elle est due
+      if (a.facture.erreur && a.decision === "acceptee") toast("<div>Facture erronée acceptée : pas de badge « Contrôle facture » cette fois.</div>"); else award("fact" + n, 50, "facture"); unlockMots(["facture", a.nc ? "nc" : a.fc ? "fc" : "tvaDed"]); a.etape = 6; }
     else if (k === "paiement"){ if (!a.fini) return;
       if (achatsRecus().length >= CONFIG.NB_ACHATS){ S.phase = "bilan"; } else { S.i = S.achats.findIndex(x => !x.fini); }
     }
     save(); render(true); sauvegarder(k === "paiement" || k === "commande"); controlerEnFond(); return;
   }
 }
+/** La rectification du fournisseur après une contestation : note de crédit (trop facturé) ou facture complémentaire (TVA à 6 % au lieu de 21 %), datée deux jours ouvrés après la livraison. */
+function rectifier(a){ const o = offreChoisie(a), f = a.facture, d = isoL(ouvresApres(deIso(a.livraisonISO || f.dateISO), 2));
+  if (f.erreur.type === "tva") a.fc = { numero:`FC-${o.fournisseur.code}-${deIso(d).getFullYear()}-${String(hash(f.numero) % 900 + 100)}`, dateISO:d, date:dateFrIso(d), montant:r2(f.correct.tva - f.tva) };
+  else a.nc = { numero:`NC-${o.fournisseur.code}-${deIso(d).getFullYear()}-${String(hash(f.numero) % 900 + 100)}`, dateISO:d, date:dateFrIso(d), montant:r2(f.totalTTC - f.correct.totalTTC) }; }
 function payer(){
   const a = A(); if (a.fini) return;
-  // V2 : solde insuffisant (facture erronée acceptée, plus chère que la commande) → la banque refuse le virement ; le fournisseur accepte 30 jours, sans escompte
-  if (a.condition === "comptant" && montantPaye(a) > banque()){ a.condition = "30j"; a.virementRefuse = true; toast(`<div>🏦 Virement refusé : solde insuffisant (${euro(banque())}). ${esc(offreChoisie(a).fournisseur.nom)} accepte un paiement à 30 jours, sans escompte.</div>`); }
-  a.fini = true; a.payeLe = a.facture ? a.facture.date : today();
-  if (a.condition === "comptant"){ a.paye = true; a.extrait = genererExtrait(a); award("paye" + S.i, 50, "paye"); unlockMots(["extrait"]); }
-  else { a.paye = false; award("dette" + S.i, 50, "credit"); unlockMots(["dettes"]); }
+  // V2 : solde insuffisant (facture erronée acceptée, plus chère que la commande) → la banque refuse le virement ; le fournisseur annule l'escompte et accepte 30 jours
+  if (a.condition === "comptant" && montantPaye(a) > banque()){ a.condition = "30j"; a.virementRefuse = true; a.facture = genererFacture(a, S.i); if (a.facture.erreur && a.decision !== "acceptee") rectifier(a); if (a.facture.erreur && a.facture.erreur.type === "tva") rectifier(a); toast(`<div>🏦 Virement refusé : solde insuffisant (${euro(banque())}). ${esc(offreChoisie(a).fournisseur.nom)} accepte un paiement à 30 jours, sans escompte.</div>`); }
+  a.fini = true;
+  if (a.condition === "comptant"){ a.payeISO = dateExecution(a); a.payeLe = dateFrIso(a.payeISO); a.paye = true; a.extrait = genererExtrait(a); award("paye" + S.i, 50, "paye"); unlockMots(["extrait"]); }
+  else { a.paye = false; a.payeISO = ""; a.payeLe = ""; award("dette" + S.i, 50, "credit"); unlockMots(["dettes"]); }
   save(); render(); sauvegarder(true);
 }
 async function envoyerFinal(){
@@ -2467,7 +2577,7 @@ document.addEventListener("click", (e) => {
   if (act === "logout"){ save(); MODE = "login"; LOGIN = {email:"", busy:false, err:"", lent:false}; S = fresh(); M1 = null; render(true); return; }
   if (act === "close"){ $("#modal").hidden = true; return; }
   if (act === "brief"){ S.briefing = true; MODE = "mission"; save(); render(true); return; }
-  if (act === "print"){ $("#print-area").innerHTML = S.achats.map(a => facture(a)).join("") + `<div class="paper" style="margin-top:8mm"><div class="ph"><div><h4>Bilan de ${esc(V1(deno))} après équipement</h4><small>${esc(today())}</small></div></div>${bilanHTML({foot:false})}</div>`; window.print(); return; }
+  if (act === "print"){ $("#print-area").innerHTML = S.achats.map(a => facture(a) + (a.nc ? noteDeCredit(a) : "") + (a.fc ? factureComplementaire(a) : "") + (a.extrait ? `<div style="margin:6mm 0">${extraitCompte(a)}</div>` : "")).join("") + `<div style="margin-top:8mm">${journalDoc(ecrituresM2())}</div><div class="paper" style="margin-top:8mm"><div class="ph"><div><h4>Bilan de ${esc(V1(deno))} après équipement</h4><small>${esc(today())}</small></div></div>${bilanHTML({foot:false})}</div>`; window.print(); return; }
   if (act === "resend"){ S.envoi = {mode:"wait"}; render(); envoyer("termine").then(confirmerEnvoi); return; }
   if (MODE !== "mission") return;
   if (b.dataset.budget){ S.budget = +b.dataset.budget; save(); render(); return; }
@@ -2480,11 +2590,14 @@ document.addEventListener("click", (e) => {
     if (b.dataset.choix != null){ a.choix = +b.dataset.choix; save(); render(); return; }
     if (b.dataset.raison){ const r = b.dataset.raison, i = a.raisons.indexOf(r); if (i >= 0) a.raisons.splice(i, 1); else if (a.raisons.length < 2) a.raisons.push(r); else { toast("<div>Deux raisons maximum.</div>"); return; } save(); render(); return; }
     if (b.dataset.cond){ if (b.getAttribute("aria-disabled") === "true"){ toast("<div>Solde insuffisant pour payer comptant : choisis le paiement à 30 jours.</div>"); return; } a.condition = b.dataset.cond; save(); render(); return; }
-    if (act === "accepter"){ a.decision = "acceptee"; a.contestation = false; save(); render(); return; }
+    if (act === "accepter"){ a.decision = "acceptee"; a.contestation = false; if (a.facture.erreur && a.facture.erreur.type === "tva") rectifier(a); save(); render(); return; }   // V3 : une TVA fausse acceptée est quand même corrigée par le fournisseur (facture complémentaire)
     if (act === "contester"){ a.contestation = true; save(); render(); return; }
-    if (b.dataset.err){ a.erreurChoisie = b.dataset.err; a.decision = "contestee"; a.contestation = false;
-      if (a.facture.erreur){ const o = offreChoisie(a); a.nc = { numero:`NC-${o.fournisseur.code}-${ANNEE()}-${String(hash(a.facture.numero) % 900 + 100)}`, date:dateFr(jourOuvre(joursApres(dateLivraison(o.delai), 2))) };
-        if (a.erreurChoisie === a.facture.erreur.type){ S.xp += 75; S.done["b_lynx"] = true; toast("<b>+75 XP</b><div>🦅 Badge débloqué : Œil de lynx</div>"); } }
+    if (b.dataset.err){ a.erreurChoisie = b.dataset.err; a.contestation = false;
+      if (!a.facture.erreur){ a.decision = "contestee"; }
+      else if (a.erreurChoisie === a.facture.erreur.type){ a.decision = "contestee"; rectifier(a); S.xp += 75; S.done["b_lynx"] = true; toast("<b>+75 XP</b><div>🦅 Badge débloqué : Œil de lynx</div>"); }
+      else { a.contestations = (a.contestations || 0) + 1;   // V3 : mauvaise ligne : le fournisseur maintient sa facture ; au deuxième échec, il retrouve l'erreur lui-même (sans badge)
+        if (a.contestations >= 2){ a.decision = "contestee"; rectifier(a); toast("<div>Pas la bonne ligne, deux fois : le fournisseur a retrouvé l'erreur lui-même.</div>"); }
+        else { a.decision = null; a.mauvaiseLigne = true; toast("<div>📩 Le fournisseur maintient sa facture : cette ligne est correcte. Relis, puis décide à nouveau.</div>"); } }
       save(); render(); return; }
     if (act === "payer"){ payer(); return; }
   }
