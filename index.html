@@ -499,6 +499,18 @@ img.photo-r{display:block; width:100%; height:100%; object-fit:cover; user-selec
 .cmp-aide{margin:8px 0 0}
 .cls-acces{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:16px 0 4px}
 .cls-acces > span{color:var(--muted); font-size:13.5px}
+/* ─── V4.1 : escompte ferme ou conditionnel ; le code PIN du virement ─── */
+.note-escompte{margin:14px 0 0}
+.pin-zone{margin:14px 0 0; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.05)}
+.pin-zone.ok{border-color:rgba(52,211,153,.7); background:rgba(52,211,153,.10)}
+.pin-zone.faux{border-color:rgba(251,113,133,.8); background:rgba(251,113,133,.10)}
+.pin-titre{display:block; font-size:15px; margin-bottom:10px}
+.pin-champ{display:block; width:190px; max-width:100%; padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,.3); background:#0d1426; color:#fff; font:700 28px var(--mono, monospace); letter-spacing:.45em; text-align:center; -webkit-text-security:disc}
+.pin-champ:focus{outline:none; border-color:#f5c451; box-shadow:0 0 0 3px rgba(245,196,81,.25)}
+.pin-aide{margin:10px 0 0; font-size:14.5px; color:var(--muted, #a3afc4)}
+.pin-aide b{font:800 18px var(--mono, monospace); color:#f5c451; letter-spacing:.12em}
+.pin-etat{margin:6px 0 0; min-height:1.3em; font-size:14px; font-weight:600}
+.pin-zone.ok .pin-etat{color:#34d399} .pin-zone.faux .pin-etat{color:#fb7185}
 /* ─── V4 : le dossier imprimé (comme aux 3P) : une feuille recto verso au plus, aucun document coupé, des couleurs de papier ─── */
 @media print{
   @page{size:A4; margin:9mm}
@@ -1634,7 +1646,54 @@ button.m2-dossier:focus-visible{outline:3px solid #f6d88f; outline-offset:2px}
   .m2-dossier{grid-template-columns:auto minmax(0,1fr)} .m2-d-ouvrir{grid-column:2; justify-self:start} }
 @media (prefers-reduced-motion:reduce){ .m2-polaroid,.m2-pince,.m2-eph-page.arrache{animation:none !important} }
 @media print{ .m2-mur-photos{display:none !important} }
-/* ═══ DÉCOR MISSION 2 — fin ═══ */
+/* ═══ DÉCOR MISSION 2 — fin ═══ *//* ═══ V4.1 (30/10/2026, remarques du professeur) : dossiers classés cliquables, camion qui arrive après les films, appels réalistes, éphéméride au rythme des 3P ═══ */
+/* le décor est insensible au pointeur (règle du haut), sauf les dossiers classés, qui ouvrent le classeur */
+#main [data-decor] button.m2-dossier{pointer-events:auto}
+/* le camion attend, garé hors de l'écran, la fin des films de l'envoi et du temps qui passe */
+.m2-rue.attend .kit-camion, .m2-rue.attend .kit-camion *{animation-play-state:paused !important}
+/* les appels : ça sonne, en ligne (chrono), on se parle, appel terminé */
+.m2-appel .m2-sonne, .m2-appel .m2-enligne, .m2-appel .m2-fini{display:none}
+.m2-appel.sonne .m2-sonne{display:inline; animation:m2-clignote .9s ease-in-out infinite}
+.m2-appel.enligne .m2-enligne{display:inline}
+.m2-appel.fini .m2-fini{display:inline; color:#cfd6e6}
+.m2-appel.sonne .m2-appel-av{animation:m2-sonne 1s ease-out infinite}
+.m2-appel.enligne .m2-appel-av, .m2-appel.fini .m2-appel-av{animation:none}
+@keyframes m2-clignote{50%{opacity:.35}}
+.m2-sc-tel .m2-sc-phone{min-height:480px}
+.m2-sc-tel .m2-raccrocher{margin-top:12px}
+.m2-bulles{display:grid; gap:8px; margin:16px 0 0; text-align:left; min-height:160px}
+.m2-bulle{margin:0; max-width:92%; padding:8px 11px; border-radius:14px; font:500 13px/1.35 var(--doc); opacity:0; transform:translateY(8px); transition:opacity .3s, transform .3s}
+.m2-bulle.vu{opacity:1; transform:none}
+.m2-bulle.eux{justify-self:start; background:rgba(255,255,255,.15); color:#fff; border-bottom-left-radius:4px}
+.m2-bulle.moi{justify-self:end; background:#2f6fed; color:#fff; border-bottom-right-radius:4px}
+/* l'éphéméride : plus grande, les pages s'arrachent comme aux 3P */
+.m2-eph-titre{font:800 22px var(--doc); color:#fff; letter-spacing:.02em}
+.m2-sc-cal .m2-eph{width:250px; height:272px}
+.m2-sc-cal .m2-eph-jour{font-size:106px}
+.m2-sc-cal .m2-eph-page.arrache{z-index:3; animation:m2-eph-arrache2 .46s cubic-bezier(.5,0,.8,.6) forwards}
+@keyframes m2-eph-arrache2{to{transform:translate(70px,-120px) rotate(24deg) rotateX(50deg); opacity:0}}
+.m2-sc-cal .m2-eph-fin{font-size:20px; text-align:center}
+@media (max-width:640px){
+  .m2-sc-tel .m2-sc-phone{min-height:0}
+  .m2-bulles{min-height:0}
+  .m2-sc-cal .m2-eph{width:190px; height:210px} .m2-sc-cal .m2-eph-jour{font-size:78px}
+}
+/* dans les films, la sonnerie, les bulles et les pages arrachées gardent leur mouvement même quand l'ordinateur demande moins d'animations :
+   ces sélecteurs, plus précis, l'emportent sur la règle « tout sans animation » de la page (*{animation:none !important; transition:none !important}) */
+@media (prefers-reduced-motion:reduce){
+  .cpt-film .m2-bulle{transition:opacity .3s, transform .3s !important}
+  .cpt-film .m2-appel.sonne .m2-sonne{animation:m2-clignote .9s ease-in-out infinite !important}
+  .cpt-film .m2-appel.sonne .m2-appel-av{animation:m2-sonne 1s ease-out infinite !important}
+  .cpt-film .m2-sc-cal .m2-eph-page.arrache{animation:m2-eph-arrache2 .46s cubic-bezier(.5,0,.8,.6) forwards !important}
+}
+/* V4.1 : même quand l'ordinateur demande moins d'animations (Windows : effets d'animation désactivés), le camion de la livraison arrive pour de bon
+   (demande du professeur) ; les films de la mission 2 se jouent aussi en entier (option « toujours » du kit), sans fondus */
+@media (prefers-reduced-motion:reduce){
+  #main .m2-rue.kit-route .kit-camion{animation:kit-camion 2.8s cubic-bezier(.15,.75,.25,1) both !important}
+  #main .m2-rue.kit-route .kit-camion .roue{animation:kit-roue .5s linear 5.6 !important}
+  #main .m2-rue.kit-route.attend .kit-camion, #main .m2-rue.kit-route.attend .kit-camion *{animation-play-state:paused !important}
+  #main .m2-rue.kit-route.kit-deja-vu .kit-camion, #main .m2-rue.kit-route.kit-deja-vu .kit-camion .roue{animation:none !important}
+}
 </style>
 </head>
 <body>
@@ -2143,7 +2202,7 @@ const M2_MOTS = {
   bl:{mot:"Bon de livraison", def:"Le document qui accompagne la marchandise. On vérifie et on signe : la signature prouve que tu as bien reçu ce qui est écrit."},
   facture:{mot:"Facture", def:"Le document qui réclame le paiement. Elle doit correspondre au bon de commande et au bon de livraison : c'est le contrôle à trois documents."},
   credit:{mot:"Crédit fournisseur", def:"Quand le fournisseur accepte d'être payé plus tard (30 jours), l'entreprise a une dette envers lui : « dettes fournisseurs » au passif."},
-  escompte:{mot:"Escompte", def:"Une réduction de 2 % accordée pour un paiement rapide (dans les 8 jours après la facture), retranchée avant la TVA. Pour l'entreprise qui l'obtient, c'est un produit financier (7570)."},
+  escompte:{mot:"Escompte", def:"Une réduction de 2 % pour un paiement rapide. Ferme (celui de cette mission) : promis dès la commande, il est retranché sur la facture, avant la TVA. Conditionnel : acquis seulement si on paie dans le délai ; il vient après la TVA et se déduit au moment de payer. Pour l'entreprise qui l'obtient, c'est un produit financier (7570)."},
   fc:{mot:"Facture complémentaire", def:"Le document par lequel un fournisseur corrige une facture erronée en sa défaveur : article oublié, prix ou TVA trop bas. Elle s'ajoute à la facture, elle ne la remplace pas."},
   nc:{mot:"Note de crédit", def:"Le document par lequel un fournisseur corrige une facture erronée en sa faveur : il annule le montant facturé en trop. Au journal, elle diminue la dette fournisseur (4400) et ce qui avait été enregistré en trop."},
   extrait:{mot:"Extrait de compte", def:"Le relevé de la banque qui prouve chaque mouvement : ce qui entre, ce qui sort, et le nouveau solde."},
@@ -2156,7 +2215,7 @@ const M2_BADGES = [["budget","🎯","Budget fixé"],["compare","🔎","Comparate
 // Les exemples des défis ne reprennent ni les chiffres des explications ni ceux des offres de la mission.
 const M2_QUIZ = {
   offres:{ q:"Une offre à 1 000 € HT avec 5 % de remise et livraison gratuite. Combien paie l'entreprise TTC ?", opts:["1 000 € : la TVA ne compte pas","950 € + 21 % de TVA = 1 149,50 €","1 000 € + 21 % = 1 210 €"], ok:1, exp:"On déduit d'abord la remise (950 € HT), puis on ajoute 21 % de TVA : 1 149,50 € TTC. Et comme la TVA est déductible, le coût réel pour l'entreprise reste 950 €." },
-  offres2:{ q:"Une offre à 600 € HT, payée au comptant dans les 8 jours avec 2 % d'escompte. Sur quel montant calcule-t-on la TVA ?", opts:["Sur 600 € : l'escompte vient après la TVA","Sur 588 € : l'escompte (12 €) se retranche avant la TVA","Sur 726 € : on ajoute d'abord la TVA"], ok:1, exp:"L'escompte se retranche avant la TVA (fiche 340) : 600 − 12 = 588 € de montant taxable. TVA 21 % : 123,48 €. Total à payer : 711,48 €." },
+  offres2:{ q:"Une offre à 600 € HT, payée au comptant dans les 8 jours avec un escompte ferme de 2 %. Sur quel montant calcule-t-on la TVA ?", opts:["Sur 600 € : l'escompte vient après la TVA","Sur 588 € : l'escompte (12 €) se retranche avant la TVA","Sur 726 € : on ajoute d'abord la TVA"], ok:1, exp:"Un escompte ferme se retranche avant la TVA (fiche 340) : 600 − 12 = 588 € de montant taxable. TVA 21 % : 123,48 €. Total à payer : 711,48 €. Un escompte conditionnel, lui, ne se déduit qu'au moment du paiement." },
   offres3:{ q:"Deux offres pour le même article : A coûte 950 € HT, franco de port ; B coûte 900 € HT, plus 60 € de frais de port. Laquelle est la moins chère ?", opts:["B, car 900 € est moins que 950 €","A : 950 € HT, contre 960 € HT pour B","Elles coûtent exactement pareil"], ok:1, exp:"On compare les totaux, port compris : le port fait partie du coût d'achat. B revient à 900 + 60 = 960 € HT, A à 950 € HT. Un prix bas peut cacher des frais." },
   facture:{ q:"Tu reçois une facture qui ne correspond pas à ton bon de commande. Que fais-tu ?", opts:["Je paie, puis je réclame","Je conteste avant de payer et j'attends une note de crédit","Je corrige la facture moi-même au stylo"], ok:1, exp:"On ne paie jamais une facture erronée : on la conteste par écrit et le fournisseur émet une note de crédit (ou une facture corrigée). Une facture ne se modifie jamais à la main." },
   facture2:{ q:"Une facture est datée du 10 mars, payable à 30 jours date de facture. Quelle est l'échéance ?", opts:["Le 10 mars","Le 9 avril","Le 30 mars"], ok:1, exp:"« À 30 jours date de facture » : on compte 30 jours à partir de la date de la facture. 10 mars + 30 jours = 9 avril (mars a 31 jours). C'est la date limite pour payer." },
@@ -2168,7 +2227,7 @@ const M2_COACH = {
   bien:"Trois investissements indispensables pour ouvrir. L'ordre t'appartient. Chacun ira à l'<b>actif immobilisé</b> du bilan : ce n'est pas de l'argent perdu, c'est de l'argent transformé.",
   methode:"Première règle d'un bon acheteur : ne jamais acheter sur une seule offre. Choisis comment tu vas obtenir <b>trois offres de prix</b> à comparer.",
   offres:"Les fournisseurs affichent des prix <b>hors TVA</b>. Compare les totaux <b>TTC</b>, c'est ce qui sortira de la banque… mais souviens-toi que la TVA te sera remboursée. Prix, qualité, délai, garantie : à toi d'arbitrer.",
-  commande:"Le bon de commande t'engage. Relis chaque ligne : fournisseur, référence, prix, conditions. Et choisis comment payer : <b>au comptant (8 jours) avec 2 % d'escompte</b>, retranché avant la TVA, ou <b>à 30 jours date de facture</b> pour préserver ta trésorerie.",
+  commande:"Le bon de commande t'engage. Relis chaque ligne : fournisseur, référence, prix, conditions. Et choisis comment payer : <b>au comptant (8 jours) avec un escompte ferme de 2 %</b>, retranché avant la TVA, ou <b>à 30 jours date de facture</b> pour préserver ta trésorerie.",
   livraison:"Le livreur attend ta signature. Ne signe jamais sans vérifier : une fois signé, le bon de livraison prouve que tu as reçu exactement ce qui est écrit.",
   facture:"Le contrôle qui fait toute la différence : la facture doit correspondre au <b>bon de commande</b> et au <b>bon de livraison</b>. Vérifie chaque montant avant d'accepter. Les fournisseurs se trompent parfois… rarement en ta faveur.",
   paiement:"Chaque paiement laisse une trace sur l'<b>extrait de compte</b> de la banque. Ensuite, on <b>classe</b> : facture, bon de commande et bon de livraison vont ensemble dans le classeur. Curieux de la comptabilité ? Les écritures t'attendent dans le bandeau 📒.",
@@ -2230,7 +2289,7 @@ function ibanFixe(n){ const bank = ["001","063","068","310","363","523","732","7
 function commStruct(n){ const b = String(n % 1e10).padStart(10, "0"), k = String((parseInt(b, 10) % 97) || 97).padStart(2, "0"), s = b + k; return `+++${s.slice(0,3)}/${s.slice(3,7)}/${s.slice(7)}+++`; }
 const COMPTES_BIEN = { mobilier:"mobilier", caisse:"matBureau", ordinateur:"matInfo" };
 const JOURNAUX = { ACH:"journal des achats", FIN:"journal financier" };
-const condTxt = (c) => c === "comptant" ? `au comptant : paiement dans les ${DELAI_COMPTANT} jours après réception de la facture, escompte de ${Math.round(ESCOMPTE * 100)} %` : `à ${DELAI_PAIEMENT} jours date de facture`;
+const condTxt = (c) => c === "comptant" ? `au comptant : paiement dans les ${DELAI_COMPTANT} jours après réception de la facture, escompte ferme de ${Math.round(ESCOMPTE * 100)} %` : `à ${DELAI_PAIEMENT} jours date de facture`;
 const tresoDepart = () => V1(tresorerie);
 const chargesMois = () => V1(chargesMensuelles);                                                  // sorties fixes du mois (loyer, assurances, énergie et télécom TVA comprise, mensualité)
 const chargesCR = () => V1(() => r2(loyer() + CHARGES_AUTRES + r2(emprunt() * TAUX / 12)));        // ce qui est une charge au compte de résultats (sans le capital remboursé, sans la TVA)
@@ -2332,7 +2391,7 @@ function genererExtrait(a){
 function payload(statut){
   const a = A();
   const fourn = (o) => ({ nom:o.fournisseur.nom, forme:o.fournisseur.forme, denomination:`${o.fournisseur.nom} ${o.fournisseur.forme}`, adresse:`${o.fournisseur.rue}, ${o.fournisseur.cp} ${o.fournisseur.ville}`, numeroEntreprise:o.fournisseur.bce, numeroTVA:"BE " + o.fournisseur.bce, iban:o.fournisseur.iban, telephone:o.fournisseur.tel, site:o.fournisseur.web, atout:o.fournisseur.atout });
-  const offreD = (o, cond) => ({ numero:o.numero, fournisseur:fourn(o), reference:o.ref, article:o.article, detail:o.detail, niveau:o.niveau, prix:o.prixHT, prixHT:o.prixHT, remisePourcent:o.remisePct, remise:o.remise, fraisLivraison:o.livraison, totalHT:o.totalHT, tva:o.tva, totalTTC:o.totalTTC, totalAPayer:o.totalTTC, delaiJours:o.delai, garantieAns:o.garantie, paiement: cond === "comptant" ? "au comptant (8 jours), escompte 2 %" : "à 30 jours date de facture" });
+  const offreD = (o, cond) => ({ numero:o.numero, fournisseur:fourn(o), reference:o.ref, article:o.article, detail:o.detail, niveau:o.niveau, prix:o.prixHT, prixHT:o.prixHT, remisePourcent:o.remisePct, remise:o.remise, fraisLivraison:o.livraison, totalHT:o.totalHT, tva:o.tva, totalTTC:o.totalTTC, totalAPayer:o.totalTTC, delaiJours:o.delai, garantieAns:o.garantie, paiement: cond === "comptant" ? "au comptant (8 jours), escompte ferme 2 %" : "à 30 jours date de facture" });
   const d = bilanData(), srl = M1.direction === "plusieurs";
   const patrimoine = { possede:d.actif.map(l => ({ compte:l.compte, libelle:l.libelle, montant:l.montant })), origine:d.passif.map(l => ({ compte:l.compte, libelle:l.libelle, montant:l.montant })), valeur:d.total, argentEnBanque:banque() };
   const fin = (f) => f ? { brut:f.brut, remise:f.remise, netCommercial:f.netCommercial, escompte:f.escompte, netHTVA:f.netHTVA, fraisPort:f.livraison, montantTaxable:f.totalHT, totalHT:f.totalHT, tauxTVA:f.tauxTva, tva:f.tva, totalTTC:f.totalTTC } : null;
@@ -2352,7 +2411,7 @@ function payload(statut){
         notification: x.notif ? { canal:"SMS et e-mail", recuLe:x.notif.date, livraisonPrevue:x.notif.livraison, livraisonISO:x.livraisonISO } : null,
         bonDeLivraison: x.bl ? { numero:x.bl.numero, date:x.bl.date, dateISO:x.bl.dateISO, verifications:{ bonArticle:x.checks[0], bonneQuantite:x.checks[1], colisBonEtat:x.checks[2] }, signature:x.signBL, accepte:x.checks.every(Boolean) } : null,
         facture: x.facture ? Object.assign({ numero:x.facture.numero, date:x.facture.date, dateISO:x.facture.dateISO, echeance:x.facture.echeance, echeanceISO:x.facture.echeanceISO, communication:x.facture.communication, erreur:x.facture.erreur, decision:x.decision, contestations:x.contestations || 0, erreurTrouvee: x.facture.erreur ? x.decision === "contestee" && x.erreurChoisie === x.facture.erreur.type : null, noteDeCredit:x.nc, factureComplementaire:x.fc, tropPaye:tropPaye(x), montantsRecus:fin(x.facture), montantsCorrects:fin(x.facture.correct), montantsDus:fin(factureDue(x)) }, fin(x.facture)) : null,
-        paiement: x.fini ? { montant:montantPaye(x), montantTTC:montantFacture(x), escompte:escompteDe(x), mode: x.condition === "comptant" ? "virement au comptant (8 jours), escompte 2 %" : "virement à 30 jours date de facture", date: x.payeLe || "", dateISO:x.payeISO || "", echeance: x.facture ? x.facture.echeance : "", echeanceISO: x.facture ? x.facture.echeanceISO : "", paye:x.paye, virementRefuse:!!x.virementRefuse, accepte:true } : null,
+        paiement: x.fini ? { montant:montantPaye(x), montantTTC:montantFacture(x), escompte:escompteDe(x), mode: x.condition === "comptant" ? "virement au comptant (8 jours), escompte ferme 2 %" : "virement à 30 jours date de facture", date: x.payeLe || "", dateISO:x.payeISO || "", echeance: x.facture ? x.facture.echeance : "", echeanceISO: x.facture ? x.facture.echeanceISO : "", paye:x.paye, virementRefuse:!!x.virementRefuse, accepte:true } : null,
         termine:x.fini };
     }),
     bilan:d, patrimoine,
@@ -2452,7 +2511,7 @@ function lignesDoc(d, opts={}){
     ${d.lignes.map(l => `<tr class="${err("quantite")}"><td>${esc(l.libelle)}</td><td>${esc(l.unite || "pièce")}</td><td class="n">${l.qte}</td><td class="n">${euro(l.pu)}</td><td class="n">${euro(l.montant)}</td></tr>`).join("")}
     <tr class="sub"><td colspan="4">Total des articles</td><td class="n">${euro(d.brut)}</td></tr>
     ${d.remisePct || err("remise") ? `<tr class="sub ${err("remise")}"><td colspan="4">− Remise ${d.remisePct} %</td><td class="n">− ${euro(d.remise)}</td></tr><tr class="sub"><td colspan="4">= Net commercial</td><td class="n">${euro(d.netCommercial)}</td></tr>` : ""}
-    ${d.cond === "comptant" ? `<tr class="sub"><td colspan="4">− Escompte ${Math.round(ESCOMPTE * 100)} % (paiement dans les ${DELAI_COMPTANT} jours)</td><td class="n">− ${euro(d.escompte)}</td></tr><tr class="sub"><td colspan="4">= Net HTVA</td><td class="n">${euro(d.netHTVA)}</td></tr>` : ""}
+    ${d.cond === "comptant" ? `<tr class="sub"><td colspan="4">− Escompte ferme ${Math.round(ESCOMPTE * 100)} % (paiement dans les ${DELAI_COMPTANT} jours)</td><td class="n">− ${euro(d.escompte)}</td></tr><tr class="sub"><td colspan="4">= Net HTVA</td><td class="n">${euro(d.netHTVA)}</td></tr>` : ""}
     <tr class="sub ${err("livraison")}"><td colspan="4">+ Frais de port</td><td class="n">${d.livraison ? euro(d.livraison) : "offerts"}</td></tr>
     <tr><td colspan="4"><b>= Montant taxable</b></td><td class="n"><b>${euro(d.totalHT)}</b></td></tr>
     <tr class="sub ${err("tva")}"><td colspan="4">TVA ${d.tauxTva || 21} %</td><td class="n">${euro(d.tva)}</td></tr>
@@ -2494,7 +2553,7 @@ function extraitCompte(a){ const e = a.extrait;
 function ordreVirement(a){ const o = offreChoisie(a), f = a.facture, d = dateExecution(a);
   return `<div class="paper"><div class="ph"><div><h4>Ordre de virement</h4><small>Borinage Banque · compte professionnel</small></div><div class="ref">Date d'exécution souhaitée<br>${esc(dateFrIso(d))}</div></div>
     <dl><dt>Donneur d'ordre</dt><dd>${esc(V1(deno))} · <span class="num">${esc(ibanM1())}</span></dd><dt>Bénéficiaire</dt><dd>${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}, ${esc(o.fournisseur.cp)} ${esc(o.fournisseur.ville)}</dd><dt>IBAN du bénéficiaire</dt><dd><span class="num">${esc(o.fournisseur.iban || ibanFixe(hash(o.fournisseur.code)))}</span> · BIC BORIBEBB</dd>
-      <dt>Montant</dt><dd><span class="num"><b>${euro(montantPaye(a))}</b></span>${a.condition === "comptant" ? ` <small style="color:var(--paper-muted)">(facture ${esc(f.numero)}, escompte de ${euro(escompteDe(a))} déjà déduit)</small>` : ""}</dd><dt>Communication structurée</dt><dd><span class="num">${esc(f.communication || f.numero)}</span></dd></dl>
+      <dt>Montant</dt><dd><span class="num"><b>${euro(montantPaye(a))}</b></span>${a.condition === "comptant" ? ` <small style="color:var(--paper-muted)">(facture ${esc(f.numero)}, escompte ferme de ${euro(escompteDe(a))} déjà déduit)</small>` : ""}</dd><dt>Communication structurée</dt><dd><span class="num">${esc(f.communication || f.numero)}</span></dd></dl>
     <div class="foot"><span>Vérifie l'IBAN et la communication : un virement parti ne se rattrape pas.</span><span class="signed" style="font-family:'Playfair Display',serif;font-style:italic">${esc(S.eleve.prenom)} ${esc(S.eleve.nom)}</span></div></div>`; }
 const dateExecution = (a) => a.payeISO || (a.facture ? isoL(ouvresApres(deIso(a.facture.dateISO), 2)) : isoL(new Date()));
 /** V3 : une écriture du journal, en document (compte, libellé, débit, crédit, totaux). */
@@ -2516,7 +2575,7 @@ function offreCard(o, k, a){ const on = a.choix === k, minTTC = Math.min(...a.of
       <div class="ol"><span>Délai</span><span>${o.delai} jours ouvrés</span></div><div class="ol"><span>Garantie</span><span>${o.garantie} an${o.garantie > 1 ? "s" : ""}</span></div></div>
     <div class="ot"><small>Total TTC (à 30 jours)</small><b>${euro(o.totalTTC)}</b></div></button>`; }
 function comparatif(a){ const best = (f, max) => { const v = a.offres.map(f), m = max ? Math.max(...v) : Math.min(...v); return v.map(x => x === m); };   // V4 : comme le tableur des 3P
-  const rows = [["Total HT", o => euro(o.totalHT)], ["TVA 21 %", o => euro(o.tva)], ["Total TTC à 30 jours", o => `<b>${euro(o.totalTTC)}</b>`, best(o => o.totalTTC)], ["Au comptant (8 jours), escompte déduit", o => euro(montantsOffre(o, "comptant").totalTTC), best(o => montantsOffre(o, "comptant").totalTTC)], ["Délai de livraison", o => o.delai + " j ouvrés", best(o => o.delai)], ["Garantie", o => o.garantie + " an" + (o.garantie > 1 ? "s" : ""), best(o => o.garantie, true)], ["Niveau", o => STRATEGIES.find(s => s.id === o.niveau).icone + " " + STRATEGIES.find(s => s.id === o.niveau).nom]];
+  const rows = [["Total HT", o => euro(o.totalHT)], ["TVA 21 %", o => euro(o.tva)], ["Total TTC à 30 jours", o => `<b>${euro(o.totalTTC)}</b>`, best(o => o.totalTTC)], ["Au comptant (8 jours), escompte ferme déduit", o => euro(montantsOffre(o, "comptant").totalTTC), best(o => montantsOffre(o, "comptant").totalTTC)], ["Délai de livraison", o => o.delai + " j ouvrés", best(o => o.delai)], ["Garantie", o => o.garantie + " an" + (o.garantie > 1 ? "s" : ""), best(o => o.garantie, true)], ["Niveau", o => STRATEGIES.find(s => s.id === o.niveau).icone + " " + STRATEGIES.find(s => s.id === o.niveau).nom]];
   return `<div class="cmp"><table class="led"><thead><tr><th></th>${a.offres.map(o => `<th class="n">${esc(o.fournisseur.nom)}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr><td>${r[0]}</td>${a.offres.map((o, k) => `<td class="n ${a.choix === k ? "pos" : ""} ${r[2] && r[2][k] ? "best" : ""}">${r[1](o)}</td>`).join("")}</tr>`).join("")}</tbody></table><p class="help cmp-aide">En vert : la meilleure valeur de la ligne (le moins cher, le plus rapide, la garantie la plus longue).</p></div>`; }
 
 // ═══ PHOTOS v1 (V4, 30/10/2026 : la technique des 3P) — début (identique dans les missions 1, 2 et 3) ═══
@@ -2558,7 +2617,7 @@ const CLASSEUR = (() => {
   const dLong = (s) => s ? deIso(s).toLocaleDateString("fr-BE", { weekday:"long", day:"numeric", month:"long" }) : "";
   const hashC = (s) => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
   const TVA = 0.21, ESC = 0.02, J_COMPTANT = 8, J_CREDIT = 30;
-  const condTxt = (c) => c === "comptant" ? `au comptant : paiement dans les ${J_COMPTANT} jours après réception de la facture, escompte de ${Math.round(ESC * 100)} %` : `à ${J_CREDIT} jours date de facture`;
+  const condTxt = (c) => c === "comptant" ? `au comptant : paiement dans les ${J_COMPTANT} jours après réception de la facture, escompte ferme de ${Math.round(ESC * 100)} %` : `à ${J_CREDIT} jours date de facture`;
   const ICONES = { offre:"📨", bc:"📝", bl:"📦", facture:"🧾", nc:"↩️", fc:"➕", extrait:"🏦", devis:"📋", fv:"🧾", ticket:"🧾", caisse:"💶" };
   const NOMS_BIENS = { mobilier:"Le mobilier", caisse:"La caisse enregistreuse", ordinateur:"L'ordinateur" };
 
@@ -2571,7 +2630,7 @@ const CLASSEUR = (() => {
   function totaux(d, err){
     const T = [["Total des articles", d.brut, "sub"]], e = (k) => err === k ? " err" : "";
     if (d.remisePct || err === "remise") T.push([`− Remise ${d.remisePct || 0}${NB}%`, -d.remise, "sub" + e("remise")], ["= Net commercial", d.netCommercial, "sub"]);
-    if (d.cond === "comptant") T.push([`− Escompte ${Math.round(ESC * 100)}${NB}% (paiement dans les ${J_COMPTANT} jours)`, -d.escompte, "sub"], ["= Net HTVA", d.netHTVA, "sub"]);
+    if (d.cond === "comptant") T.push([`− Escompte ferme ${Math.round(ESC * 100)}${NB}% (paiement dans les ${J_COMPTANT} jours)`, -d.escompte, "sub"], ["= Net HTVA", d.netHTVA, "sub"]);
     T.push(["+ Frais de port", d.livraison, "sub" + e("livraison"), d.livraison ? null : "offerts"], ["= Montant taxable", d.totalHT, "b"], [`TVA ${d.tauxTva || 21}${NB}%`, d.tva, "sub" + e("tva")], ["Total à payer (TVAC)", d.totalTTC, "tot"]);
     return T;
   }
@@ -2751,11 +2810,11 @@ const pourquoiBien = (b) => b.id === "mobilier" && M1 && MOBILIER[M1.typeId] ? M
 const M2_COACH_COURT = {
   bien:"Achat suivant : choisis le bien qui manque encore.",
   methode:"Même règle qu'au premier achat : au moins trois offres. Tu peux changer de méthode pour voir la différence.",
-  offres:"Compare les totaux TTC, le délai et la garantie. Au comptant, l'escompte de 2 % se retranche avant la TVA.",
+  offres:"Compare les totaux TTC, le délai et la garantie. Au comptant, l'escompte ferme de 2 % se retranche avant la TVA.",
   commande:"Choisis comment payer, relis chaque ligne du bon de commande, signe et envoie.",
   livraison:"Le réflexe du pro : l'article, la quantité, l'état du colis… et seulement ensuite, la signature.",
   facture:"Facture, bon de commande, bon de livraison : compare-les ligne par ligne avant d'accepter.",
-  paiement:"Au comptant, le virement part maintenant, escompte déduit. À 30 jours, la facture rejoint tes dettes fournisseurs."
+  paiement:"Au comptant, tape le code PIN de ta carte : le virement part maintenant, escompte ferme déduit. À 30 jours, la facture rejoint tes dettes fournisseurs."
 };
 /** V4 : un défi différent à chaque achat (offres, offres2, offres3 ; facture, facture2, facture3), 50 XP chacun, une seule fois. */
 const cleQuiz = (base) => S.i ? base + (S.i + 1) : base;
@@ -2787,6 +2846,25 @@ function dossierImpression(){
       <div class="blk"><h3 class="dz-t">Le bilan après équipement</h3><div class="paper">${bilanHTML({foot:false})}</div></div>
     </div></div>`;
 }
+/** V4.1 (30/10/2026, demande du professeur) : l'escompte proposé au comptant est un escompte FERME (déduit sur la facture, avant la TVA) ; rappel de la différence avec l'escompte conditionnel. */
+const noteEscompte = () => `<div class="note note-escompte"><span class="i">📌</span><div><b>Escompte ferme ou conditionnel ?</b> <b>Ferme</b> : promis dès la commande, il est déduit sur la facture, avant la TVA. C'est celui que propose ce fournisseur. <b>Conditionnel</b> : il n'est acquis que si tu paies dans le délai ; il apparaît à la fin de la facture, après la TVA, et c'est au moment de payer que tu le déduis.</div></div>`;
+/** V4.1 : le virement se confirme avec le code PIN de la carte bancaire de l'entreprise (fictif, écrit juste en dessous du champ). Rien n'est enregistré. */
+const PIN_SAISI = {};
+const codePin = (a) => String(hash((S.eleve.email || "") + "|pin|" + a.bien) % 9000 + 1000);
+const pinOK = (a) => !!a && PIN_SAISI[S.i] === codePin(a);
+const etatPin = (v, ok) => ok ? "✔ Code correct : tu peux confirmer le virement." : v.length === 4 ? "✘ Code incorrect : recopie le code écrit juste en dessous." : "";
+function zonePin(a){ const code = codePin(a), v = PIN_SAISI[S.i] || "", ok = v === code;
+  return `<div class="pin-zone${ok ? " ok" : v.length === 4 ? " faux" : ""}"><label class="pin-titre" for="pin-${S.i}">🔐 Pour confirmer le virement, tape le <b>code PIN</b> de la carte bancaire de ton entreprise</label>
+    <input class="pin-champ" id="pin-${S.i}" data-pin type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="4" value="${esc(v)}" placeholder="• • • •" aria-describedby="pin-aide-${S.i}">
+    <p class="pin-aide" id="pin-aide-${S.i}">Code PIN de ta carte (fictif, pour le jeu) : <b>${code.split("").join(" ")}</b></p>
+    <p class="pin-etat" aria-live="polite">${esc(etatPin(v, ok))}</p></div>`; }
+document.addEventListener("input", (e) => {
+  const el = e.target; if (!el || !el.matches || !el.matches("[data-pin]") || MODE !== "mission") return;
+  const v = el.value.replace(/\D/g, "").slice(0, 4); if (el.value !== v) el.value = v;
+  PIN_SAISI[S.i] = v; const a = A(), ok = pinOK(a), zone = el.closest(".pin-zone");
+  if (zone){ zone.classList.toggle("ok", ok); zone.classList.toggle("faux", v.length === 4 && !ok); const t = zone.querySelector(".pin-etat"); if (t) t.textContent = etatPin(v, ok); }
+  const b = document.querySelector('#main [data-act="payer"]'); if (b) b.disabled = !ok;
+});
 // ======================================================================
 //  ÉCRANS
 // ======================================================================
@@ -2864,8 +2942,8 @@ R.ac_commande = (a) => { const o = offreChoisie(a), solde = banque(), mc = monta
   const ok = !!a.condition && a.verifBC && a.signBC.trim().length >= 3 && a.envoyeBC;
   return head(`Achat ${S.i + 1} · étape 4`, "Rédige ton <span class='grad'>bon de commande</span>", "Choisis tes conditions de paiement (fiche 310), vérifie chaque ligne, signe, envoie.") + coach("commande")
     + `<div class="card" style="margin-bottom:14px"><h3>Conditions de paiement</h3><div class="grid g2">
-        <button class="choice ${a.condition === "comptant" ? "on" : ""} ${comptantOK ? "" : "full"}" data-cond="comptant" ${comptantOK ? "" : 'aria-disabled="true"'}><div class="ico">⚡</div><h4>Au comptant (8 jours)</h4><p>Tu paies dans les 8 jours après réception de la facture. Le fournisseur t'accorde <b>2 % d'escompte</b>, retranché avant la TVA.</p><span class="pro">Escompte : ${euro(mc.escompte)} (un produit financier, 7570)</span><span class="con">${euro(mc.totalTTC)} sortent de la banque dans les 8 jours</span>${comptantOK ? "" : `<span class="tag" style="color:var(--coral)">Solde insuffisant (${euro0(solde)}) : la banque refuserait le virement</span>`}</button>
-        <button class="choice ${a.condition === "30j" ? "on" : ""}" data-cond="30j"><div class="ico">📅</div><h4>À 30 jours date de facture</h4><p>Le fournisseur te fait crédit : tu paies le mois prochain, prix plein.</p><span class="pro">Ta trésorerie reste disponible</span><span class="con">Une dette fournisseur de ${euro(m30.totalTTC)} apparaît au passif (4400)</span></button></div></div>
+        <button class="choice ${a.condition === "comptant" ? "on" : ""} ${comptantOK ? "" : "full"}" data-cond="comptant" ${comptantOK ? "" : 'aria-disabled="true"'}><div class="ico">⚡</div><h4>Au comptant (8 jours) : escompte ferme</h4><p>Tu t'engages à payer dans les 8 jours après réception de la facture. En échange, le fournisseur t'accorde un <b>escompte ferme de 2 %</b> : il est déduit sur la facture, avant la TVA.</p><span class="pro">Escompte ferme : ${euro(mc.escompte)} (un produit financier, 7570)</span><span class="con">${euro(mc.totalTTC)} sortent de la banque dans les 8 jours</span>${comptantOK ? "" : `<span class="tag" style="color:var(--coral)">Solde insuffisant (${euro0(solde)}) : la banque refuserait le virement</span>`}</button>
+        <button class="choice ${a.condition === "30j" ? "on" : ""}" data-cond="30j"><div class="ico">📅</div><h4>À 30 jours date de facture</h4><p>Le fournisseur te fait crédit : tu paies le mois prochain, prix plein.</p><span class="pro">Ta trésorerie reste disponible</span><span class="con">Une dette fournisseur de ${euro(m30.totalTTC)} apparaît au passif (4400)</span></button></div>${noteEscompte()}</div>
       ${bonDeCommande(a)}
       <div class="checks" style="margin-top:14px">
         <label class="check ${a.verifBC ? "ok" : ""}"><input type="checkbox" data-chk="verifBC" ${a.verifBC ? "checked" : ""}><span>J'ai vérifié : fournisseur, référence <b>${esc(o.ref)}</b>, prix HT <b>${euro(o.prixHT)}</b>${o.remise ? ", remise " + o.remisePct + " %" : ""}, livraison ${o.livraison ? euro(o.livraison) : "gratuite"}, total à payer <b>${a.condition ? euro(montantsOffre(o, a.condition).totalTTC) : "…"}</b>, conditions de paiement et de livraison.</span></label>
@@ -2894,7 +2972,7 @@ R.ac_facture = (a) => { const f = a.facture, o = offreChoisie(a), decided = !!a.
   }
   return head(`Achat ${S.i + 1} · étape 6`, "Contrôle la <span class='grad'>facture</span>", `La facture de ${esc(o.fournisseur.nom)} est arrivée. Compare-la avec ton bon de commande (${euro(montantsOffre(o, a.condition).totalTTC)} à payer) et ton bon de livraison : le contrôle à trois documents.`) + coach("facture")
     + `<div class="grid g2" style="align-items:start"><div>${facture(a, {marque:decided})}</div>
-      <div><div class="card tight"><h3>Rappel de ta commande ${esc(a.bc.numero)}</h3>${(() => { const m = montantsOffre(o, a.condition); return `<table class="led"><tbody><tr><td>Article</td><td class="n">1 × ${esc(o.ref)}</td></tr><tr><td>Prix HT</td><td class="n">${euro(o.prixHT)}</td></tr><tr><td>Remise</td><td class="n">${o.remise ? "− " + euro(o.remise) : "aucune"}</td></tr>${m.escompte ? `<tr><td>Escompte 2 % (comptant)</td><td class="n">− ${euro(m.escompte)}</td></tr>` : ""}<tr><td>Livraison</td><td class="n">${o.livraison ? euro(o.livraison) : "gratuite"}</td></tr><tr><td>Montant taxable</td><td class="n">${euro(m.totalHT)}</td></tr><tr><td>TVA 21 %</td><td class="n">${euro(m.tva)}</td></tr><tr class="tot"><td>Total à payer</td><td class="n">${euro(m.totalTTC)}</td></tr></tbody></table>`; })()}<p class="help">Livré : 1 article, colis conforme (BL ${esc(a.bl.numero)}).</p></div>
+      <div><div class="card tight"><h3>Rappel de ta commande ${esc(a.bc.numero)}</h3>${(() => { const m = montantsOffre(o, a.condition); return `<table class="led"><tbody><tr><td>Article</td><td class="n">1 × ${esc(o.ref)}</td></tr><tr><td>Prix HT</td><td class="n">${euro(o.prixHT)}</td></tr><tr><td>Remise</td><td class="n">${o.remise ? "− " + euro(o.remise) : "aucune"}</td></tr>${m.escompte ? `<tr><td>Escompte ferme 2 % (comptant)</td><td class="n">− ${euro(m.escompte)}</td></tr>` : ""}<tr><td>Livraison</td><td class="n">${o.livraison ? euro(o.livraison) : "gratuite"}</td></tr><tr><td>Montant taxable</td><td class="n">${euro(m.totalHT)}</td></tr><tr><td>TVA 21 %</td><td class="n">${euro(m.tva)}</td></tr><tr class="tot"><td>Total à payer</td><td class="n">${euro(m.totalTTC)}</td></tr></tbody></table>`; })()}<p class="help">Livré : 1 article, colis conforme (BL ${esc(a.bl.numero)}).</p></div>
         ${a.mauvaiseLigne && !decided ? `<div class="note warn" style="margin-top:12px"><span class="i">📩</span><div><b>Le fournisseur maintient sa facture :</b> « la ligne que vous contestez est correcte ». Relis ligne par ligne, puis accepte ou conteste à nouveau (dernier essai).</div></div>` : ""}
         ${decided ? "" : `<div class="decision"><button class="btn btn-ghost" data-act="accepter" style="justify-content:center;border-color:rgba(52,211,153,.6)">✓ Conforme, j'accepte</button><button class="btn btn-ghost" data-act="contester" style="justify-content:center;border-color:rgba(251,113,133,.6)">✗ Je conteste</button></div>`}
         ${!decided && a.decision === null && a.contestation ? `<div class="card tight" style="margin-top:12px"><h3>Qu'est-ce qui cloche ?</h3><div class="chips">${ERREURS_FACTURE.map(e => `<button class="chip" data-err="${e[0]}">${esc(e[1])}</button>`).join("")}</div></div>` : ""}
@@ -2904,10 +2982,10 @@ R.ac_facture = (a) => { const f = a.facture, o = offreChoisie(a), decided = !!a.
     + nav(decided, "Accepte ou conteste la facture.", {label: a.condition === "comptant" ? "Passer au paiement" : "Enregistrer la dette"}); };
 
 R.ac_paiement = (a) => { const o = offreChoisie(a), comptant = a.condition === "comptant", due = montantFacture(a);
-  return head(`Achat ${S.i + 1} · étape 7`, comptant ? "Paie par <span class='grad'>virement</span>" : "Enregistre ta <span class='grad'>dette</span>", comptant ? `Total à payer dans les 8 jours, escompte de ${euro(escompteDe(a))} déjà retranché sur la facture : <b class="money">${euro(due)}</b>.` : `Rien ne sort aujourd'hui : tu dois <b class="money">${euro(due)}</b> à ${esc(o.fournisseur.nom)} pour le ${esc(a.facture.echeance)}.`) + coach("paiement")
+  return head(`Achat ${S.i + 1} · étape 7`, comptant ? "Paie par <span class='grad'>virement</span>" : "Enregistre ta <span class='grad'>dette</span>", comptant ? `Total à payer dans les 8 jours, escompte ferme de ${euro(escompteDe(a))} déjà retranché sur la facture : <b class="money">${euro(due)}</b>.` : `Rien ne sort aujourd'hui : tu dois <b class="money">${euro(due)}</b> à ${esc(o.fournisseur.nom)} pour le ${esc(a.facture.echeance)}.`) + coach("paiement")
     + (a.fini ? `${a.virementRefuse ? `<div class="note warn"><span class="i">🏦</span><div><b>La banque a refusé le virement : solde insuffisant.</b> La facture acceptée était plus chère que ta commande. Le fournisseur a annulé l'escompte et réémis sa facture à 30 jours : une dette fournisseur apparaît au passif.</div></div>` : ""}${comptant ? extraitCompte(a) : `<div class="note gold"><span class="i">📅</span><div><b>Dette fournisseur enregistrée.</b> ${euro(due)} à payer le ${esc(a.facture.echeance)}. Ta banque n'a pas bougé : ${euro(banque())}. Mais au passif, une dette est apparue (4400) : il faudra la trésorerie à l'échéance.</div></div>`}${bandeauEcritures("m2-ecr-" + S.i, ecritures(a))}<div class="cls-acces">${CLASSEUR.bouton("Ouvrir le classeur", "m2-" + (S.i + 1))}<span>Facture, bon de commande, bon de livraison${a.extrait ? ", extrait de compte" : ""} : tout est classé. Clique pour relire un document.</span></div>`
-      : `${comptant ? ordreVirement(a) : `<div class="card"><h3>Facture à payer</h3><table class="led"><tbody><tr><td>Bénéficiaire</td><td class="n">${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}</td></tr><tr><td>Communication</td><td class="n">${esc(a.facture.communication || a.facture.numero)}</td></tr><tr><td>Montant à payer (TVAC)</td><td class="n">${euro(due)}</td></tr><tr class="tot"><td>Échéance</td><td class="n">${esc(a.facture.echeance)}</td></tr></tbody></table></div>`}
-        ${comptant && montantPaye(a) > banque() ? `<div class="note warn" style="margin:12px 0 0"><span class="i">⚠️</span><div>Solde insuffisant (${euro(banque())}) : la banque refusera ce virement. Le fournisseur te laissera alors 30 jours, sans escompte.</div></div>` : ""}<div class="nav" style="margin-top:14px"><span class="help">Solde actuel : ${euro(banque())}</span><button class="btn btn-main" data-act="payer">${comptant ? "Confirmer le virement" : "Enregistrer la facture à payer"}</button></div>`)
+      : `${comptant ? ordreVirement(a) + zonePin(a) : `<div class="card"><h3>Facture à payer</h3><table class="led"><tbody><tr><td>Bénéficiaire</td><td class="n">${esc(o.fournisseur.nom)} ${esc(o.fournisseur.forme)}</td></tr><tr><td>Communication</td><td class="n">${esc(a.facture.communication || a.facture.numero)}</td></tr><tr><td>Montant à payer (TVAC)</td><td class="n">${euro(due)}</td></tr><tr class="tot"><td>Échéance</td><td class="n">${esc(a.facture.echeance)}</td></tr></tbody></table></div>`}
+        ${comptant && montantPaye(a) > banque() ? `<div class="note warn" style="margin:12px 0 0"><span class="i">⚠️</span><div>Solde insuffisant (${euro(banque())}) : la banque refusera ce virement. Le fournisseur te laissera alors 30 jours, sans escompte.</div></div>` : ""}<div class="nav" style="margin-top:14px"><span class="help">Solde actuel : ${euro(banque())}</span><button class="btn btn-main" data-act="payer" ${comptant && !pinOK(a) ? "disabled" : ""}>${comptant ? "Confirmer le virement" : "Enregistrer la facture à payer"}</button></div>`)
     + (a.fini ? nav(true, "", {label: achatsRecus().length < CONFIG.NB_ACHATS ? "Achat suivant" : "Voir mon bilan"}) : ""); };
 
 R.bilan = () => { const d = bilanData(), t = tresoDepart(), ok = !!S.done.bilan, trop = r2(S.achats.reduce((s, a) => s + tropPaye(a), 0));
@@ -2924,7 +3002,7 @@ R.fin = () => { const lecture = MODE === "consultation", e = S.envoi || {}, defi
   const achats = S.achats.slice().sort((x, y) => x.facture.dateISO < y.facture.dateISO ? -1 : x.facture.dateISO > y.facture.dateISO ? 1 : 0);
   return `<div class="hero" style="padding-top:6px"><div class="kick">Mission 2 ${lecture ? "terminée" : "accomplie"}</div><h2 style="font-size:clamp(32px,4.8vw,54px)"><span class="grad">${esc(V1(deno))}</span> est équipée.</h2><p class="lead">Mobilier, caisse, ordinateur : tout est là, payé ou à payer, et ta comptabilité est à jour. Bravo ${esc(S.eleve.prenom)}.</p></div>${status}
     <div class="stats"><div class="stat"><b>${S.xp}</b><span>XP gagnés</span></div><div class="stat"><b style="font-family:var(--display);font-size:20px;padding:4px 0">${esc(niv())}</b><span>Ton niveau</span></div><div class="stat"><b>${M2_BADGES.filter(b => S.done["b_" + b[0]]).length}/${M2_BADGES.length}</b><span>Badges</span></div><div class="stat"><b>${defis}/${Object.keys(M2_QUIZ).length}</b><span>Défis éclair réussis</span></div></div>
-    <div class="duo"><div class="front-wrap">${V1(() => vitrine("fin"))}</div><div><div class="card tight"><h3>Ton équipement</h3>${S.achats.map(a => { const o = offreChoisie(a), b = bien(a.bien); return `<div class="fourn" style="margin-bottom:8px"><div class="fi">${b.icone}</div><div><b>${esc(o.article)}</b><br><span class="help" style="margin:0">${esc(o.fournisseur.nom)} · ${cpt(COMPTES_BIEN[a.bien])} ${esc(b.rubrique)} · ${euro(immoDe(a))} HT · ${a.paye ? "payé au comptant, escompte " + euro(escompteDe(a)) : "à payer le " + esc(a.facture.echeance)}</span></div></div>`; }).join("")}</div></div></div>
+    <div class="duo"><div class="front-wrap">${V1(() => vitrine("fin"))}</div><div><div class="card tight"><h3>Ton équipement</h3>${S.achats.map(a => { const o = offreChoisie(a), b = bien(a.bien); return `<div class="fourn" style="margin-bottom:8px"><div class="fi">${b.icone}</div><div><b>${esc(o.article)}</b><br><span class="help" style="margin:0">${esc(o.fournisseur.nom)} · ${cpt(COMPTES_BIEN[a.bien])} ${esc(b.rubrique)} · ${euro(immoDe(a))} HT · ${a.paye ? "payé au comptant, escompte ferme " + euro(escompteDe(a)) : "à payer le " + esc(a.facture.echeance)}</span></div></div>`; }).join("")}</div></div></div>
     <div class="card" style="margin-top:22px"><h3 class="sub" style="margin-top:0">Récapitulatif de tes factures d'achat</h3><div class="jrn-wrap"><table class="led journal"><thead><tr><th>Date</th><th>Fournisseur</th><th>Pièce</th><th>Compte</th><th class="n">HT</th><th class="n">Escompte</th><th class="n">TVA</th>${trop ? `<th class="n">En trop</th>` : ""}<th class="n">TVAC</th><th>Paiement</th></tr></thead><tbody>${achats.map(a => { const o = offreChoisie(a); return `<tr><td>${esc(a.facture.date)}</td><td>${esc(o.fournisseur.nom)}</td><td class="money">${esc(a.facture.numero)}${a.nc ? " + NC" : ""}${a.fc ? " + FC" : ""}</td><td class="n cpt">${cpt(COMPTES_BIEN[a.bien])}</td><td class="n">${euro(immoDe(a))}</td><td class="n">${escompteDe(a) ? "− " + euro(escompteDe(a)) : "–"}</td><td class="n">${euro(tvaDe(a))}</td>${trop ? `<td class="n">${tropPaye(a) ? euro(tropPaye(a)) : "–"}</td>` : ""}<td class="n">${euro(montantFacture(a))}</td><td>${a.paye ? "✓ payé " + euro(montantPaye(a)) : "📅 " + esc(a.facture.echeance)}</td></tr>`; }).join("")}<tr class="tot"><td colspan="4">Total</td><td class="n">${euro(r2(S.achats.reduce((s, a) => s + immoDe(a), 0)))}</td><td class="n">− ${euro(resultat())}</td><td class="n">${euro(tvaRecup())}</td>${trop ? `<td class="n">${euro(r2(S.achats.reduce((s, a) => s + tropPaye(a), 0)))}</td>` : ""}<td class="n">${euro(r2(S.achats.reduce((s, a) => s + montantFacture(a), 0)))}</td><td></td></tr></tbody></table></div><p class="help" style="margin:10px 0 0">HT − escompte + TVA = TVAC à payer. ${trop ? "« En trop » : la part de la facture fausse que tu as acceptée, TVA comprise (ton matériel est surévalué d'autant)." : ""}</p></div>
     ${bandeauEcritures("m2-journal", journalDoc(E) + `<p class="help" style="margin:10px 0 0">Chaque facture passe au journal des achats (ACH) ; chaque virement au journal financier (FIN), avec l'extrait de compte comme pièce. Débit = crédit, toujours.</p>`, "Écritures comptables de tes achats disponibles")}
     <h3 class="sub">Ton bilan après équipement</h3>${bilanHTML()}
@@ -3126,7 +3204,7 @@ document.addEventListener("click", (e) => {
         if (a.contestations >= 2){ a.decision = "contestee"; rectifier(a); toast("<div>Pas la bonne ligne, deux fois : le fournisseur a retrouvé l'erreur lui-même.</div>"); }
         else { a.decision = null; a.mauvaiseLigne = true; toast("<div>📩 Le fournisseur maintient sa facture : cette ligne est correcte. Relis, puis décide à nouveau.</div>"); } }
       save(); render(); return; }
-    if (act === "payer"){ payer(); return; }
+    if (act === "payer"){ const ap = A(); if (ap && !ap.fini && ap.condition === "comptant" && !pinOK(ap)) return; payer(); return; }
   }
   if (act === "validerBilan"){ award("bilan", 100, "bilan"); if (budgetRespecte()) award("dansBudget", 100, "dansBudget"); save(); render(); return; }
   switch (act){ case "next": suivant(); break; case "send": envoyerFinal(); break; }
@@ -3869,6 +3947,8 @@ function vitrineSVG(cfg, uid){
 // v1.3 (27/10/2026) : film() (scène de 3 s au plus sur tout l'écran, passée d'un clic, comme aux 3P), cascade(), confettis(),
 // xpSaute(), vivant() (cartes qui réagissent, reflets, notifications façon téléphone), couperFilms() pour les bancs d'essai.
 // v1.4 (30/10/2026) : creditsImages() pose une ligne visible au bas de la page (comme aux 3P) ; la liste ajoute les photos libres de la page.
+// v1.5 (30/10/2026) : film({ long:true }) peut durer jusqu'à 9 s (scènes plus réalistes de la mission 2) ; sans « long », toujours 3 s au plus ;
+// film({ toujours:true }) se joue en entier même quand l'ordinateur demande moins d'animations.
 const COMPTA = (() => {
   const X = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
@@ -4105,7 +4185,10 @@ const COMPTA = (() => {
   function film(o){
     if (filmsCoupes || !o || !o.html || !premiereFois("film-" + o.cle)) return Promise.resolve(false);
     if (filmEnCours) filmEnCours();
-    const reduit = matchMedia("(prefers-reduced-motion: reduce)").matches, ms = reduit ? 700 : Math.min(3000, o.duree || 2400);
+    // v1.5 : un film « long » (o.long, demande du professeur du 30/10/2026 : scènes plus réalistes, comme aux 3P) peut durer jusqu'à 9 s ; les autres, 3 s au plus.
+    // Un film « toujours » (o.toujours) se joue en entier même si l'ordinateur demande moins d'animations (Windows : effets d'animation désactivés) :
+    // ses étapes avancent au rythme prévu, seuls les fondus et glissements disparaissent.
+    const reduit = !o.toujours && matchMedia("(prefers-reduced-motion: reduce)").matches, ms = reduit ? 700 : Math.min(o.long ? 9000 : 3000, o.duree || 2400);
     const el = document.createElement("div");
     el.className = "cpt-film" + (reduit ? " cpt-film-calme" : ""); el.setAttribute("aria-hidden", "true");
     el.innerHTML = `<div class="cpt-film-boite">${o.html}${o.texte ? `<p class="cpt-film-texte">${X(o.texte)}</p>` : ""}</div><span class="cpt-film-passer">Clique pour passer</span><i class="cpt-film-temps" style="animation-duration:${ms}ms"></i>`;
@@ -4249,21 +4332,33 @@ const DECOR = (() => {
   function filmRecherche(a){
     const b = bien(a.bien), offres = a.offres || [], fs = offres.map(o => o.fournisseur);
     if (!b || fs.length < 3) return null;
-    if (a.methode === "telephone") return { duree:2600, texte:"Tu appelles trois fournisseurs…",
+    // V4.1 (demande du professeur : « plus réaliste, comme aux 3P ») : chaque appel sonne, décroche, on se parle, on raccroche ; trois appels en 9 s environ
+    const objet = `${String(b.nom || b.court || "").replace(/^./, c => c.toLowerCase())} de ma boutique`;
+    if (a.methode === "telephone") return { toujours:true, long:true, duree:9000, texte:"Tu appelles trois fournisseurs…",
       html:`<div class="m2-sc m2-sc-tel"><div class="phone m2-sc-phone"><div class="tel-barre"><span>${X(heureCourte())}</span><span>📶 🔋</span></div>
-        ${fs.map(f => `<div class="m2-appel"><div class="m2-appel-av">${logoF(f.code)}</div><b>${X(f.nom)}</b><span class="m2-appel-num">${X(f.tel)}</span><span class="m2-appel-etat">Appel en cours… <span class="m2-chrono">00:00</span></span></div>`).join("")}
+        ${fs.map(f => `<div class="m2-appel"><div class="m2-appel-av">${logoF(f.code)}</div><b>${X(f.nom)}</b><span class="m2-appel-num">${X(f.tel)}</span>
+          <span class="m2-appel-etat"><span class="m2-sonne">📞 Ça sonne…</span><span class="m2-enligne">En ligne · <span class="m2-chrono">00:00</span></span><span class="m2-fini">Appel terminé</span></span>
+          <div class="m2-bulles"><p class="m2-bulle eux">${X(f.nom)}, bonjour ! Je vous écoute.</p><p class="m2-bulle moi">Bonjour, je voudrais une offre de prix pour ${X(objet)}.</p><p class="m2-bulle eux">C'est noté : je vous envoie notre offre par e-mail aujourd'hui.</p></div></div>`).join("")}
         <div class="m2-raccrocher">📞</div></div>
         <ol class="m2-sc-liste">${fs.map(f => `<li><span class="m2-sl-logo">${logoF(f.code)}</span><span class="m2-sl-nom">${X(f.nom)}</span><span class="m2-sl-etat">✔ Offre demandée</span></li>`).join("")}</ol></div>`,
       jouer(el, ms){
-        const ap = el.querySelectorAll(".m2-appel"), li = el.querySelectorAll(".m2-sc-liste li"); let k = -1, s = 0;
-        const tic = setInterval(() => { if (!el.isConnected) return clearInterval(tic); const c = el.querySelector(".m2-appel.actif .m2-chrono"); if (c) c.textContent = "00:" + String(++s % 60).padStart(2, "0"); }, Math.max(50, Math.round(ms / 28)));
+        const ap = [...el.querySelectorAll(".m2-appel")], li = [...el.querySelectorAll(".m2-sc-liste li")], T = ms / ap.length; let s = 0, ligne = null;
+        const tic = setInterval(() => { if (!el.isConnected) return clearInterval(tic); if (ligne){ const c = ligne.querySelector(".m2-chrono"); if (c) c.textContent = "00:" + String(++s % 60).padStart(2, "0"); } }, Math.max(80, Math.round(T / 16)));
         setTimeout(() => clearInterval(tic), ms + 100);
-        const appeler = () => { if (k >= 0){ li[k].classList.remove("encours"); li[k].classList.add("ok"); } k++;
-          if (k < ap.length){ ap.forEach((x, j) => x.classList.toggle("actif", j === k)); li[k].classList.add("encours"); s = 0; COMPTA.son("bip"); } };
-        COMPTA.etapes(el, ms, [[0, appeler], [.31, appeler], [.62, appeler], [.93, appeler]]);
+        const etape = (k, f) => () => { const x = ap[k]; if (x) f(x, li[k]); };
+        const pas = [];
+        // chaque appel occupe un tiers du film : ça sonne, on décroche, trois répliques, on raccroche
+        ap.forEach((_, k) => { const t = k / ap.length, sl = 1 / ap.length;
+          pas.push([t + .01 * sl, etape(k, (x, l) => { ap.forEach(y => y.classList.toggle("actif", y === x)); l.classList.add("encours"); x.classList.add("sonne"); COMPTA.son("bip"); })],
+            [t + .22 * sl, etape(k, (x) => { x.classList.remove("sonne"); x.classList.add("enligne"); s = 0; ligne = x; })],
+            [t + .36 * sl, etape(k, (x) => x.querySelectorAll(".m2-bulle")[0].classList.add("vu"))],
+            [t + .55 * sl, etape(k, (x) => x.querySelectorAll(".m2-bulle")[1].classList.add("vu"))],
+            [t + .74 * sl, etape(k, (x) => { x.querySelectorAll(".m2-bulle")[2].classList.add("vu"); COMPTA.son("notif"); })],
+            [t + .92 * sl, etape(k, (x, l) => { x.classList.remove("enligne"); x.classList.add("fini"); ligne = null; l.classList.remove("encours"); l.classList.add("ok"); })]); });
+        COMPTA.etapes(el, ms, pas);
       },
-      final(el){ el.querySelectorAll(".m2-sc-liste li").forEach(x => x.classList.add("ok")); const ap = el.querySelector(".m2-appel"); if (ap) ap.classList.add("actif"); } };
-    if (a.methode === "email") return { duree:2400, texte:"Tu demandes trois offres de prix par e-mail…",
+      final(el){ el.querySelectorAll(".m2-sc-liste li").forEach(x => x.classList.add("ok")); const ap = el.querySelectorAll(".m2-appel"), x = ap[ap.length - 1]; if (x){ x.classList.add("actif", "fini"); x.querySelectorAll(".m2-bulle").forEach(b => b.classList.add("vu")); } } };
+    if (a.methode === "email") return { toujours:true, long:true, duree:6000, texte:"Tu demandes trois offres de prix par e-mail… et les réponses arrivent",
       html:`<div class="m2-sc m2-fen m2-sc-mail"><div class="m2-fen-barre"><i></i><i></i><i></i><span>Boîte de réception – ${X(V(emailPro, ""))}</span></div>
         <div class="m2-mail-envoye">✔ Demande de prix envoyée à 3 fournisseurs</div>
         <ul class="m2-boite">${fs.map(f => `<li class="m2-m-ligne"><span class="m2-m-logo">${logoF(f.code)}</span><span class="m2-m-txt"><b>${X(f.nom)}</b><span>Re : Demande de prix – ${X(b.court)}</span><span class="m2-m-pj">📎 Offre de prix.pdf</span></span><time>maintenant</time></li>`).join("")}</ul></div>`,
@@ -4273,7 +4368,7 @@ const DECOR = (() => {
           [.3, () => l[0].classList.add("vu")], [.52, () => l[1].classList.add("vu")], [.74, () => { l[2].classList.add("vu"); COMPTA.son("notif"); }]]);
       },
       final(el){ el.querySelectorAll(".m2-mail-envoye, .m2-m-ligne").forEach(x => x.classList.add("vu")); } };
-    if (a.methode === "internet") return { duree:2600, texte:"Tu compares les sites de trois fournisseurs…",
+    if (a.methode === "internet") return { toujours:true, long:true, duree:7000, texte:"Tu compares les sites de trois fournisseurs…",
       html:`<div class="m2-sc m2-fen m2-sc-web"><div class="m2-web-onglets">${fs.map(f => `<span class="m2-onglet">${logoF(f.code)}${X(f.nom)}</span>`).join("")}</div>
         <div class="m2-web-adresse"><span>🔒</span><span class="m2-url">${X(fs[0].web)}</span></div><div class="m2-web-charge"><i></i></div>
         <div class="m2-web-pages">${offres.map(o => `<div class="m2-web-page" style="--f:${couleurF(o.fournisseur.code)};--t:${encreF(o.fournisseur.code)}"><div class="m2-wp-tete">${logoF(o.fournisseur.code)}<b>${X(o.fournisseur.nom)}</b><span>Boutique en ligne</span></div>
@@ -4286,7 +4381,7 @@ const DECOR = (() => {
         COMPTA.etapes(el, ms, [[0, ouvrir(0)], [.22, garder(0)], [.33, ouvrir(1)], [.55, garder(1)], [.66, ouvrir(2)], [.88, garder(2)]]);
       },
       final(el){ const pg = el.querySelectorAll(".m2-web-page"); pg.forEach(x => x.classList.add("garde")); if (pg[2]) pg[2].classList.add("actif"); } };
-    return { duree:2600, texte:"Tu visites trois magasins…",                                       // aller dans les magasins
+    return { toujours:true, long:true, duree:7000, texte:"Tu visites trois magasins…",                                       // aller dans les magasins
       html:`<div class="m2-sc m2-sc-rue"><div class="m2-rue-mags">${fs.map((f, k) => `<div class="m2-mag" style="--f:${couleurF(f.code)};--t:${encreF(f.code)}"><div class="m2-mag-enseigne">${X(f.nom)}</div><div class="m2-mag-auvent"></div>
         <div class="m2-mag-face"><span class="m2-mag-vit">${photoOuIcone(idPhoto(a.bien, offres[k].niveau), b.icone)}</span><span class="m2-mag-porte"></span></div><span class="m2-mag-bulle">📄 Offre de prix</span></div>`).join("")}</div>
         <div class="m2-rue-trottoir"><span class="m2-pieton">🚶</span></div></div>`,
@@ -4302,7 +4397,7 @@ const DECOR = (() => {
   function filmEnvoi(a, o){
     if (!a.bc || !o) return null;
     const f = o.fournisseur;
-    return { duree:2000, texte:`Envoi du bon de commande à ${f.nom}…`,
+    return { toujours:true, duree:2000, texte:`Envoi du bon de commande à ${f.nom}…`,
       html:`<div class="m2-sc m2-sc-envoi"><div class="m2-mail-fen"><div class="m2-mf-barre"><span>Nouveau message</span><span class="m2-mf-btns"><i></i><i></i><i></i></span></div>
         <div class="m2-mf-champ"><span>De :</span>${X(V(emailPro, ""))}</div><div class="m2-mf-champ"><span>À :</span>${X(mailFourn(f))}</div><div class="m2-mf-champ"><span>Objet :</span>Bon de commande ${X(a.bc.numero)}</div>
         <div class="m2-mf-corps">Bonjour,<br>Voici notre bon de commande ${X(a.bc.numero)}, suivant votre offre n° ${X(o.numero)}.<br>Bien à vous,<br><span class="m2-mf-sig">${X(S.eleve.prenom)} ${X(S.eleve.nom)} – ${X(V(deno, ""))}</span></div>
@@ -4315,39 +4410,46 @@ const DECOR = (() => {
       final(el){ el.querySelector(".m2-sc-envoi").classList.add("part", "fini"); } };
   }
   /** V4 : le temps passe entre la commande et la livraison : l'éphéméride s'effeuille jour après jour (comme aux 3P). Week-ends et jours fériés : rien ne bouge.
-   *  Les dates viennent de la page (bon de commande, livraison prévue) ; le film suit celui de l'envoi du bon de commande. */
+   *  V4.1 (demande du professeur) : au rythme des 3P, qu'on voie vraiment les jours passer : un temps d'arrêt, puis une page par jour (un tiers de seconde),
+   *  puis « Nous sommes le… ». Les dates viennent de la page (bon de commande, livraison prévue) ; le film suit celui de l'envoi du bon de commande. */
   function filmCalendrier(a){
     if (!a.bc || !a.bc.dateISO || !a.livraisonISO || a.livraisonISO <= a.bc.dateISO) return null;
     const jours = []; for (let d = joursApres(deIso(a.bc.dateISO), 1); isoL(d) <= a.livraisonISO; d = joursApres(d, 1)) jours.push(new Date(d));
     if (!jours.length || jours.length > 21) return null;
     const note = (d) => ferie(d) ? "Jour férié : rien ne bouge" : d.getDay() % 6 === 0 ? "Week-end : livreurs au repos" : "";
     const page = (d, cls) => `<div class="m2-eph-page${cls ? " " + cls : ""}${ferie(d) ? " ferie" : d.getDay() % 6 === 0 ? " we" : ""}"><span class="m2-eph-mois">${X(d.toLocaleDateString("fr-BE", { month:"long", year:"numeric" }))}</span><b class="m2-eph-jour">${d.getDate()}</b><span class="m2-eph-nom">${X(d.toLocaleDateString("fr-BE", { weekday:"long" }))}</span><span class="m2-eph-note">${X(note(d))}</span></div>`;
-    return { duree:2600, texte:"Le temps passe… ta commande voyage",
-      html:`<div class="m2-sc m2-sc-cal"><div class="m2-eph"><span class="m2-eph-anneau"></span><span class="m2-eph-anneau"></span><div class="m2-eph-pile">${page(deIso(a.bc.dateISO), "m2-eph-dessus")}</div></div><p class="m2-eph-fin">Livraison le <b>${X(jourLongIso(a.livraisonISO))}</b></p></div>`,
+    const DEBUT = 700, PAS = Math.max(300, Math.min(420, Math.round(3200 / jours.length))), FIN = 1600, duree = DEBUT + jours.length * PAS + FIN;
+    return { toujours:true, long:true, duree, texte:"Le temps passe… ta commande voyage",
+      html:`<div class="m2-sc m2-sc-cal"><div class="m2-eph-titre">Le temps passe…</div><div class="m2-eph"><span class="m2-eph-anneau"></span><span class="m2-eph-anneau"></span><div class="m2-eph-pile">${page(deIso(a.bc.dateISO), "m2-eph-dessus")}</div></div>
+        <p class="m2-eph-fin">Nous sommes le <b>${X(jourLongIso(a.livraisonISO))}</b> : le livreur arrive !</p></div>`,
       jouer(el, ms){
-        const pile = el.querySelector(".m2-eph-pile"); let k = 0;
-        const tourner = () => { if (!pile.isConnected || k >= jours.length) return; const vieux = pile.querySelector(".m2-eph-dessus");
+        const pile = el.querySelector(".m2-eph-pile"), sc = el.querySelector(".m2-sc-cal"); let k = 0;
+        const tourner = () => { if (!pile.isConnected) return;
+          const vieux = pile.querySelector(".m2-eph-dessus");
           pile.insertAdjacentHTML("afterbegin", page(jours[k], ""));                            // la nouvelle page se glisse sous celle qu'on arrache
-          if (vieux){ vieux.classList.remove("m2-eph-dessus"); vieux.classList.add("arrache"); setTimeout(() => vieux.remove(), 380); }
-          pile.firstElementChild.classList.add("m2-eph-dessus"); COMPTA.son("touche"); k++; };
-        COMPTA.etapes(el, ms, jours.map((_, i) => [.06 + .74 * i / jours.length, tourner]).concat([[.86, () => el.querySelector(".m2-sc-cal").classList.add("fini")]]));
+          // la page arrachée s'envole, même si l'ordinateur demande moins d'animations (demande du professeur ; voir decor_m2.css, V4.1)
+          if (vieux){ vieux.classList.remove("m2-eph-dessus"); vieux.classList.add("arrache"); setTimeout(() => vieux.remove(), 460); }
+          pile.firstElementChild.classList.add("m2-eph-dessus"); COMPTA.son("touche"); k++;
+          if (k < jours.length) setTimeout(tourner, PAS); else setTimeout(() => { if (sc.isConnected){ sc.classList.add("fini"); COMPTA.son("succes"); } }, 260); };
+        setTimeout(tourner, DEBUT);
       },
       final(el){ el.querySelector(".m2-eph-pile").innerHTML = page(jours[jours.length - 1], "m2-eph-dessus"); el.querySelector(".m2-sc-cal").classList.add("fini"); } };
   }
-  /** Le paiement : virement dans l'application de la banque (code secret, « Virement exécuté »), ou facture rangée « À payer ». */
+  /** Le paiement : virement dans l'application de la banque (code PIN, « Virement exécuté »), ou facture rangée « À payer ». */
   function filmPaiement(a, o){
-    if (a.condition !== "comptant") return { duree:2000, texte:"Facture enregistrée : à payer à l'échéance",
+    if (a.condition !== "comptant") return { toujours:true, duree:2000, texte:"Facture enregistrée : à payer à l'échéance",
       html:`<div class="m2-sc m2-sc-dette"><div class="m2-sd-facture"><b>Facture</b><small>${X(a.facture ? a.facture.numero : "")}</small><span>${X(o.fournisseur.nom)}</span><span class="m2-sd-montant">${X(euro(montantFacture(a)))}</span></div>
         <div class="m2-sd-farde"><span class="m2-sd-onglet">À payer</span><span class="m2-sd-ech">Échéance<br><b>${X(a.facture ? a.facture.echeance : "")}</b></span></div></div>`,
       jouer(el, ms){ const sc = el.querySelector(".m2-sc-dette"); COMPTA.etapes(el, ms, [[.3, () => { sc.classList.add("range"); COMPTA.son("papier"); }], [.68, () => { sc.classList.add("fini"); COMPTA.son("tampon"); }]]); },
       final(el){ el.querySelector(".m2-sc-dette").classList.add("range", "fini"); } };
-    const code = String(KIT.hash(S.eleve.email + a.bien) % 9000 + 1000).split("");
-    return { duree:2800, texte:`Virement de ${euro(montantPaye(a))} à ${o.fournisseur.nom}`,
+    // V4.1 : le téléphone tape le même code PIN que celui que l'élève vient de recopier (codePin, mission 2)
+    const code = (typeof codePin === "function" ? codePin(a) : String(KIT.hash(S.eleve.email + a.bien) % 9000 + 1000)).split("");
+    return { toujours:true, duree:2800, texte:`Virement de ${euro(montantPaye(a))} à ${o.fournisseur.nom}`,
       html:`<div class="m2-sc m2-sc-paie"><div class="phone m2-paie-tel"><div class="tel-barre"><span>${X(heureCourte())}</span><span>📶 🔋</span></div>
         <div class="m2-pt-app">${COMPTA.logoBanque({ clair:true })}</div><div class="m2-pt-titre">Nouveau virement</div>
         <div class="m2-pt-ligne"><small>Vers</small><b>${X(o.fournisseur.nom)} ${X(o.fournisseur.forme)}</b></div><div class="m2-pt-montant">${X(euro(montantPaye(a)))}</div>
         <div class="m2-pt-ligne"><small>Communication</small><b class="m2-mono">${X(a.facture ? a.facture.numero : "")}</b></div>
-        <div class="m2-pt-code">Code secret : <b class="m2-pts">○○○○</b></div><div class="m2-pt-ok">✔ Virement exécuté</div>
+        <div class="m2-pt-code">Code PIN : <b class="m2-pts">○○○○</b></div><div class="m2-pt-ok">✔ Virement exécuté</div>
         <div class="m2-pt-touches">${["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "✔"].map(t => `<span>${t}</span>`).join("")}</div></div></div>`,
       jouer(el, ms){
         const sc = el.querySelector(".m2-sc-paie"), pts = el.querySelector(".m2-pts"), touches = [...el.querySelectorAll(".m2-pt-touches span")];
@@ -4498,13 +4600,11 @@ const DECOR = (() => {
     if (sms){
       sms.classList.add("m2-sms");
       const de = sms.querySelector(".from"); if (de) poser(de, "afterbegin", "ico", `<span class="m2-sms-ico" aria-hidden="true">💬</span>`);
-      poser(sms, "afterend", "rue", () => `<div class="kit-route m2-rue" aria-hidden="true" data-anim="m2-rue-${S.i}"><span class="m2-rue-ciel"></span>${REVERBERE}${KIT.camion({ nom:f.nom, sousTitre:"Livraison · " + f.ville, couleur:couleurF(f.code) })}<span class="m2-rue-boutique">${miniBoutique()}</span></div>`);
+      // V4.1 (demande du professeur : « le camion est statique ») : le camion attend, garé hors de l'écran, la fin des films de l'envoi et du temps qui passe,
+      // puis il arrive pour de bon (arriveeCamion) ; le téléphone vibre et le klaxon sonne à ce moment-là, pas sous le film
+      if (!un("#main .m2-rue") && COMPTA.premiereFois("camion-" + S.i)) camionAttend = true;
+      poser(sms, "afterend", "rue", () => `<div class="kit-route m2-rue${camionAttend ? " attend" : ""}" aria-hidden="true" data-anim="m2-rue-${S.i}"><span class="m2-rue-ciel"></span>${REVERBERE}${KIT.camion({ nom:f.nom, sousTitre:"Livraison · " + f.ville, couleur:couleurF(f.code) })}<span class="m2-rue-boutique">${miniBoutique()}</span></div>`);
       if (a.bl) poser(sms, "afterbegin", "cal", () => calLivraison(a.bl.date, a.notif ? a.notif.livraison : ""));
-      if (COMPTA.premiereFois("camion-" + S.i)){
-        const decal = a.bc && a.livraisonISO && a.livraisonISO > a.bc.dateISO ? 2600 : 0;   // V4 : après le film du temps qui passe
-        sms.classList.add("m2-vibre"); sonDiffere("notif", 2100 + decal);          // le téléphone vibre : SMS du fournisseur (après le film de l'envoi)
-        sonDiffere("camion", 2400 + decal); sonDiffere("porte", 3300 + decal);      // le klaxon quand le camion s'arrête, puis la sonnette
-      }
     }
     const papier = un("#main .paper");
     if (papier){
@@ -4603,7 +4703,8 @@ const DECOR = (() => {
     arrivee([bl], "bilan-" + ecran());
     poser(bl, "afterbegin", "tete", () => `<div class="m2-bilan-tete" aria-hidden="true"><div><b>Bilan après équipement</b><small>${X(V(deno, ""))} · ${X(today())}</small>${COMPTA.mention()}</div>${COMPTA.balance(d.equilibre, { couleurTexte:"#14284b" })}${S.done && S.done.bilan ? `<span class="tampon vert frappe" data-anim="m2-bilan-ok">Validé</span>` : ""}</div>`);
     // Le surligneur passe une fois sur ce que l'équipement a changé : le matériel, la TVA à récupérer, les dettes, la banque
-    if (COMPTA.premiereFois("fluo-" + ecran())) tous(".l", bl).forEach((l) => { if (/^(Mobilier|Matériel|TVA à récupérer|Dettes fournisseurs|Banque)/.test(String((l.querySelector(".k") || l).textContent).trim())) l.classList.add("m2-fluo"); });
+    // V4.1 : les lignes du bilan commencent par le numéro de compte (« 2400Mobilier… ») ; sans lui, le surligneur ne marquait plus rien
+    if (COMPTA.premiereFois("fluo-" + ecran())) tous(".l", bl).forEach((l) => { if (/^(\d{4}\s*)?(Mobilier|Matériel|TVA à récupérer|Dettes fournisseurs|Banque)/.test(String((l.querySelector(".k") || l).textContent).trim())) l.classList.add("m2-fluo"); });
   }
 
   // ─── Fin : la boutique équipée, allumée, en fête ───
@@ -4662,6 +4763,15 @@ const DECOR = (() => {
 
   const ECRANS = { briefing, budget, ac_bien:acBien, ac_methode:acMethode, ac_offres:acOffres, ac_commande:acCommande, ac_livraison:acLivraison, ac_facture:acFacture, ac_paiement:acPaiement,
     bilan:bilanDoc, fin, ferme:() => nuit(false), bloque:() => nuit(true) };
+  /** V4.1 : le camion de la livraison arrive quand les films sont finis (il était garé hors de l'écran, animation en pause). */
+  let camionAttend = false, filmsEnCours = false;
+  function arriveeCamion(){
+    if (!camionAttend) return; camionAttend = false;
+    const rue = un("#main .m2-rue"), sms = un("#main .sms");
+    if (rue) rue.classList.remove("attend");
+    if (sms){ sms.classList.remove("m2-vibre"); void sms.offsetWidth; sms.classList.add("m2-vibre"); }
+    COMPTA.son("notif"); sonDiffere("camion", 2400); sonDiffere("porte", 3300);   // le SMS du fournisseur, le klaxon quand le camion s'arrête, puis la sonnette
+  }
   /** Au passage d'un écran à l'autre (pas au chargement de la page) : le film de la recherche ou de l'envoi du bon de commande. */
   let precedent = null;
   function films(cle){
@@ -4672,7 +4782,9 @@ const DECOR = (() => {
       : avant === "ac_commande:" + S.i && cle === "ac_livraison:" + S.i ? filmEnvoi(a, offreChoisie(a)) : null;
     if (!f) return;
     const suite = avant === "ac_commande:" + S.i ? filmCalendrier(a) : null;   // V4 : après l'envoi du bon de commande, le temps passe jusqu'à la livraison
-    COMPTA.film(Object.assign({ cle:cle }, f)).then(() => { if (suite) COMPTA.film(Object.assign({ cle:cle + ":temps" }, suite)); });
+    filmsEnCours = true;
+    COMPTA.film(Object.assign({ cle:cle }, f)).then(() => suite ? COMPTA.film(Object.assign({ cle:cle + ":temps" }, suite)) : null)
+      .then(() => { filmsEnCours = false; arriveeCamion(); }, () => { filmsEnCours = false; arriveeCamion(); });
   }
   function decorer(){
     try {
@@ -4684,6 +4796,7 @@ const DECOR = (() => {
       COMPTA.cascade(main, cle);                                      // les blocs de l'écran arrivent l'un après l'autre (une fois)
       COMPTA.xpSaute(S.xp || 0);
       films(cle);
+      if (camionAttend && !filmsEnCours) arriveeCamion();            // V4.1 : pas de film (rechargement de la page) : le camion arrive tout de suite
     } catch(e) { console.warn("décor :", e); }
   }
   // ─── Accroche (seules affectations permises : render, refreshLive, vitrine, toast, confetti) ───
